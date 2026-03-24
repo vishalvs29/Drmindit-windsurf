@@ -1,8 +1,14 @@
 package com.drmindit.android.ui.screens
 
+<<<<<<< HEAD
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+=======
+import androidx.compose.animation.core.*
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.*
+>>>>>>> master
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
@@ -19,7 +25,14 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+<<<<<<< HEAD
 import com.drmindit.android.ui.components.*
+=======
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.drmindit.android.ui.components.*
+import com.drmindit.android.ui.viewmodel.DashboardViewModel
+import com.drmindit.android.ui.viewmodel.CrisisViewModel
+>>>>>>> master
 import com.drmindit.shared.domain.model.Mood
 import com.drmindit.shared.domain.model.SessionCategory
 import java.time.LocalDateTime
@@ -28,6 +41,7 @@ import java.time.format.DateTimeFormatter
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DashboardScreen(
+<<<<<<< HEAD
     userName: String = "Sarah",
     mentalHealthScore: Float = 0.75f,
     currentStreak: Int = 7,
@@ -41,6 +55,48 @@ fun DashboardScreen(
     val selectedMood = remember { mutableStateOf<Mood?>(null) }
 
     Column(
+=======
+    dashboardViewModel: DashboardViewModel = viewModel(),
+    crisisViewModel: CrisisViewModel = viewModel(),
+    onSessionClick: (String) -> Unit = {},
+    onProgramClick: (String) -> Unit = {},
+    onViewAllSessions: () -> Unit = {}
+) {
+    val uiState by dashboardViewModel.uiState.collectAsState()
+    val crisisUiState by crisisViewModel.uiState.collectAsState()
+    val crisisDetectionResult by crisisViewModel.crisisDetectionResult.collectAsState()
+    
+    LaunchedEffect(Unit) {
+        dashboardViewModel.refreshData()
+    }
+    
+    // Show crisis modal if detected
+    if (crisisUiState.showCrisisModal && crisisDetectionResult != null) {
+        CrisisModal(
+            isVisible = crisisUiState.showCrisisModal,
+            crisisResult = crisisDetectionResult!!,
+            helplines = crisisUiState.emergencyHelplines,
+            onDismiss = { crisisViewModel.dismissCrisisModal() },
+            onCallHelpline = { phone ->
+                // Handle phone call
+                crisisViewModel.dismissCrisisModal()
+            },
+            onStartGrounding = { crisisViewModel.resolveCrisis() },
+            onResolve = { crisisViewModel.resolveCrisis() }
+        )
+    }
+    
+    // Show grounding exercise
+    if (crisisUiState.showGroundingExercise) {
+        GroundingExerciseScreen(
+            onComplete = { crisisViewModel.completeGroundingExercise() },
+            onSkip = { crisisViewModel.dismissGroundingExercise() }
+        )
+        return
+    }
+    
+    Box(
+>>>>>>> master
         modifier = Modifier
             .fillMaxSize()
             .background(
@@ -51,6 +107,7 @@ fun DashboardScreen(
                     )
                 )
             )
+<<<<<<< HEAD
             .verticalScroll(rememberScrollState())
             .padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(24.dp)
@@ -90,11 +147,112 @@ fun DashboardScreen(
 
         // Active Programs
         ActiveProgramsSection(onProgramClick = onProgramClick)
+=======
+    ) {
+        if (uiState.isLoading) {
+            Box(
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center
+            ) {
+                CircularProgressIndicator(
+                    modifier = Modifier.size(48.dp),
+                    color = MaterialTheme.colorScheme.primary
+                )
+            }
+        } else {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .verticalScroll(rememberScrollState())
+                    .padding(16.dp),
+                verticalArrangement = Arrangement.spacedBy(24.dp)
+            ) {
+                // Header Section
+                HeaderSection(
+                    userName = uiState.user?.name ?: "User",
+                    greeting = getGreeting()
+                )
+                
+                // Crisis Detection Component
+                CrisisDetectionTrigger(
+                    crisisViewModel = crisisViewModel,
+                    modifier = Modifier.fillMaxWidth()
+                )
+                
+                // Mental Health Score Card
+                uiState.user?.let { user ->
+                    MentalHealthScoreCard(
+                        score = calculateMentalHealthScore(user),
+                        userName = user.name
+                    )
+                }
+                
+                // Daily Check-in Section
+                DailyCheckInSection(
+                    onMoodSelected = { mood ->
+                        // Log mood and check for crisis
+                        crisisViewModel.detectCrisis(
+                            moodType = mood,
+                            moodScore = getMoodScore(mood)
+                        )
+                    }
+                )
+                
+                // Quick Stats Row
+                QuickStatsRow(
+                    currentStreak = uiState.analytics?.currentStreak ?: 0,
+                    totalMindfulMinutes = uiState.analytics?.totalMindfulMinutes ?: 0
+                )
+                
+                // Recommended Sessions
+                RecommendedSessionsSection(
+                    sessions = uiState.recommendedSessions,
+                    onSessionClick = onSessionClick,
+                    onViewAllSessions = onViewAllSessions,
+                    isLoading = uiState.isLoading
+                )
+                
+                // Weekly Insights
+                uiState.analytics?.let { analytics ->
+                    WeeklyInsightsSection(analytics = analytics)
+                }
+                
+                // Focus Card
+                FocusCard()
+                
+                // Active Programs
+                ActiveProgramsSection(onProgramClick = onProgramClick)
+                
+                // Error display
+                uiState.error?.let { error ->
+                    ErrorCard(
+                        error = error,
+                        onDismiss = { dashboardViewModel.clearError() }
+                    )
+                }
+                
+                crisisUiState.error?.let { error ->
+                    ErrorCard(
+                        error = error,
+                        onDismiss = { crisisViewModel.clearError() },
+                        isCrisisError = true
+                    )
+                }
+            }
+        }
+>>>>>>> master
     }
 }
 
 @Composable
+<<<<<<< HEAD
 private fun HeaderSection(greeting: String, userName: String) {
+=======
+private fun HeaderSection(
+    greeting: String,
+    userName: String
+) {
+>>>>>>> master
     Row(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceBetween,
@@ -114,7 +272,11 @@ private fun HeaderSection(greeting: String, userName: String) {
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
         }
+<<<<<<< HEAD
 
+=======
+        
+>>>>>>> master
         IconButton(
             onClick = { /* Handle notifications */ },
             modifier = Modifier
@@ -132,7 +294,14 @@ private fun HeaderSection(greeting: String, userName: String) {
 }
 
 @Composable
+<<<<<<< HEAD
 private fun MentalHealthScoreCard(score: Float) {
+=======
+private fun MentalHealthScoreCard(
+    score: Float,
+    userName: String
+) {
+>>>>>>> master
     Card(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(20.dp),
@@ -178,7 +347,10 @@ private fun MentalHealthScoreCard(score: Float) {
 
 @Composable
 private fun DailyCheckInSection(
+<<<<<<< HEAD
     selectedMood: Mood?,
+=======
+>>>>>>> master
     onMoodSelected: (Mood) -> Unit
 ) {
     Card(
@@ -214,7 +386,11 @@ private fun DailyCheckInSection(
                 items(Mood.values()) { mood ->
                     MoodCard(
                         mood = mood.name.replace("_", " "),
+<<<<<<< HEAD
                         isSelected = selectedMood == mood,
+=======
+                        isSelected = false,
+>>>>>>> master
                         onClick = { onMoodSelected(mood) }
                     )
                 }
@@ -224,6 +400,7 @@ private fun DailyCheckInSection(
 }
 
 @Composable
+<<<<<<< HEAD
 private fun QuickStatsRow(currentStreak: Int, totalMindfulMinutes: Int) {
     Row(
         modifier = Modifier.fillMaxWidth(),
@@ -283,6 +460,14 @@ private fun RecommendedSessionsSection(
         )
     }
 
+=======
+private fun RecommendedSessionsSection(
+    sessions: List<com.drmindit.shared.domain.model.Session>,
+    onSessionClick: (String) -> Unit,
+    onViewAllSessions: () -> Unit,
+    isLoading: Boolean
+) {
+>>>>>>> master
     Card(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(20.dp),
@@ -312,6 +497,7 @@ private fun RecommendedSessionsSection(
             
             Spacer(modifier = Modifier.height(16.dp))
             
+<<<<<<< HEAD
             Column(
                 verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
@@ -327,13 +513,50 @@ private fun RecommendedSessionsSection(
                         onPlayClick = { onSessionClick(title) }
                     )
                 }
+=======
+            if (isLoading) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(120.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    CircularProgressIndicator(
+                        modifier = Modifier.size(32.dp),
+                        color = MaterialTheme.colorScheme.primary
+                    )
+                }
+            } else {
+                Column(
+                    verticalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    sessions.take(3).forEach { session ->
+                        SessionCard(
+                            title = session.title,
+                            instructor = session.instructor,
+                            duration = session.duration,
+                            rating = session.rating,
+                            imageUrl = session.imageUrl,
+                            isFavorite = session.isFavorite,
+                            onFavoriteClick = { /* Handle favorite */ },
+                            onPlayClick = { onSessionClick(session.id) }
+                        )
+                    }
+                }
+>>>>>>> master
             }
         }
     }
 }
 
 @Composable
+<<<<<<< HEAD
 private fun WeeklyInsightsSection() {
+=======
+private fun WeeklyInsightsSection(
+    analytics: com.drmindit.shared.domain.model.UserAnalytics
+) {
+>>>>>>> master
     val weeklyData = remember { listOf(65f, 80f, 45f, 90f, 70f, 85f, 75f) }
 
     Card(
@@ -475,6 +698,57 @@ private fun ActiveProgramsSection(onProgramClick: (String) -> Unit) {
     }
 }
 
+<<<<<<< HEAD
+=======
+@Composable
+private fun ErrorCard(
+    error: String,
+    onDismiss: () -> Unit,
+    isCrisisError: Boolean = false
+) {
+    val backgroundColor = if (isCrisisError) Color(0xFFFFF3E0) else MaterialTheme.colorScheme.errorContainer
+    val contentColor = if (isCrisisError) Color(0xFFE65100) else MaterialTheme.colorScheme.onError
+    
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(12.dp),
+        colors = CardDefaults.cardColors(containerColor = backgroundColor)
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Icon(
+                imageVector = if (isCrisisError) Icons.Default.Warning else Icons.Default.Error,
+                contentDescription = "Error",
+                tint = contentColor,
+                modifier = Modifier.size(20.dp)
+            )
+            
+            Spacer(modifier = Modifier.width(12.dp))
+            
+            Text(
+                text = error,
+                style = MaterialTheme.typography.bodyMedium,
+                color = contentColor,
+                fontWeight = FontWeight.Medium,
+                modifier = Modifier.weight(1f)
+            )
+            
+            IconButton(onClick = onDismiss) {
+                Icon(
+                    imageVector = Icons.Default.Close,
+                    contentDescription = "Dismiss",
+                    tint = contentColor
+                )
+            }
+        }
+    }
+}
+
+>>>>>>> master
 private fun getGreeting(): String {
     val hour = LocalDateTime.now().hour
     return when (hour) {
@@ -492,3 +766,35 @@ private fun getScoreMessage(score: Float): String {
         else -> "Needs attention. Consider seeking support."
     }
 }
+<<<<<<< HEAD
+=======
+
+private fun calculateMentalHealthScore(user: com.drmindit.shared.domain.model.User): Float {
+    // Calculate score based on various factors
+    var score = 0.5f // Base score
+    
+    // Adjust based on stress level
+    when (user.stressLevel) {
+        com.drmindit.shared.domain.model.StressLevel.LOW -> score += 0.3f
+        com.drmindit.shared.domain.model.StressLevel.MEDIUM -> score += 0.1f
+        com.drmindit.shared.domain.model.StressLevel.HIGH -> score -= 0.1f
+        com.drmindit.shared.domain.model.StressLevel.SEVERE -> score -= 0.3f
+    }
+    
+    return score.coerceIn(0f, 1f)
+}
+
+private fun getMoodScore(mood: Mood): Int {
+    return when (mood) {
+        Mood.VERY_HAPPY -> 10
+        Mood.HAPPY -> 8
+        Mood.NEUTRAL -> 6
+        Mood.CALM -> 7
+        Mood.ENERGETIC -> 9
+        Mood.ANXIOUS -> 4
+        Mood.SAD -> 3
+        Mood.VERY_SAD -> 2
+        Mood.TIRED -> 5
+    }
+}
+>>>>>>> master
