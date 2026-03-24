@@ -1,5 +1,6 @@
 package com.drmindit.android.ui.screens
 
+<<<<<<< Updated upstream
 <<<<<<< HEAD
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -9,6 +10,11 @@ import androidx.compose.animation.core.*
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 >>>>>>> master
+=======
+import androidx.compose.animation.core.*
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.*
+>>>>>>> Stashed changes
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
@@ -25,6 +31,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+<<<<<<< Updated upstream
 <<<<<<< HEAD
 import com.drmindit.android.ui.components.*
 =======
@@ -33,6 +40,12 @@ import com.drmindit.android.ui.components.*
 import com.drmindit.android.ui.viewmodel.DashboardViewModel
 import com.drmindit.android.ui.viewmodel.CrisisViewModel
 >>>>>>> master
+=======
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.drmindit.android.ui.components.*
+import com.drmindit.android.ui.viewmodel.DashboardViewModel
+import com.drmindit.android.ui.viewmodel.CrisisViewModel
+>>>>>>> Stashed changes
 import com.drmindit.shared.domain.model.Mood
 import com.drmindit.shared.domain.model.SessionCategory
 import java.time.LocalDateTime
@@ -41,16 +54,21 @@ import java.time.format.DateTimeFormatter
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DashboardScreen(
+<<<<<<< Updated upstream
 <<<<<<< HEAD
     userName: String = "Sarah",
     mentalHealthScore: Float = 0.75f,
     currentStreak: Int = 7,
     totalMindfulMinutes: Int = 145,
+=======
+    dashboardViewModel: DashboardViewModel = viewModel(),
+    crisisViewModel: CrisisViewModel = viewModel(),
+>>>>>>> Stashed changes
     onSessionClick: (String) -> Unit = {},
-    onMoodSelected: (Mood) -> Unit = {},
     onProgramClick: (String) -> Unit = {},
     onViewAllSessions: () -> Unit = {}
 ) {
+<<<<<<< Updated upstream
     val greeting = getGreeting()
     val selectedMood = remember { mutableStateOf<Mood?>(null) }
 
@@ -62,6 +80,8 @@ fun DashboardScreen(
     onProgramClick: (String) -> Unit = {},
     onViewAllSessions: () -> Unit = {}
 ) {
+=======
+>>>>>>> Stashed changes
     val uiState by dashboardViewModel.uiState.collectAsState()
     val crisisUiState by crisisViewModel.uiState.collectAsState()
     val crisisDetectionResult by crisisViewModel.crisisDetectionResult.collectAsState()
@@ -96,7 +116,10 @@ fun DashboardScreen(
     }
     
     Box(
+<<<<<<< Updated upstream
 >>>>>>> master
+=======
+>>>>>>> Stashed changes
         modifier = Modifier
             .fillMaxSize()
             .background(
@@ -107,24 +130,25 @@ fun DashboardScreen(
                     )
                 )
             )
+<<<<<<< Updated upstream
 <<<<<<< HEAD
             .verticalScroll(rememberScrollState())
             .padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(24.dp)
+=======
+>>>>>>> Stashed changes
     ) {
-        // Header Section
-        HeaderSection(greeting = greeting, userName = userName)
-
-        // Mental Health Score Card
-        MentalHealthScoreCard(score = mentalHealthScore)
-
-        // Daily Check-in Section
-        DailyCheckInSection(
-            selectedMood = selectedMood.value,
-            onMoodSelected = { mood ->
-                selectedMood.value = mood
-                onMoodSelected(mood)
+        if (uiState.isLoading) {
+            Box(
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center
+            ) {
+                CircularProgressIndicator(
+                    modifier = Modifier.size(48.dp),
+                    color = MaterialTheme.colorScheme.primary
+                )
             }
+<<<<<<< Updated upstream
         )
 
         // Quick Stats Row
@@ -159,6 +183,8 @@ fun DashboardScreen(
                     color = MaterialTheme.colorScheme.primary
                 )
             }
+=======
+>>>>>>> Stashed changes
         } else {
             Column(
                 modifier = Modifier
@@ -240,19 +266,28 @@ fun DashboardScreen(
                 }
             }
         }
+<<<<<<< Updated upstream
 >>>>>>> master
+=======
+>>>>>>> Stashed changes
     }
 }
 
 @Composable
+<<<<<<< Updated upstream
 <<<<<<< HEAD
 private fun HeaderSection(greeting: String, userName: String) {
 =======
+=======
+>>>>>>> Stashed changes
 private fun HeaderSection(
     greeting: String,
     userName: String
 ) {
+<<<<<<< Updated upstream
 >>>>>>> master
+=======
+>>>>>>> Stashed changes
     Row(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceBetween,
@@ -272,11 +307,15 @@ private fun HeaderSection(
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
         }
+<<<<<<< Updated upstream
 <<<<<<< HEAD
 
 =======
         
 >>>>>>> master
+=======
+        
+>>>>>>> Stashed changes
         IconButton(
             onClick = { /* Handle notifications */ },
             modifier = Modifier
@@ -294,14 +333,20 @@ private fun HeaderSection(
 }
 
 @Composable
+<<<<<<< Updated upstream
 <<<<<<< HEAD
 private fun MentalHealthScoreCard(score: Float) {
 =======
+=======
+>>>>>>> Stashed changes
 private fun MentalHealthScoreCard(
     score: Float,
     userName: String
 ) {
+<<<<<<< Updated upstream
 >>>>>>> master
+=======
+>>>>>>> Stashed changes
     Card(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(20.dp),
@@ -347,10 +392,13 @@ private fun MentalHealthScoreCard(
 
 @Composable
 private fun DailyCheckInSection(
+<<<<<<< Updated upstream
 <<<<<<< HEAD
     selectedMood: Mood?,
 =======
 >>>>>>> master
+=======
+>>>>>>> Stashed changes
     onMoodSelected: (Mood) -> Unit
 ) {
     Card(
@@ -386,11 +434,15 @@ private fun DailyCheckInSection(
                 items(Mood.values()) { mood ->
                     MoodCard(
                         mood = mood.name.replace("_", " "),
+<<<<<<< Updated upstream
 <<<<<<< HEAD
                         isSelected = selectedMood == mood,
 =======
                         isSelected = false,
 >>>>>>> master
+=======
+                        isSelected = false,
+>>>>>>> Stashed changes
                         onClick = { onMoodSelected(mood) }
                     )
                 }
@@ -400,6 +452,7 @@ private fun DailyCheckInSection(
 }
 
 @Composable
+<<<<<<< Updated upstream
 <<<<<<< HEAD
 private fun QuickStatsRow(currentStreak: Int, totalMindfulMinutes: Int) {
     Row(
@@ -448,10 +501,15 @@ private fun QuickStatsRow(currentStreak: Int, totalMindfulMinutes: Int) {
 }
 
 @Composable
+=======
+>>>>>>> Stashed changes
 private fun RecommendedSessionsSection(
+    sessions: List<com.drmindit.shared.domain.model.Session>,
     onSessionClick: (String) -> Unit,
-    onViewAllSessions: () -> Unit
+    onViewAllSessions: () -> Unit,
+    isLoading: Boolean
 ) {
+<<<<<<< Updated upstream
     val recommendedSessions = remember {
         listOf(
             Triple("Morning Meditation", "Dr. Sarah Chen", 10, 4.8f),
@@ -468,6 +526,8 @@ private fun RecommendedSessionsSection(
     isLoading: Boolean
 ) {
 >>>>>>> master
+=======
+>>>>>>> Stashed changes
     Card(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(20.dp),
@@ -497,6 +557,7 @@ private fun RecommendedSessionsSection(
             
             Spacer(modifier = Modifier.height(16.dp))
             
+<<<<<<< Updated upstream
 <<<<<<< HEAD
             Column(
                 verticalArrangement = Arrangement.spacedBy(12.dp)
@@ -526,6 +587,20 @@ private fun RecommendedSessionsSection(
                         color = MaterialTheme.colorScheme.primary
                     )
                 }
+=======
+            if (isLoading) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(120.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    CircularProgressIndicator(
+                        modifier = Modifier.size(32.dp),
+                        color = MaterialTheme.colorScheme.primary
+                    )
+                }
+>>>>>>> Stashed changes
             } else {
                 Column(
                     verticalArrangement = Arrangement.spacedBy(12.dp)
@@ -543,13 +618,17 @@ private fun RecommendedSessionsSection(
                         )
                     }
                 }
+<<<<<<< Updated upstream
 >>>>>>> master
+=======
+>>>>>>> Stashed changes
             }
         }
     }
 }
 
 @Composable
+<<<<<<< Updated upstream
 <<<<<<< HEAD
 private fun WeeklyInsightsSection() {
 =======
@@ -557,6 +636,11 @@ private fun WeeklyInsightsSection(
     analytics: com.drmindit.shared.domain.model.UserAnalytics
 ) {
 >>>>>>> master
+=======
+private fun WeeklyInsightsSection(
+    analytics: com.drmindit.shared.domain.model.UserAnalytics
+) {
+>>>>>>> Stashed changes
     val weeklyData = remember { listOf(65f, 80f, 45f, 90f, 70f, 85f, 75f) }
 
     Card(
@@ -698,8 +782,11 @@ private fun ActiveProgramsSection(onProgramClick: (String) -> Unit) {
     }
 }
 
+<<<<<<< Updated upstream
 <<<<<<< HEAD
 =======
+=======
+>>>>>>> Stashed changes
 @Composable
 private fun ErrorCard(
     error: String,
@@ -748,7 +835,10 @@ private fun ErrorCard(
     }
 }
 
+<<<<<<< Updated upstream
 >>>>>>> master
+=======
+>>>>>>> Stashed changes
 private fun getGreeting(): String {
     val hour = LocalDateTime.now().hour
     return when (hour) {
@@ -766,8 +856,11 @@ private fun getScoreMessage(score: Float): String {
         else -> "Needs attention. Consider seeking support."
     }
 }
+<<<<<<< Updated upstream
 <<<<<<< HEAD
 =======
+=======
+>>>>>>> Stashed changes
 
 private fun calculateMentalHealthScore(user: com.drmindit.shared.domain.model.User): Float {
     // Calculate score based on various factors
@@ -797,4 +890,7 @@ private fun getMoodScore(mood: Mood): Int {
         Mood.TIRED -> 5
     }
 }
+<<<<<<< Updated upstream
 >>>>>>> master
+=======
+>>>>>>> Stashed changes

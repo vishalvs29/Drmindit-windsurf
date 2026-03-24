@@ -1,0 +1,43 @@
+# This file contains the local configuration for the DrMindit project.
+# Copy this file to local.properties and fill in your actual values.
+# DO NOT commit this file to version control.
+
+# Supabase Configuration
+SUPABASE_URL=https://your-project-id.supabase.co
+SUPABASE_ANON_KEY=your-supabase-anon-key
+SUPABASE_SERVICE_KEY=your-supabase-service-key
+
+# App Signing Configuration (for release builds)
+# Generate a keystore using: keytool -genkey -v -keystore release.keystore -alias release -keyalg RSA -keysize 2048 -validity 10000
+RELEASE_STORE_FILE=release.keystore
+RELEASE_STORE_PASSWORD=your-keystore-password
+RELEASE_KEY_ALIAS=release
+RELEASE_KEY_PASSWORD=your-key-password
+
+# Google Sign-In Configuration (if using)
+GOOGLE_WEB_CLIENT_ID=your-google-web-client-id
+
+# Environment Configuration
+# Set to: development, staging, or production
+APP_ENV=development
+
+# Debug Configuration
+DEBUG_MODE=true
+LOG_LEVEL=debug
+
+# API Configuration
+API_BASE_URL=https://your-project-id.supabase.co
+API_TIMEOUT=30000
+
+# Optional: Override values for different environments
+# STAGING_SUPABASE_URL=https://staging-project-id.supabase.co
+# PRODUCTION_SUPABASE_URL=https://production-project-id.supabase.co
+
+# Optional: Analytics and monitoring
+# SENTRY_DSN=your-sentry-dsn
+# FIREBASE_PROJECT_ID=your-firebase-project-id
+
+# Optional: Feature flags
+# ENABLE_CRISIS_DETECTION=true
+# ENABLE_ANALYTICS=true
+# ENABLE_PUSH_NOTIFICATIONS=true

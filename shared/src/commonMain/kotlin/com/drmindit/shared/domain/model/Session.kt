@@ -8,29 +8,33 @@ data class Session(
     val title: String,
     val description: String,
     val instructor: String,
-    val duration: Int, // minutes
+    val duration: Int, // in minutes
     val audioUrl: String,
     val imageUrl: String? = null,
     val category: SessionCategory,
-    val tags: List<String>,
-    val rating: Float,
-    val totalRatings: Int,
+    val tags: List<String> = emptyList(),
+    val rating: Float = 0f,
+    val totalRatings: Int = 0,
     val isPremium: Boolean = false,
     val isDownloaded: Boolean = false,
     val isFavorite: Boolean = false,
     val difficulty: Difficulty,
     val language: String = "en",
-    val transcript: String? = null
+    val transcript: String? = null,
+    // Backend-specific fields
+    val createdAt: String? = null,
+    val updatedAt: String? = null,
+    val isActive: Boolean = true
 )
 
 @Serializable
 enum class SessionCategory {
-    SLEEP,
+    MINDFULNESS,
     ANXIETY,
     STRESS,
     FOCUS,
     DEPRESSION,
-    MINDFULNESS,
+    SLEEP,
     BREATHING,
     MEDITATION,
     YOGA,
@@ -48,9 +52,29 @@ enum class Difficulty {
 data class SessionProgress(
     val sessionId: String,
     val userId: String,
-    val completedDuration: Int, // seconds
-    val totalDuration: Int, // seconds
-    val isCompleted: Boolean,
+    val completedDuration: Int, // in seconds
+    val totalDuration: Int, // in seconds
+    val isCompleted: Boolean = false,
     val lastPlayedDate: String,
-    val playbackSpeed: Float = 1.0f
+    val playbackSpeed: Float = 1.0f,
+    val bookmarkPosition: Int = 0, // in seconds
+    val completionDate: String? = null,
+    val createdAt: String? = null,
+    val updatedAt: String? = null
+) {
+    val progressPercentage: Float
+        get() = if (totalDuration > 0) {
+            (completedDuration.toFloat() / totalDuration) * 100f
+        } else 0f
+}
+
+@Serializable
+data class SessionMetadata(
+    val sessionId: String,
+    val playCount: Int = 0,
+    val averageCompletionRate: Float = 0f,
+    val skipRate: Float = 0f,
+    val lastPlayedBy: List<String> = emptyList(),
+    val popularityScore: Float = 0f,
+    val recommendedFor: List<String> = emptyList()
 )
