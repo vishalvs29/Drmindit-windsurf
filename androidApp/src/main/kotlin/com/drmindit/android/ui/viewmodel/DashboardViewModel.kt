@@ -3,10 +3,13 @@ package com.drmindit.android.ui.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 <<<<<<< HEAD
 import com.drmindit.shared.domain.model.Mood
 import com.drmindit.shared.domain.usecase.GetUserUseCase
 =======
+=======
+>>>>>>> Stashed changes
 =======
 >>>>>>> Stashed changes
 import com.drmindit.shared.data.repository.AuthRepository
@@ -15,7 +18,10 @@ import com.drmindit.shared.domain.model.Session
 import com.drmindit.shared.domain.model.User
 import com.drmindit.shared.domain.usecase.GetSessionOfTheDayUseCase
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 >>>>>>> master
+=======
+>>>>>>> Stashed changes
 =======
 >>>>>>> Stashed changes
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -24,6 +30,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
 class DashboardViewModel(
+<<<<<<< Updated upstream
 <<<<<<< Updated upstream
 <<<<<<< HEAD
     private val getUserUseCase: GetUserUseCase,
@@ -38,11 +45,17 @@ class DashboardViewModel(
     private val sessionRepository: SessionRepositoryImpl = SessionRepositoryImpl(),
     private val getSessionOfTheDayUseCase: GetSessionOfTheDayUseCase = GetSessionOfTheDayUseCase(sessionRepository)
 >>>>>>> Stashed changes
+=======
+    private val authRepository: AuthRepository = AuthRepository(),
+    private val sessionRepository: SessionRepositoryImpl = SessionRepositoryImpl(),
+    private val getSessionOfTheDayUseCase: GetSessionOfTheDayUseCase = GetSessionOfTheDayUseCase(sessionRepository)
+>>>>>>> Stashed changes
 ) : ViewModel() {
     
     private val _uiState = MutableStateFlow(DashboardUiState())
     val uiState: StateFlow<DashboardUiState> = _uiState.asStateFlow()
     
+<<<<<<< Updated upstream
 <<<<<<< Updated upstream
 <<<<<<< HEAD
     private val _selectedMood = MutableStateFlow<Mood?>(null)
@@ -50,6 +63,8 @@ class DashboardViewModel(
     
 =======
 >>>>>>> master
+=======
+>>>>>>> Stashed changes
 =======
 >>>>>>> Stashed changes
     init {
@@ -61,6 +76,7 @@ class DashboardViewModel(
         viewModelScope.launch {
             _uiState.value = _uiState.value.copy(isLoading = true)
             
+<<<<<<< Updated upstream
 <<<<<<< Updated upstream
 <<<<<<< HEAD
             getUserUseCase().fold(
@@ -79,6 +95,8 @@ class DashboardViewModel(
                 }
             )
 =======
+=======
+>>>>>>> Stashed changes
 =======
 >>>>>>> Stashed changes
             try {
@@ -108,7 +126,10 @@ class DashboardViewModel(
                 )
             }
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 >>>>>>> master
+=======
+>>>>>>> Stashed changes
 =======
 >>>>>>> Stashed changes
         }
@@ -116,6 +137,7 @@ class DashboardViewModel(
     
     private fun loadSessionOfTheDay() {
         viewModelScope.launch {
+<<<<<<< Updated upstream
 <<<<<<< Updated upstream
 <<<<<<< HEAD
             getSessionOfTheDayUseCase().fold(
@@ -185,6 +207,31 @@ class DashboardViewModel(
     }
     
 >>>>>>> Stashed changes
+=======
+            try {
+                val sessionResult = getSessionOfTheDayUseCase()
+                sessionResult.fold(
+                    onSuccess = { session ->
+                        _uiState.value = _uiState.value.copy(
+                            sessionOfTheDay = session,
+                            recommendedSessions = listOf(session) // Start with session of the day
+                        )
+                    },
+                    onFailure = { error ->
+                        _uiState.value = _uiState.value.copy(
+                            error = "Failed to load session of the day: ${error.message}"
+                        )
+                    }
+                )
+            } catch (e: Exception) {
+                _uiState.value = _uiState.value.copy(
+                    error = "Unexpected error loading session: ${e.message}"
+                )
+            }
+        }
+    }
+    
+>>>>>>> Stashed changes
     private fun loadUserAnalytics(userId: String) {
         viewModelScope.launch {
             try {
@@ -215,7 +262,10 @@ class DashboardViewModel(
             }
         }
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 >>>>>>> master
+=======
+>>>>>>> Stashed changes
 =======
 >>>>>>> Stashed changes
     }
@@ -224,6 +274,7 @@ class DashboardViewModel(
         loadUserData()
         loadSessionOfTheDay()
     }
+<<<<<<< Updated upstream
 <<<<<<< Updated upstream
 <<<<<<< HEAD
 }
@@ -308,12 +359,54 @@ data class DashboardUiState(
 
 data class DashboardUiState(
 >>>>>>> Stashed changes
+=======
+    
+    fun clearError() {
+        _uiState.value = _uiState.value.copy(error = null)
+    }
+    
+    fun loadRecommendedSessions(category: com.drmindit.shared.domain.model.SessionCategory? = null) {
+        viewModelScope.launch {
+            _uiState.value = _uiState.value.copy(isLoading = true)
+            
+            try {
+                val sessionsResult = sessionRepository.getSessions(category)
+                sessionsResult.fold(
+                    onSuccess = { sessions ->
+                        _uiState.value = _uiState.value.copy(
+                            recommendedSessions = sessions,
+                            isLoading = false,
+                            error = null
+                        )
+                    },
+                    onFailure = { error ->
+                        _uiState.value = _uiState.value.copy(
+                            isLoading = false,
+                            error = "Failed to load sessions: ${error.message}"
+                        )
+                    }
+                )
+            } catch (e: Exception) {
+                _uiState.value = _uiState.value.copy(
+                    isLoading = false,
+                    error = "Unexpected error: ${e.message}"
+                )
+            }
+        }
+    }
+}
+
+data class DashboardUiState(
+>>>>>>> Stashed changes
     val user: User? = null,
     val sessionOfTheDay: Session? = null,
     val recommendedSessions: List<Session> = emptyList(),
     val analytics: com.drmindit.shared.domain.model.UserAnalytics? = null,
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 >>>>>>> master
+=======
+>>>>>>> Stashed changes
 =======
 >>>>>>> Stashed changes
     val isLoading: Boolean = false,

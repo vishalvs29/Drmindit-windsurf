@@ -1,6 +1,7 @@
 package com.drmindit.android.ui.screens
 
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 <<<<<<< HEAD
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -10,6 +11,11 @@ import androidx.compose.animation.core.*
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 >>>>>>> master
+=======
+import androidx.compose.animation.core.*
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.*
+>>>>>>> Stashed changes
 =======
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.background
@@ -32,6 +38,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 <<<<<<< HEAD
 import com.drmindit.android.ui.components.*
 =======
@@ -40,6 +47,12 @@ import com.drmindit.android.ui.components.*
 import com.drmindit.android.ui.viewmodel.DashboardViewModel
 import com.drmindit.android.ui.viewmodel.CrisisViewModel
 >>>>>>> master
+=======
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.drmindit.android.ui.components.*
+import com.drmindit.android.ui.viewmodel.DashboardViewModel
+import com.drmindit.android.ui.viewmodel.CrisisViewModel
+>>>>>>> Stashed changes
 =======
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.drmindit.android.ui.components.*
@@ -55,6 +68,7 @@ import java.time.format.DateTimeFormatter
 @Composable
 fun DashboardScreen(
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 <<<<<<< HEAD
     userName: String = "Sarah",
     mentalHealthScore: Float = 0.75f,
@@ -64,10 +78,15 @@ fun DashboardScreen(
     dashboardViewModel: DashboardViewModel = viewModel(),
     crisisViewModel: CrisisViewModel = viewModel(),
 >>>>>>> Stashed changes
+=======
+    dashboardViewModel: DashboardViewModel = viewModel(),
+    crisisViewModel: CrisisViewModel = viewModel(),
+>>>>>>> Stashed changes
     onSessionClick: (String) -> Unit = {},
     onProgramClick: (String) -> Unit = {},
     onViewAllSessions: () -> Unit = {}
 ) {
+<<<<<<< Updated upstream
 <<<<<<< Updated upstream
     val greeting = getGreeting()
     val selectedMood = remember { mutableStateOf<Mood?>(null) }
@@ -80,6 +99,8 @@ fun DashboardScreen(
     onProgramClick: (String) -> Unit = {},
     onViewAllSessions: () -> Unit = {}
 ) {
+=======
+>>>>>>> Stashed changes
 =======
 >>>>>>> Stashed changes
     val uiState by dashboardViewModel.uiState.collectAsState()
@@ -117,7 +138,10 @@ fun DashboardScreen(
     
     Box(
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 >>>>>>> master
+=======
+>>>>>>> Stashed changes
 =======
 >>>>>>> Stashed changes
         modifier = Modifier
@@ -131,10 +155,13 @@ fun DashboardScreen(
                 )
             )
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 <<<<<<< HEAD
             .verticalScroll(rememberScrollState())
             .padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(24.dp)
+=======
+>>>>>>> Stashed changes
 =======
 >>>>>>> Stashed changes
     ) {
@@ -148,6 +175,7 @@ fun DashboardScreen(
                     color = MaterialTheme.colorScheme.primary
                 )
             }
+<<<<<<< Updated upstream
 <<<<<<< Updated upstream
         )
 
@@ -183,6 +211,8 @@ fun DashboardScreen(
                     color = MaterialTheme.colorScheme.primary
                 )
             }
+=======
+>>>>>>> Stashed changes
 =======
 >>>>>>> Stashed changes
         } else {
@@ -267,7 +297,10 @@ fun DashboardScreen(
             }
         }
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 >>>>>>> master
+=======
+>>>>>>> Stashed changes
 =======
 >>>>>>> Stashed changes
     }
@@ -275,9 +308,12 @@ fun DashboardScreen(
 
 @Composable
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 <<<<<<< HEAD
 private fun HeaderSection(greeting: String, userName: String) {
 =======
+=======
+>>>>>>> Stashed changes
 =======
 >>>>>>> Stashed changes
 private fun HeaderSection(
@@ -285,7 +321,10 @@ private fun HeaderSection(
     userName: String
 ) {
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 >>>>>>> master
+=======
+>>>>>>> Stashed changes
 =======
 >>>>>>> Stashed changes
     Row(
@@ -308,11 +347,15 @@ private fun HeaderSection(
             )
         }
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 <<<<<<< HEAD
 
 =======
         
 >>>>>>> master
+=======
+        
+>>>>>>> Stashed changes
 =======
         
 >>>>>>> Stashed changes
@@ -334,9 +377,12 @@ private fun HeaderSection(
 
 @Composable
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 <<<<<<< HEAD
 private fun MentalHealthScoreCard(score: Float) {
 =======
+=======
+>>>>>>> Stashed changes
 =======
 >>>>>>> Stashed changes
 private fun MentalHealthScoreCard(
@@ -344,7 +390,10 @@ private fun MentalHealthScoreCard(
     userName: String
 ) {
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 >>>>>>> master
+=======
+>>>>>>> Stashed changes
 =======
 >>>>>>> Stashed changes
     Card(
@@ -393,10 +442,13 @@ private fun MentalHealthScoreCard(
 @Composable
 private fun DailyCheckInSection(
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 <<<<<<< HEAD
     selectedMood: Mood?,
 =======
 >>>>>>> master
+=======
+>>>>>>> Stashed changes
 =======
 >>>>>>> Stashed changes
     onMoodSelected: (Mood) -> Unit
@@ -435,11 +487,15 @@ private fun DailyCheckInSection(
                     MoodCard(
                         mood = mood.name.replace("_", " "),
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 <<<<<<< HEAD
                         isSelected = selectedMood == mood,
 =======
                         isSelected = false,
 >>>>>>> master
+=======
+                        isSelected = false,
+>>>>>>> Stashed changes
 =======
                         isSelected = false,
 >>>>>>> Stashed changes
@@ -452,6 +508,7 @@ private fun DailyCheckInSection(
 }
 
 @Composable
+<<<<<<< Updated upstream
 <<<<<<< Updated upstream
 <<<<<<< HEAD
 private fun QuickStatsRow(currentStreak: Int, totalMindfulMinutes: Int) {
@@ -503,12 +560,15 @@ private fun QuickStatsRow(currentStreak: Int, totalMindfulMinutes: Int) {
 @Composable
 =======
 >>>>>>> Stashed changes
+=======
+>>>>>>> Stashed changes
 private fun RecommendedSessionsSection(
     sessions: List<com.drmindit.shared.domain.model.Session>,
     onSessionClick: (String) -> Unit,
     onViewAllSessions: () -> Unit,
     isLoading: Boolean
 ) {
+<<<<<<< Updated upstream
 <<<<<<< Updated upstream
     val recommendedSessions = remember {
         listOf(
@@ -526,6 +586,8 @@ private fun RecommendedSessionsSection(
     isLoading: Boolean
 ) {
 >>>>>>> master
+=======
+>>>>>>> Stashed changes
 =======
 >>>>>>> Stashed changes
     Card(
@@ -557,6 +619,7 @@ private fun RecommendedSessionsSection(
             
             Spacer(modifier = Modifier.height(16.dp))
             
+<<<<<<< Updated upstream
 <<<<<<< Updated upstream
 <<<<<<< HEAD
             Column(
@@ -601,6 +664,20 @@ private fun RecommendedSessionsSection(
                     )
                 }
 >>>>>>> Stashed changes
+=======
+            if (isLoading) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(120.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    CircularProgressIndicator(
+                        modifier = Modifier.size(32.dp),
+                        color = MaterialTheme.colorScheme.primary
+                    )
+                }
+>>>>>>> Stashed changes
             } else {
                 Column(
                     verticalArrangement = Arrangement.spacedBy(12.dp)
@@ -619,7 +696,10 @@ private fun RecommendedSessionsSection(
                     }
                 }
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 >>>>>>> master
+=======
+>>>>>>> Stashed changes
 =======
 >>>>>>> Stashed changes
             }
@@ -629,6 +709,7 @@ private fun RecommendedSessionsSection(
 
 @Composable
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 <<<<<<< HEAD
 private fun WeeklyInsightsSection() {
 =======
@@ -636,6 +717,11 @@ private fun WeeklyInsightsSection(
     analytics: com.drmindit.shared.domain.model.UserAnalytics
 ) {
 >>>>>>> master
+=======
+private fun WeeklyInsightsSection(
+    analytics: com.drmindit.shared.domain.model.UserAnalytics
+) {
+>>>>>>> Stashed changes
 =======
 private fun WeeklyInsightsSection(
     analytics: com.drmindit.shared.domain.model.UserAnalytics
@@ -783,8 +869,11 @@ private fun ActiveProgramsSection(onProgramClick: (String) -> Unit) {
 }
 
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 <<<<<<< HEAD
 =======
+=======
+>>>>>>> Stashed changes
 =======
 >>>>>>> Stashed changes
 @Composable
@@ -836,7 +925,10 @@ private fun ErrorCard(
 }
 
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 >>>>>>> master
+=======
+>>>>>>> Stashed changes
 =======
 >>>>>>> Stashed changes
 private fun getGreeting(): String {
@@ -857,8 +949,11 @@ private fun getScoreMessage(score: Float): String {
     }
 }
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 <<<<<<< HEAD
 =======
+=======
+>>>>>>> Stashed changes
 =======
 >>>>>>> Stashed changes
 
@@ -891,6 +986,9 @@ private fun getMoodScore(mood: Mood): Int {
     }
 }
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 >>>>>>> master
+=======
+>>>>>>> Stashed changes
 =======
 >>>>>>> Stashed changes
