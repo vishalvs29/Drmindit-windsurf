@@ -6,10 +6,13 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.drmindit.shared.domain.model.AudioSession
 import com.drmindit.shared.data.repository.AudioSessionRepository
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class AudioPlayerController(
+@HiltViewModel
+class AudioPlayerController @Inject constructor(
     private val audioSessionRepository: AudioSessionRepository
 ) : ViewModel() {
     

@@ -13,28 +13,28 @@ object AppConfig {
         }
     }
     
-    // Supabase Configuration
+    // Supabase Configuration - LOAD FROM ENVIRONMENT VARIABLES
     val supabaseUrl: String by lazy {
         when (environment) {
-            Environment.PRODUCTION -> System.getProperty("supabase.prod.url") ?: "https://your-prod-project.supabase.co"
-            Environment.STAGING -> System.getProperty("supabase.staging.url") ?: "https://your-staging-project.supabase.co"
-            Environment.DEVELOPMENT -> System.getProperty("supabase.dev.url") ?: "https://swsqirdcmxotncibmgeb.supabase.co"
+            Environment.PRODUCTION -> System.getenv("SUPABASE_PROD_URL") ?: System.getProperty("supabase.prod.url") ?: "https://your-prod-project.supabase.co"
+            Environment.STAGING -> System.getenv("SUPABASE_STAGING_URL") ?: System.getProperty("supabase.staging.url") ?: "https://your-staging-project.supabase.co"
+            Environment.DEVELOPMENT -> System.getenv("SUPABASE_DEV_URL") ?: System.getProperty("supabase.dev.url") ?: "https://your-dev-project.supabase.co"
         }
     }
     
     val supabaseAnonKey: String by lazy {
         when (environment) {
-            Environment.PRODUCTION -> System.getProperty("supabase.prod.anon_key") ?: ""
-            Environment.STAGING -> System.getProperty("supabase.staging.anon_key") ?: ""
-            Environment.DEVELOPMENT -> System.getProperty("supabase.dev.anon_key") ?: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InN3c3FpcmRjbXhvdG5jaWJtZ2ViIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MTM5NzU5MDksImV4cCI6MjAyOTU1MTkwOX0.placeholder"
+            Environment.PRODUCTION -> System.getenv("SUPABASE_PROD_ANON_KEY") ?: System.getProperty("supabase.prod.anon_key") ?: ""
+            Environment.STAGING -> System.getenv("SUPABASE_STAGING_ANON_KEY") ?: System.getProperty("supabase.staging.anon_key") ?: ""
+            Environment.DEVELOPMENT -> System.getenv("SUPABASE_DEV_ANON_KEY") ?: System.getProperty("supabase.dev.anon_key") ?: ""
         }
     }
     
     val supabaseServiceKey: String by lazy {
         when (environment) {
-            Environment.PRODUCTION -> System.getProperty("supabase.prod.service_key") ?: ""
-            Environment.STAGING -> System.getProperty("supabase.staging.service_key") ?: ""
-            Environment.DEVELOPMENT -> System.getProperty("supabase.dev.service_key") ?: ""
+            Environment.PRODUCTION -> System.getenv("SUPABASE_PROD_SERVICE_KEY") ?: System.getProperty("supabase.prod.service_key") ?: ""
+            Environment.STAGING -> System.getenv("SUPABASE_STAGING_SERVICE_KEY") ?: System.getProperty("supabase.staging.service_key") ?: ""
+            Environment.DEVELOPMENT -> System.getenv("SUPABASE_DEV_SERVICE_KEY") ?: System.getProperty("supabase.dev.service_key") ?: ""
         }
     }
     

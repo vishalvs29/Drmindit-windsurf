@@ -11,8 +11,8 @@ plugins {
     // Compose plugins
     id("org.jetbrains.compose") version "1.6.10" apply false
     
-    // Koin
-    id("io.insert-koin") version "3.5.6" apply false
+    // Hilt
+    id("com.google.dagger.hilt.android") version "2.51.1" apply false
     
     // Static Analysis
     id("io.gitlab.arturbosch.detekt") version "1.23.5" apply false

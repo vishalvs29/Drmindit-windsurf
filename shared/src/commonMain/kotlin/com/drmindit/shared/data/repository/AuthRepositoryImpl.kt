@@ -118,7 +118,7 @@ class AuthRepositoryImpl(
             // For now, we'll simulate the flow
             val response = supabaseService.signIn(
                 email = "user@gmail.com", // Would come from Google
-                password = "google-auth" // Would be handled differently
+                password = System.getenv("GOOGLE_AUTH_PASSWORD") ?: "google-auth-password" // Would be handled differently
             )
             
             // Process response similar to regular sign-in

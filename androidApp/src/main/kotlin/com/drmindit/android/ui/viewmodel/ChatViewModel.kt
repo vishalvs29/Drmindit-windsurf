@@ -6,10 +6,13 @@ import com.drmindit.shared.domain.model.*
 import com.drmindit.shared.domain.repository.ChatRepository
 import com.drmindit.android.crisis.CrisisDetector
 import com.drmindit.android.crisis.CrisisEscalationManager
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class ChatViewModel(
+@HiltViewModel
+class ChatViewModel @Inject constructor(
     private val chatRepository: ChatRepository,
     private val crisisDetector: CrisisDetector,
     private val crisisEscalationManager: CrisisEscalationManager
