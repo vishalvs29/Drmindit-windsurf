@@ -2,24 +2,24 @@ package com.drmindit.android.ui.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.drmindit.shared.data.repository.AuthRepository
-import com.drmindit.shared.data.repository.SessionRepositoryImpl
-import com.drmindit.shared.domain.model.Session
-import com.drmindit.shared.domain.model.User
-import com.drmindit.shared.domain.usecase.GetSessionOfTheDayUseCase
-import kotlinx.coroutines.flow.*
+import com.drmindit.shared.domain.model.Mood
+import com.drmindit.shared.domain.usecase.GetUserUseCase
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
 class DashboardViewModel(
-    private val authRepository: AuthRepository = AuthRepository(),
-    private val sessionRepository: SessionRepositoryImpl = SessionRepositoryImpl(),
-    private val getSessionOfTheDayUseCase: GetSessionOfTheDayUseCase =
-        GetSessionOfTheDayUseCase(sessionRepository)
+    private val getUserUseCase: GetUserUseCase,
+    private val getSessionOfTheDayUseCase: com.drmindit.shared.domain.usecase.GetSessionOfTheDayUseCase
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(DashboardUiState())
     val uiState: StateFlow<DashboardUiState> = _uiState.asStateFlow()
-
+    
+    private val _selectedMood = MutableStateFlow<Mood?>(null)
+    val selectedMood: StateFlow<Mood?> = _selectedMood.asStateFlow()
+    
     init {
         refreshData()
     }
@@ -32,16 +32,19 @@ class DashboardViewModel(
     private fun loadUserData() {
         viewModelScope.launch {
             _uiState.value = _uiState.value.copy(isLoading = true)
-
-            val result = authRepository.getCurrentUser()
-            result.fold(
-                onSuccess = {
-                    _uiState.value = _uiState.value.copy(user = it, isLoading = false)
-                },
-                onFailure = {
+            
+            getUserUseCase().fold(
+                onSuccess = { user ->
                     _uiState.value = _uiState.value.copy(
-                        error = it.message,
-                        isLoading = false
+                        user = user,
+                        isLoading = false,
+                        error = null
+                    )
+                },
+                onFailure = { error ->
+                    _uiState.value = _uiState.value.copy(
+                        isLoading = false,
+                        error = error.message
                     )
                 }
             )
@@ -50,30 +53,69 @@ class DashboardViewModel(
 
     private fun loadSessionOfTheDay() {
         viewModelScope.launch {
-            val result = getSessionOfTheDayUseCase()
-            result.fold(
-                onSuccess = {
+            getSessionOfTheDayUseCase().fold(
+                onSuccess = { session ->
                     _uiState.value = _uiState.value.copy(
-                        sessionOfTheDay = it,
-                        recommendedSessions = listOf(it)
+                        sessionOfTheDay = session
                     )
                 },
-                onFailure = {
-                    _uiState.value = _uiState.value.copy(error = it.message)
+                onFailure = { error ->
+                    _uiState.value = _uiState.value.copy(
+                        error = error.message
+                    )
                 }
             )
         }
     }
-
+    
+    fun selectMood(mood: Mood) {
+        _selectedMood.value = mood
+        // Here you would save the mood entry to the repository
+    }
+    
+    fun refreshData() {
+        loadUserData()
+        loadSessionOfTheDay()
+    }
+    
     fun clearError() {
         _uiState.value = _uiState.value.copy(error = null)
+    }
+    
+    fun loadRecommendedSessions(category: com.drmindit.shared.domain.model.SessionCategory? = null) {
+        viewModelScope.launch {
+            _uiState.value = _uiState.value.copy(isLoading = true)
+            
+            try {
+                val sessionsResult = sessionRepository.getSessions(category)
+                sessionsResult.fold(
+                    onSuccess = { sessions ->
+                        _uiState.value = _uiState.value.copy(
+                            recommendedSessions = sessions,
+                            isLoading = false,
+                            error = null
+                        )
+                    },
+                    onFailure = { error ->
+                        _uiState.value = _uiState.value.copy(
+                            isLoading = false,
+                            error = "Failed to load sessions: ${error.message}"
+                        )
+                    }
+                )
+            } catch (e: Exception) {
+                _uiState.value = _uiState.value.copy(
+                    isLoading = false,
+                    error = "Unexpected error: ${e.message}"
+                )
+            }
+        }
     }
 }
 
 data class DashboardUiState(
-    val user: User? = null,
-    val sessionOfTheDay: Session? = null,
-    val recommendedSessions: List<Session> = emptyList(),
+    val user: com.drmindit.shared.domain.model.User? = null,
+    val sessionOfTheDay: com.drmindit.shared.domain.model.Session? = null,
     val isLoading: Boolean = false,
     val error: String? = null
 )
