@@ -1,0 +1,30 @@
+package com.drmindit.shared.data.config
+
+object BuildConfig {
+    // These values are set at build time from build.gradle
+    const val DEBUG = false // Will be overridden by build config
+    const val APPLICATION_ID = "com.drmindit.android"
+    const val VERSION_CODE = 1
+    const val VERSION_NAME = "1.0.0"
+    
+    // Build type specific values
+    const val BUILD_TYPE = "debug"
+    const val FLAVOR = ""
+    
+    // API endpoints
+    const val API_BASE_URL = "https://swsqirdcmxotncibmgeb.supabase.co"
+    const val SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InN3c3FpcmRjbXhvdG5jaWJtZ2ViIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MTM5NzU5MDksImV4cCI6MjAyOTU1MTkwOX0.placeholder"
+    
+    // Feature flags
+    const val ENABLE_CRISIS_DETECTION = true
+    const val ENABLE_ANALYTICS = false
+    const val ENABLE_PUSH_NOTIFICATIONS = false
+    
+    // Debug settings
+    const val LOG_HTTP_REQUESTS = true
+    const val ENABLE_NETWORK_INSPECTOR = true
+    
+    // Performance settings
+    const val ENABLE_PERFORMANCE_MONITORING = false
+    const val ENABLE_CRASH_REPORTING = false
+}
