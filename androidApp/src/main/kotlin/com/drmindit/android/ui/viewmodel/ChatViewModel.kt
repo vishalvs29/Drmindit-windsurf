@@ -4,14 +4,15 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.drmindit.shared.domain.model.*
 import com.drmindit.shared.domain.repository.ChatRepository
-import dagger.hilt.android.lifecycle.HiltViewModel
+import com.drmindit.android.crisis.CrisisDetector
+import com.drmindit.android.crisis.CrisisEscalationManager
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 
-@HiltViewModel
-class ChatViewModel @Inject constructor(
-    private val chatRepository: ChatRepository
+class ChatViewModel(
+    private val chatRepository: ChatRepository,
+    private val crisisDetector: CrisisDetector,
+    private val crisisEscalationManager: CrisisEscalationManager
 ) : ViewModel() {
     
     private val _chatState = MutableStateFlow(ChatState())
@@ -23,11 +24,21 @@ class ChatViewModel @Inject constructor(
     private val _currentMessage = MutableStateFlow("")
     val currentMessage: StateFlow<String> = _currentMessage.asStateFlow()
     
+    private val _currentMood = MutableStateFlow<MoodCategory?>(null)
+    val currentMood: StateFlow<MoodCategory?> = _currentMood.asStateFlow()
+    
+    private val _showCrisisModal = MutableStateFlow(false)
+    val showCrisisModal: StateFlow<Boolean> = _showCrisisModal.asStateFlow()
+    
+    private val _showGroundingSession = MutableStateFlow(false)
+    val showGroundingSession: StateFlow<Boolean> = _showGroundingSession.asStateFlow()
+    
     private var currentSessionId: String? = null
     private val userId = "current_user" // In real app, get from auth service
     
     init {
         initializeChat()
+        observeCrisisState()
     }
     
     private fun initializeChat() {
@@ -131,6 +142,21 @@ class ChatViewModel @Inject constructor(
             _currentMessage.value = ""
             
             try {
+                // Analyze message for crisis indicators
+                val assessment = crisisDetector.analyzeMessage(message, _currentMood.value)
+                crisisDetector.updateCrisisState(assessment)
+                
+                // Handle crisis escalation
+                if (assessment.riskLevel >= RiskLevel.HIGH) {
+                    _showCrisisModal.value = true
+                    crisisEscalationManager.handleCrisisEvent(
+                        userId = userId,
+                        sessionId = sessionId,
+                        message = message,
+                        riskLevel = assessment.riskLevel
+                    )
+                }
+                
                 val context = _chatState.value.messages.takeLast(10)
                 val response = chatRepository.sendMessage(sessionId, message, context)
                 
@@ -145,7 +171,7 @@ class ChatViewModel @Inject constructor(
                                 SafetyAlert(
                                     level = aiResponse.riskLevel,
                                     message = "Support is available. Please reach out if you need help.",
-                                    suggestedHelplines = emptyList(), // Will be populated by repository
+                                    suggestedHelplines = crisisDetector.getEmergencyHelplines(),
                                     requiresImmediateAction = aiResponse.riskLevel == RiskLevel.CRITICAL,
                                     autoEscalation = aiResponse.requiresEscalation
                                 )
@@ -331,6 +357,46 @@ class ChatViewModel @Inject constructor(
     override fun onCleared() {
         super.onCleared()
         // Clean up any resources
+    }
+    
+    // Crisis management methods
+    private fun observeCrisisState() {
+        viewModelScope.launch {
+            crisisDetector.crisisState.collect { crisisState ->
+                _showCrisisModal.value = crisisState != com.drmindit.android.crisis.CrisisState.Normal
+            }
+        }
+    }
+    
+    fun dismissCrisisModal() {
+        _showCrisisModal.value = false
+        crisisDetector.resetCrisisState()
+    }
+    
+    fun showGroundingSession() {
+        _showGroundingSession.value = true
+        _showCrisisModal.value = false
+    }
+    
+    fun dismissGroundingSession() {
+        _showGroundingSession.value = false
+    }
+    
+    fun callHelpline(phoneNumber: String) {
+        // This would integrate with phone dialer
+        // For now, just log the action
+        println("Calling helpline: $phoneNumber")
+    }
+    
+    fun updateCurrentMood(mood: MoodCategory) {
+        _currentMood.value = mood
+        
+        // Check if mood indicates crisis
+        val assessment = crisisDetector.analyzeMessage("", mood)
+        if (assessment.riskLevel >= RiskLevel.HIGH) {
+            crisisDetector.updateCrisisState(assessment)
+            _showCrisisModal.value = true
+        }
     }
 }
 

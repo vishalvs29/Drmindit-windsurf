@@ -4,13 +4,10 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.drmindit.shared.domain.model.*
 import com.drmindit.shared.domain.repository.NotificationRepository
-import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 
-@HiltViewModel
-class NotificationSettingsViewModel @Inject constructor(
+class NotificationSettingsViewModel(
     private val notificationRepository: NotificationRepository
 ) : ViewModel() {
     

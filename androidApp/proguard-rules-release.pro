@@ -1,99 +1,200 @@
-# Additional ProGuard rules specifically for release builds
-# These rules provide more aggressive optimization for production
+# Enhanced ProGuard rules for release build with maximum security
 
-# More aggressive optimization
--optimizations !code/simplification/arithmetic,!code/simplification/cast,!field/*,!class/merging/*
--optimizationpasses 7
+# Aggressive obfuscation
+-optimizationpasses 5
 -allowaccessmodification
 -dontpreverify
+-mergeinterfacesaggressively
+-repackageclasses ''
 
-# Remove debug logging
+# Remove debug information
+-removeregexpcharclass "[\n\r]"
+-keepattributes SourceFile,LineNumberTable
+-renamesourcefileattribute SourceFile
+
+# Maximum string obfuscation
+-adaptclassstrings
+-adaptresourcefilenames
+-adaptresourcefilecontents
+
+# Keep critical security classes (but obfuscate internals)
+-keep class com.drmindit.android.crisis.CrisisDetector {
+    public <methods>;
+    private <fields>;
+}
+-keep class com.drmindit.android.compliance.DPDPComplianceManager {
+    public <methods>;
+    private <fields>;
+}
+-keep class com.drmindit.android.compliance.ParentalConsentManager {
+    public <methods>;
+    private <fields>;
+}
+
+# Keep Firebase Auth classes (obfuscated)
+-keep class com.google.firebase.auth.FirebaseAuth {
+    public *** getInstance(...);
+    public *** signInWithEmailAndPassword(...);
+    public *** createUserWithEmailAndPassword(...);
+    public *** signOut(...);
+}
+-keep class com.google.firebase.auth.FirebaseUser {
+    public *** getUid(...);
+    public *** getEmail(...);
+    public *** isEmailVerified(...);
+}
+
+# Keep Firestore (obfuscated)
+-keep class com.google.firebase.firestore.FirebaseFirestore {
+    public *** getInstance(...);
+    public *** collection(...);
+    public *** document(...);
+}
+-keep class com.google.firebase.firestore.Query {
+    public *** whereEqualTo(...);
+    public *** orderBy(...);
+    public *** limit(...);
+    public *** get(...);
+}
+
+# Keep encryption classes
+-keep class androidx.security.crypto.EncryptedSharedPreferences {
+    public *** create(...);
+}
+-keep class androidx.security.crypto.MasterKey {
+    public *** Builder(...);
+}
+
+# Obfuscate API keys and tokens completely
+-keepclassmembers class * {
+    private *** apiKey;
+    private *** token;
+    private *** secret;
+    private *** password;
+    private *** key;
+}
+
+# Remove all logging in release
 -assumenosideeffects class android.util.Log {
     public static *** v(...);
     public static *** d(...);
     public static *** i(...);
     public static *** w(...);
-}
-
-# Remove Timber logging (if used)
--assumenosideeffects class timber.log.Timber {
-    public static *** tag(...);
-    public static *** d(...);
-    public static *** v(...);
-    public static *** i(...);
-    public static *** w(...);
     public static *** e(...);
 }
 
-# Remove all debug code
--assumenosideeffects class com.drmindit.android.BuildConfig {
-    public static *** DEBUG;
+-assumenosideeffects class java.io.PrintStream {
+    public *** println(...);
+    public *** print(...);
 }
 
-# Keep only essential classes for release
--keep class com.drmindit.android.MainActivity { *; }
--keep class com.drmindit.android.DrMinditApplication { *; }
-
-# Remove unused resources
--shrinkresources true
-
-# Keep only necessary model classes
--keep public class com.drmindit.shared.domain.model.** { *; }
--keep public class com.drmindit.shared.data.network.** { *; }
-
-# Keep authentication and security classes
--keep public class com.drmindit.shared.data.repository.AuthRepositoryImpl { *; }
--keep public class com.drmindit.android.player.** { *; }
-
-# Remove unused Compose runtime classes
--dontwarn androidx.compose.runtime.**
--keep class androidx.compose.runtime.** { *; }
-
-# Optimize ExoPlayer for release
--keep class androidx.media3.exoplayer.** { *; }
--keep class androidx.media3.datasource.** { *; }
--keep class androidx.media3.extractor.** { *; }
-
-# Network optimization
--keep class io.ktor.client.** { *; }
--dontwarn io.ktor.client.**
-
-# Keep only essential Hilt components
--keep class dagger.hilt.** { *; }
--keep class javax.inject.** { *; }
-
-# Remove test classes
--dontwarn org.junit.**
--dontwarn org.mockito.**
--dontwarn androidx.test.**
-
-# Remove unused Google Play Services classes
--dontwarn com.google.android.gms.**
--keep class com.google.android.gms.** { *; }
-
-# Keep only necessary AndroidX classes
--keep class androidx.** { *; }
--dontwarn androidx.**
-
-# Remove unused Kotlin reflection
--dontwarn kotlin.reflect.**
--keep class kotlin.reflect.** { *; }
-
-# Optimize serialization
--keepnames class kotlinx.serialization.** { *; }
--dontwarn kotlinx.serialization.**
-
-# Keep only essential coroutines
--keepclassmembernames class kotlinx.coroutines.** {
-    volatile <fields>;
+# Keep Koin but obfuscate internals
+-keep class org.koin.core.context.KoinApplication {
+    public *** get(...);
 }
+-keep class org.koin.android.ext.koin.androidContext
+-dontwarn org.koin.**
 
-# Remove unused metadata
+# Keep Room but obfuscate
+-keep class * extends androidx.room.RoomDatabase { *; }
+-keep class androidx.room.RoomDatabase { *; }
+-dontwarn androidx.room.**
+
+# Keep coroutines
+-keepnames class kotlinx.coroutines.** { *; }
+-keepclassmembernames class kotlinx.coroutines.** { *; }
+-dontwarn kotlinx.coroutines.**
+
+# Keep serialization but obfuscate
 -keepattributes *Annotation*, InnerClasses
--keepattributes Signature
--keepattributes SourceFile,LineNumberTable
+-dontnote kotlinx.serialization.AnnotationsKt
+-keep,includedescriptorclasses class com.drmindit.**$$serializer { *; }
+-keepclassmembers class com.drmindit.** {
+    *** Companion;
+}
+-keepclasseswithmembers class com.drmindit.** {
+    kotlinx.serialization.KSerializer serializer(...);
+}
 
-# Final optimization
+# Keep models but obfuscate field names
+-keep class com.drmindit.shared.domain.model.** { *; }
+-keep class com.drmindit.android.data.** { *; }
+-keepclassmembers class com.drmindit.shared.domain.model.** { *; }
+-keepclassmembers class com.drmindit.android.data.** { *; }
+
+# Keep ViewModels but obfuscate
+-keep class * extends androidx.lifecycle.ViewModel { *; }
+-keep class * extends androidx.lifecycle.AndroidViewModel { *; }
+-keepclassmembers class * extends androidx.lifecycle.ViewModel {
+    public <init>(...);
+}
+-keepclassmembers class * extends androidx.lifecycle.AndroidViewModel {
+    public <init>(...);
+}
+
+# Keep lifecycle but obfuscate
+-keep class androidx.lifecycle.** { *; }
+-dontwarn androidx.lifecycle.**
+
+# Keep Compose but obfuscate
+-keep class androidx.compose.** { *; }
+-dontwarn androidx.compose.**
+
+# Keep navigation but obfuscate
+-keep class androidx.navigation.** { *; }
+-dontwarn androidx.navigation.**
+
+# Keep Media3 but obfuscate
+-keep class androidx.media3.** { *; }
+-dontwarn androidx.media3.**
+
+# Keep Ktor but obfuscate
+-keep class io.ktor.** { *; }
+-dontwarn io.ktor.**
+
+# Keep Coil but obfuscate
+-keep class coil.** { *; }
+-dontwarn coil.**
+
+# Keep exceptions but obfuscate
+-keep public class * extends java.lang.Exception { *; }
+-keep public class * extends java.lang.Throwable { *; }
+
+# Keep native methods
+-keepclasseswithmembernames class * {
+    native <methods>;
+}
+
+# Keep parcelable but obfuscate
+-keep class * implements android.os.Parcelable {
+    public static final ** CREATOR;
+}
+
+# Keep enum but obfuscate
+-keepclassmembers enum * {
+    public static **[] values();
+    public static ** valueOf(java.lang.String);
+}
+
+# Keep R class
+-keepclassmembers class **.R$* {
+    public static <fields>;
+}
+
+# Keep BuildConfig
+-keep class com.drmindit.android.BuildConfig { *; }
+
+# Maximum optimization
+-optimizations !code/simplification/arithmetic,!code/simplification/cast,!field/*,!class/merging/*
+-keepattributes Signature,InnerClasses,EnclosingMethod
+-keepattributes Annotation
+
+# Remove unused code aggressively
+-allowshrinking true
+-dontshrink
+
+# Final security settings
 -repackageclasses ''
 -allowaccessmodification
 -mergeinterfacesaggressively
+-verbose-mergeinterfacesaggressively

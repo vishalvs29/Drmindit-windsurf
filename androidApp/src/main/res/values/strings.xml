@@ -1,0 +1,123 @@
+<resources>
+    <string name="app_name">DrMindit</string>
+    
+    <!-- Authentication -->
+    <string name="sign_in">Sign In</string>
+    <string name="sign_up">Sign Up</string>
+    <string name="sign_out">Sign Out</string>
+    <string name="email">Email</string>
+    <string name="password">Password</string>
+    <string name="confirm_password">Confirm Password</string>
+    <string name="display_name">Display Name</string>
+    <string name="forgot_password">Forgot Password?</string>
+    <string name="reset_password">Reset Password</string>
+    <string name="email_verification_sent">Email verification sent</string>
+    <string name="verify_email">Verify Email</string>
+    
+    <!-- Google Sign-In -->
+    <string name="sign_in_with_google">Sign in with Google</string>
+    <string name="default_web_client_id" translatable="false">123456789012-abcdefghijklmnopqrstuvwxyz123456.apps.googleusercontent.com</string>
+    
+    <!-- Navigation -->
+    <string name="home">Home</string>
+    <string name="sessions">Sessions</string>
+    <string name="chat">Chat</string>
+    <string name="profile">Profile</string>
+    <string name="settings">Settings</string>
+    
+    <!-- Chat -->
+    <string name="type_message">Type a message...</string>
+    <string name="send">Send</string>
+    <string name="chat_with_ai">Chat with AI</string>
+    <string name="new_chat">New Chat</string>
+    <string name="clear_chat">Clear Chat</string>
+    
+    <!-- Crisis -->
+    <string name="crisis_detected">Crisis Detected</string>
+    <string name="help_available">Help is available right now</string>
+    <string name="call_helpline">Call Helpline</string>
+    <string name="grounding_session">Grounding Session</string>
+    <string name="emergency_support">Emergency Support</string>
+    
+    <!-- Sessions -->
+    <string name="meditation">Meditation</string>
+    <string name="breathing">Breathing</string>
+    <string name="sleep_stories">Sleep Stories</string>
+    <string name="mindfulness">Mindfulness</string>
+    <string name="stress_relief">Stress Relief</string>
+    <string name="anxiety_relief">Anxiety Relief</string>
+    
+    <!-- Common -->
+    <string name="ok">OK</string>
+    <string name="cancel">Cancel</string>
+    <string name="save">Save</string>
+    <string name="delete">Delete</string>
+    <string name="edit">Edit</string>
+    <string name="loading">Loading...</string>
+    <string name="error">Error</string>
+    <string name="success">Success</string>
+    <string name="retry">Retry</string>
+    <string name="close">Close</string>
+    
+    <!-- Permissions -->
+    <string name="permission_required">Permission Required</string>
+    <string name="permission_denied">Permission Denied</string>
+    <string name="grant_permission">Grant Permission</string>
+    
+    <!-- Notifications -->
+    <string name="notification_channel_name">DrMindit Notifications</string>
+    <string name="notification_channel_description">Daily wellness reminders and updates</string>
+    
+    <!-- Content Descriptions -->
+    <string name="cd_play">Play</string>
+    <string name="cd_pause">Pause</string>
+    <string name="cd_stop">Stop</string>
+    <string name="cd_next">Next</string>
+    <string name="cd_previous">Previous</string>
+    <string name="cd_favorite">Favorite</string>
+    <string name="cd_download">Download</string>
+    <string name="cd_share">Share</string>
+    <string name="cd_menu">Menu</string>
+    <string name="cd_back">Back</string>
+    <string name="cd_search">Search</string>
+    <string name="cd_settings">Settings</string>
+    
+    <!-- Error Messages -->
+    <string name="error_network">Network error. Please check your connection.</string>
+    <string name="error_authentication">Authentication failed. Please sign in again.</string>
+    <string name="error_invalid_email">Invalid email address.</string>
+    <string name="error_weak_password">Password is too weak. Please choose a stronger password.</string>
+    <string name="error_user_exists">An account with this email already exists.</string>
+    <string name="error_user_not_found">No account found with this email.</string>
+    <string name="error_wrong_password">Incorrect password.</string>
+    <string name="error_generic">Something went wrong. Please try again.</string>
+    
+    <!-- Success Messages -->
+    <string name="success_sign_in">Signed in successfully</string>
+    <string name="success_sign_up">Account created successfully</string>
+    <string name="success_password_reset">Password reset email sent</string>
+    <string name="success_profile_updated">Profile updated successfully</string>
+    
+    <!-- DPDP Compliance -->
+    <string name="privacy_policy">Privacy Policy</string>
+    <string name="terms_of_service">Terms of Service</string>
+    <string name="data_consent">Data Consent</string>
+    <string name="consent_required">Consent Required</string>
+    <string name="consent_description">We need your consent to collect and process your data for providing personalized mental health support.</string>
+    <string name="agree">Agree</string>
+    <string name="disagree">Disagree</string>
+    
+    <!-- Parental Consent -->
+    <string name="parental_consent">Parental Consent</string>
+    <string name="age_verification">Age Verification</string>
+    <string name="under_18">I am under 18 years old</string>
+    <string name="over_18">I am 18 years or older</string>
+    <string name="parental_consent_required">Parental consent required for users under 18</string>
+    <string name="parent_email">Parent Email</string>
+    <string name="request_parental_consent">Request Parental Consent</string>
+    
+    <!-- Emergency Helplines -->
+    <string name="helpline_icall">iCall - 9152987821</string>
+    <string name="helpline_vandrevala">Vandrevala Foundation - 18602662345</string>
+    <string name="helpline_snehi">Snehi - 919822062402</string>
+</resources>

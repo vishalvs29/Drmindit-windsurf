@@ -1,24 +1,152 @@
-# Add project specific ProGuard rules here.
-# You can control the set of applied configuration files using the
-# proguardFiles setting in build.gradle.
-#
-# For more details, see
-#   http://developer.android.com/guide/developing/tools/proguard.html
+# Add custom ProGuard rules for DrMindit
 
-# If your project uses WebView with JS, uncomment the following
-# and specify the fully qualified class name to the JavaScript interface
-# class:
-#-keepclassmembers class fqcn.of.javascript.interface.for.webview {
-#   public *;
-#}
+# Keep Firebase classes
+-keep class com.google.firebase.** { *; }
+-keep class com.google.android.gms.** { *; }
+-keep class com.google.api.** { *; }
+-keep class com.google.auth.** { *; }
 
-# Uncomment this to preserve the line number information for
-# debugging stack traces.
-#-keepattributes SourceFile,LineNumberTable
+# Keep Koin classes
+-keep class org.koin.** { *; }
+-dontwarn org.koin.**
 
-# If you keep the line number information, uncomment this to
-# hide the original source file name.
-#-renamesourcefileattribute SourceFile
+# Keep Kotlin coroutines
+-keepnames class kotlinx.coroutines.** { *; }
+-keepclassmembernames class kotlinx.coroutines.** { *; }
+-dontwarn kotlinx.coroutines.**
+
+# Keep serialization classes
+-keepattributes *Annotation*, InnerClasses
+-dontnote kotlinx.serialization.AnnotationsKt
+-keep,includedescriptorclasses class com.drmindit.**$$serializer { *; }
+-keepclassmembers class com.drmindit.** {
+    *** Companion;
+}
+-keepclasseswithmembers class com.drmindit.** {
+    kotlinx.serialization.KSerializer serializer(...);
+}
+
+# Keep data classes and models
+-keep class com.drmindit.shared.domain.model.** { *; }
+-keep class com.drmindit.android.data.** { *; }
+-keep class com.drmindit.android.ui.** { *; }
+
+# Keep crisis detection classes (security critical)
+-keep class com.drmindit.android.crisis.** { *; }
+-keep class com.drmindit.android.compliance.** { *; }
+
+# Keep Room database classes
+-keep class * extends androidx.room.RoomDatabase
+-keep @androidx.room.Entity class *
+-keep @androidx.room.Dao class *
+-dontwarn androidx.room.paging.**
+
+# Keep Firebase Auth
+-keep class com.google.firebase.auth.** { *; }
+-keep class com.google.android.gms.auth.api.signin.** { *; }
+
+# Keep Firestore models
+-keep class com.google.firebase.firestore.** { *; }
+-dontwarn com.google.firebase.firestore.**
+
+# Keep Ktor client
+-keep class io.ktor.** { *; }
+-dontwarn io.ktor.**
+
+# Keep Media3 classes
+-keep class androidx.media3.** { *; }
+-dontwarn androidx.media3.**
+
+# Keep Compose classes
+-keep class androidx.compose.** { *; }
+-dontwarn androidx.compose.**
+
+# Security: Obfuscate sensitive strings
+-adaptclassstrings
+-keepclassmembers class * {
+    @com.google.firebase.database.Exclude <fields>;
+}
+
+# Keep encryption-related classes
+-keep class androidx.security.crypto.** { *; }
+
+# Keep authentication tokens (obfuscated)
+-keep class * {
+    private <fields>;
+    private <methods>;
+}
+
+# Obfuscate API keys and secrets
+-keepclassmembers class * {
+    private *** getToken(...);
+    private *** getApiKey(...);
+    private *** getPassword(...);
+}
+
+# Keep lifecycle classes
+-keep class androidx.lifecycle.** { *; }
+-keep class * extends androidx.lifecycle.ViewModel { *; }
+-keep class * extends androidx.lifecycle.AndroidViewModel { *; }
+
+# Keep navigation
+-keep class androidx.navigation.** { *; }
+
+# Keep Coil image loading
+-keep class coil.** { *; }
+-dontwarn coil.**
+
+# Remove logging in release
+-assumenosideeffects class android.util.Log {
+    public static *** v(...);
+    public static *** d(...);
+    public static *** i(...);
+}
+
+# Keep exception classes
+-keep public class * extends java.lang.Exception
+-keep public class * extends java.lang.Throwable
+
+# Keep native methods
+-keepclasseswithmembernames class * {
+    native <methods>;
+}
+
+# Keep custom views
+-keep public class * extends android.view.View {
+    public <init>(android.content.Context);
+    public <init>(android.content.Context, android.util.AttributeSet);
+    public <init>(android.content.Context, android.util.AttributeSet, int);
+    public void set*(...);
+}
+
+# Keep parcelable classes
+-keep class * implements android.os.Parcelable {
+    public static final ** CREATOR;
+}
+
+# Keep enum classes
+-keepclassmembers enum * {
+    public static **[] values();
+    public static ** valueOf(java.lang.String);
+}
+
+# Keep R class
+-keepclassmembers class **.R$* {
+    public static <fields>;
+}
+
+# Keep BuildConfig
+-keep class com.drmindit.android.BuildConfig { *; }
+
+# Optimization rules
+-optimizations !code/simplification/arithmetic,!code/simplification/cast,!field/*,!class/merging/*
+-keepattributes Signature
+-keepattributes *Annotation*
+
+# Remove unused classes
+-allowshrinking true
+-dontpreverify
+-verbose
 
 # Keep data classes used with Kotlin serialization
 -keepattributes *Annotation*, InnerClasses

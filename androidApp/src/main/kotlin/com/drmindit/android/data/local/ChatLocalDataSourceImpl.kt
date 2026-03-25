@@ -12,8 +12,6 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
-import javax.inject.Inject
-import javax.inject.Singleton
 
 @Dao
 interface ChatDao {
@@ -89,12 +87,11 @@ data class ChatMessageEntity(
     version = 1,
     exportSchema = false
 )
-@Singleton
 abstract class ChatDatabase : RoomDatabase() {
     abstract fun chatDao(): ChatDao
 }
 
-class ChatLocalDataSourceImpl @Inject constructor(
+class ChatLocalDataSourceImpl(
     private val context: Context,
     private val database: ChatDatabase,
     private val dataStore: DataStore<Preferences>
@@ -330,7 +327,7 @@ object ChatPreferencesKeys {
 }
 
 // Typing indicator management (simplified)
-class TypingIndicatorManager @Inject constructor(
+class TypingIndicatorManager(
     private val dataStore: DataStore<Preferences>
 ) {
     suspend fun setTyping(sessionId: String, userId: String, isTyping: Boolean) {
@@ -352,7 +349,7 @@ class TypingIndicatorManager @Inject constructor(
 }
 
 // Chat backup and restore
-class ChatBackupManager @Inject constructor(
+class ChatBackupManager(
     private val chatDao: ChatDao,
     private val json: Json
 ) {
