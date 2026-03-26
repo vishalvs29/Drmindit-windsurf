@@ -13,7 +13,7 @@ object BuildConfig {
     
     // API endpoints
     const val API_BASE_URL = "https://swsqirdcmxotncibmgeb.supabase.co"
-    const val SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InN3c3FpcmRjbXhvdG5jaWJtZ2ViIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MTM5NzU5MDksImV4cCI6MjAyOTU1MTkwOX0.placeholder"
+    const val SUPABASE_ANON_KEY = "your-supabase-anon-key-here"
     
     // Feature flags
     const val ENABLE_CRISIS_DETECTION = true

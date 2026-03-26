@@ -19,6 +19,63 @@ A production-ready mental health application built with Kotlin Multiplatform (KM
 - Depression support
 - Focus & productivity
 
+## 📸 Screenshots
+
+### 🏠 Home Screen
+![Home Screen](assets/screenshots/home_screen.png)
+*Personal dashboard with quick access to all features, mood check-ins, and personalized recommendations.*
+
+### 💬 AI Chat
+![Chat Screen](assets/screenshots/chat_screen.png)
+*Compassionate AI-powered mental health support with crisis detection and 24/7 availability.*
+
+### 🎧 Session Player
+![Session Player](assets/screenshots/session_player.png)
+*Immersive meditation player with audio controls, progress tracking, and background playback support.*
+
+### 📊 Mood Dashboard
+![Mood Dashboard](assets/screenshots/mood_dashboard.png)
+*Comprehensive mood analytics with trend charts, AI insights, and personalized recommendations.*
+
+### 🚀 Onboarding
+![Onboarding](assets/screenshots/onboarding.png)
+*Welcoming onboarding flow with personalization, goal setting, and privacy assurance.*
+
+## 🛡️ Security
+
+### 🔐 **Enterprise-Grade Security**
+- **Zero Secret Exposure**: No API keys in source code
+- **Secure Backend Proxy**: All sensitive API calls through secure server
+- **Rate Limiting**: 20 requests/minute per user
+- **JWT Authentication**: Secure token-based authentication
+- **Input Validation**: Comprehensive XSS and injection prevention
+- **HTTPS Only**: Production endpoints use HTTPS exclusively
+
+### 🚀 **Quick Setup**
+```bash
+# Backend Setup
+cd backend/secure-proxy
+cp .env.example .env
+# Edit .env with your API keys
+npm install
+npm start
+
+# Client Configuration
+# No API keys needed - uses secure backend proxy
+# Authentication handled through secure endpoints
+```
+
+### 📋 **Security Checklist**
+- ✅ No hardcoded secrets in source code
+- ✅ Environment variables for all sensitive data
+- ✅ Rate limiting and abuse prevention
+- ✅ Input validation and sanitization
+- ✅ Secure authentication with JWT tokens
+- ✅ HTTPS enforcement and security headers
+- ✅ Comprehensive logging and monitoring
+
+[📖 **Security Documentation**](SECURITY_HARDENING.md) | [🔧 **Backend Setup**](backend/secure-proxy/README.md)
+
 ## 🧱 Tech Stack
 
 ### Architecture

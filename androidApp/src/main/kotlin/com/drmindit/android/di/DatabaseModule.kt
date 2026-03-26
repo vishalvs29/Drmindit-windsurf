@@ -7,6 +7,11 @@ import com.drmindit.android.data.local.ChatDatabase
 import com.drmindit.android.data.local.ChatLocalDataSourceImpl
 import com.drmindit.android.data.local.provideChatDatabase
 import com.drmindit.android.data.local.provideChatDataStore
+import com.drmindit.android.player.ImprovedAudioPlayerManager
+import com.drmindit.android.player.MeditationAudioPlayerManager
+import com.drmindit.android.player.AudioPlayerManager
+import com.drmindit.android.notifications.NotificationManager
+import com.drmindit.android.ai.MentalHealthChatManager
 import com.drmindit.shared.data.local.LocalDataSource
 import dagger.Binds
 import dagger.Module
@@ -23,6 +28,12 @@ object DatabaseModule {
     // Managers
     @Provides
     @Singleton
+    fun provideMeditationAudioPlayerManager(@ApplicationContext context: Context): MeditationAudioPlayerManager {
+        return MeditationAudioPlayerManager(context)
+    }
+
+    @Provides
+    @Singleton
     fun provideImprovedAudioPlayerManager(): ImprovedAudioPlayerManager {
         return ImprovedAudioPlayerManager()
     }
@@ -37,6 +48,12 @@ object DatabaseModule {
     @Singleton
     fun provideMentalHealthChatManager(): MentalHealthChatManager {
         return MentalHealthChatManager(get(), get(), get(), get())
+    }
+
+    @Provides
+    @Singleton
+    fun provideNotificationManager(): NotificationManager {
+        return NotificationManager(get(), get(), get())
     }
 
     @Provides

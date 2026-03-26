@@ -1,4 +1,4 @@
-# DrMindit Git Ignore - Security Focused (Less Restrictive)
+# DrMindit Git Ignore - Security Focused (CRITICAL - NEVER COMMIT SECRETS)
 
 # Environment and secrets (CRITICAL - NEVER COMMIT)
 .env
@@ -7,11 +7,14 @@
 .env.staging
 .env.development
 *.env
+.env.example
+.env.template
 
 # Firebase configuration (CRITICAL - NEVER COMMIT)
 google-services.json
 firebase.json
 google-services.json.example
+firebase.json.example
 
 # Keystore and certificates (CRITICAL - NEVER COMMIT)
 *.keystore
@@ -30,11 +33,35 @@ gcp-credentials.json
 azure-credentials.json
 sentry.properties
 analytics.properties
+openai-api-key.txt
+supabase-credentials.json
 
-# Supabase configuration
-supabase/config.toml
-supabase/.branches/
-supabase/.temp/
+# API Keys and secrets (CRITICAL - NEVER COMMIT)
+api-keys.txt
+secrets.txt
+private-keys.txt
+config.prod.js
+config.staging.js
+local.properties
+!local.properties.example
+
+# Node.js specific (CRITICAL - NEVER COMMIT)
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+package-lock.json
+yarn.lock
+.env.local
+.env.development.local
+.env.test.local
+
+# Backend configuration (CRITICAL - NEVER COMMIT)
+backend/config/production.json
+backend/config/staging.json
+backend/.env
+backend/.env.local
+backend/secrets/
 
 # Built application files
 *.apk
