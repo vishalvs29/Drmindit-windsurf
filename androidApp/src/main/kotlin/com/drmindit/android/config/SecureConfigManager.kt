@@ -45,6 +45,16 @@ class SecureConfigManager @Inject constructor(
     }
     
     /**
+     * Get Backend URL securely
+     */
+    fun getBackendUrl(): String {
+        return System.getenv("BACKEND_URL") 
+            ?: BuildConfig.BACKEND_URL
+            ?: encryptedPrefs.getString("backend_url", "")
+            ?: "https://your-backend-api.com"
+    }
+    
+    /**
      * Get Supabase Anon Key securely
      */
     fun getSupabaseAnonKey(): String {

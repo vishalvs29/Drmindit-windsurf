@@ -10,6 +10,7 @@ import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.encodeToString
+import kotlinx.serialization.Serializable
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -109,11 +110,8 @@ class MentalHealthChatManager @Inject constructor(
             // Generate mental health focused prompt
             val prompt = generateMentalHealthPrompt(userMessage.content, context)
             
-            // Get API key securely
-            val apiKey = secureConfigManager.getOpenAIApiKey()
-            
-            // Call LLM API
-            val response = callLLMApi(prompt, apiKey)
+            // Call secure backend API instead of direct OpenAI
+            val response = callSecureBackendAPI(prompt)
             
             // Process response
             val aiMessage = ChatMessage(
@@ -229,57 +227,69 @@ class MentalHealthChatManager @Inject constructor(
     }
     
     /**
-     * Call LLM API with mental health context
+     * Call secure backend API
      */
-    private suspend fun callLLMApi(prompt: String, apiKey: String): LLMResponse {
-        // This would integrate with actual LLM API
-        // For now, simulating with contextual responses
-        
-        val emotionKeywords = extractEmotionalKeywords(prompt)
-        val isCrisis = detectCrisisKeywords(prompt)
-        
-        return if (isCrisis) {
-            LLMResponse(
-                content = generateCrisisResponse(),
-                emotionAnalysis = "crisis",
-                safetyScore = 0.1f,
-                requiresImmediateAction = true
+    private suspend fun callSecureBackendAPI(prompt: String): BackendAPIResponse {
+        return try {
+            // Get backend URL from secure config
+            val backendUrl = secureConfigManager.getBackendUrl()
+            
+            // Create request body
+            val requestBody = mapOf(
+                "message" to prompt,
+                "userId" to "current_user", // Would get from auth context
+                "sessionId" to null
             )
-        } else {
-            LLMResponse(
-                content = generateContextualResponse(prompt, emotionKeywords),
-                emotionAnalysis = analyzeEmotion(emotionKeywords),
-                safetyScore = calculateSafetyScore(emotionKeywords),
-                requiresImmediateAction = false
+            
+            // Make HTTP call to secure backend
+            val httpClient = okhttp3.OkHttpClient()
+            val mediaType = "application/json".toMediaType()
+            val jsonBody = okhttp3.RequestBody.create(
+                mediaType,
+                kotlinx.serialization.json.Json.encodeToString(requestBody)
+            )
+            
+            val request = okhttp3.Request.Builder()
+                .url("$backendUrl/api/chat")
+                .addHeader("Content-Type", "application/json")
+                .addHeader("User-Agent", "DrMindit-Android/1.0")
+                .post(jsonBody)
+                .build()
+            
+            val response = httpClient.newCall(request).execute()
+            
+            if (response.isSuccessful) {
+                val responseData = response.body?.string()
+                if (responseData != null) {
+                    // Parse JSON response
+                    val jsonResponse = kotlinx.serialization.json.Json {
+                        ignoreUnknownKeys = true
+                    }.decodeFromString<BackendChatResponse>(responseData)
+                    
+                    return BackendAPIResponse(
+                        content = jsonResponse.response ?: "",
+                        usage = jsonResponse.usage,
+                        error = null
+                    )
+                }
+            }
+            
+            BackendAPIResponse(
+                content = "",
+                error = "Backend service temporarily unavailable"
+            )
+            
+        } catch (e: Exception) {
+            BackendAPIResponse(
+                content = "",
+                error = "Network error occurred"
             )
         }
     }
     
+        
     /**
-     * Generate crisis response
-     */
-    private fun generateCrisisResponse(): String {
-        return """
-            I hear that you're going through a really difficult time right now. Your safety is the most important thing.
-            
-            Immediate Support Options:
-            🚨 **Crisis Hotline**: 988 (Available 24/7)
-            📱 **Crisis Text Line**: Text HOME to 741741
-            🏥 **Emergency Services**: Call 911 or go to nearest emergency room
-            
-            While you wait for help:
-            🧘 **Try deep breathing**: Inhale for 4 seconds, hold for 4, exhale for 4
-            📍 **Ground yourself**: Name 5 things you can see, hear, smell, touch, taste
-            🤝 **Reach out**: Contact a trusted friend, family member, or mental health professional
-            
-            You are not alone in this. Help is available, and you deserve support. Please reach out to one of the resources above.
-            
-            I'll stay here with you. You matter, and your wellbeing matters deeply.
-        """.trimIndent()
-    }
-    
-    /**
-     * Generate contextual response
+     * Generate contextual response (simplified for backend integration)
      */
     private fun generateContextualResponse(prompt: String, emotionKeywords: List<String>): String {
         val primaryEmotion = emotionKeywords.firstOrNull()
@@ -294,7 +304,7 @@ class MentalHealthChatManager @Inject constructor(
                 📝 **Grounding**: Focus on your senses - what can you see, hear, smell, touch?
                 🎯 **5-4-3-2-1**: Name 5 things you observe, 4 you can't, 3 you can smell, 2 you can taste, 1 thing you can feel
                 
-                Remember: These feelings are temporary, like clouds passing. You have the strength to navigate through them. Would you like to try any of these techniques together?
+                Remember: These feelings are temporary, like clouds passing. You have strength to navigate through them. Would you like to try any of these techniques together?
             """.trimIndent()
             
             "sad", "depressed", "down", "hopeless" -> """
@@ -530,6 +540,26 @@ class MentalHealthChatManager @Inject constructor(
 }
 
 /**
+     * Backend API response
+     */
+    @Serializable
+    data class BackendAPIResponse(
+        val content: String,
+        val usage: BackendUsage? = null,
+        val error: String? = null
+    )
+    
+    /**
+     * Backend usage information
+     */
+    @Serializable
+    data class BackendUsage(
+        val promptTokens: Int,
+        val completionTokens: Int,
+        val totalTokens: Int
+    )
+
+/**
  * Chat state for persistence
  */
 data class ChatState(
@@ -538,14 +568,24 @@ data class ChatState(
 )
 
 /**
- * LLM API response
- */
-data class LLMResponse(
-    val content: String,
-    val emotionAnalysis: String,
-    val safetyScore: Float,
-    val requiresImmediateAction: Boolean
-)
+ * Backend API response
+     */
+    @Serializable
+    data class BackendAPIResponse(
+        val content: String,
+        val usage: BackendUsage? = null,
+        val error: String? = null
+    )
+    
+    /**
+     * Backend usage information
+     */
+    @Serializable
+    data class BackendUsage(
+        val promptTokens: Int,
+        val completionTokens: Int,
+        val totalTokens: Int
+    )
 
 /**
  * Conversation context for better AI responses

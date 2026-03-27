@@ -14,6 +14,7 @@ object BuildConfig {
     // API endpoints
     const val API_BASE_URL = "https://swsqirdcmxotncibmgeb.supabase.co"
     const val SUPABASE_ANON_KEY = "your-supabase-anon-key-here"
+    const val BACKEND_URL = "https://your-backend-api.com"
     
     // Feature flags
     const val ENABLE_CRISIS_DETECTION = true
