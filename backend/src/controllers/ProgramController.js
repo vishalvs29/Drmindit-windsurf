@@ -1,3 +1,4 @@
+const express = require('express');
 const ProgramService = require('../services/ProgramService');
 const { validateRequest } = require('../middleware/validation');
 const { requireAuth } = require('../middleware/auth');
@@ -6,7 +7,7 @@ const logger = require('../utils/logger');
 
 /**
  * Program Controller - API Layer
- * Handles all program-related endpoints with proper validation and security
+ * Handles all program-related endpoints with proper validation and error handling
  */
 class ProgramController {
     /**
@@ -479,12 +480,16 @@ class ProgramController {
 // Create controller instance
 const programController = new ProgramController();
 
-// Export middleware functions
-module.exports = {
-    getPrograms: (req, res) => programController.getPrograms(req, res),
-    getProgramById: (req, res) => programController.getProgramById(req, res),
-    startProgram: (req, res) => programController.startProgram(req, res),
-    getUserProgramProgress: (req, res) => programController.getUserProgramProgress(req, res),
-    updateUserProgramProgress: (req, res) => programController.updateUserProgramProgress(req, res),
-    completeUserProgram: (req, res) => programController.completeUserProgram(req, res)
-};
+// Create Express router
+const router = express.Router();
+
+// Define routes
+router.get('/', (req, res) => programController.getPrograms(req, res));
+router.get('/:id', (req, res) => programController.getProgramById(req, res));
+router.post('/:id/start', (req, res) => programController.startProgram(req, res));
+router.get('/users/:userId/programs/progress', (req, res) => programController.getUserProgramProgress(req, res));
+router.put('/users/:userId/programs/:programId/progress', (req, res) => programController.updateUserProgramProgress(req, res));
+router.post('/users/:userId/programs/:programId/complete', (req, res) => programController.completeUserProgram(req, res));
+
+// Export router
+module.exports = router;

@@ -1,5 +1,5 @@
 const { Pool } = require('pg');
-const logger = require('../utils/logger');
+const { logger } = require('../utils/logger');
 
 /**
  * User Repository - Data Access Layer

@@ -2,8 +2,8 @@ const UserRepository = require('../repositories/UserRepository');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 const crypto = require('crypto');
-const logger = require('../utils/logger');
-const cache = require('../utils/cache');
+const { logger } = require('../utils/logger');
+const { cache } = require('../utils/cache');
 const { sendEmail } = require('../utils/email');
 
 /**
@@ -12,7 +12,12 @@ const { sendEmail } = require('../utils/email');
  */
 class AuthService {
     constructor() {
-        this.jwtSecret = process.env.JWT_SECRET || 'fallback-secret-change-in-production';
+        this.jwtSecret = process.env.JWT_SECRET || (() => {
+            if (process.env.NODE_ENV === 'production') {
+                throw new Error('JWT_SECRET environment variable is required in production');
+            }
+            return 'fallback-secret-change-in-production';
+        })();
         this.jwtExpiry = '24h';
         this.saltRounds = 12;
     }

@@ -51,6 +51,6 @@ abstract class RepositoryModule {
     @Binds
     @Singleton
     abstract fun bindCrisisRepository(
-        crisisRepositoryImpl: CrisisRepositoryImpl
+        crisisRepository: CrisisRepository
     ): CrisisRepository
 }

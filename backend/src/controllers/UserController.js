@@ -1,3 +1,4 @@
+const express = require('express');
 const { logger } = require('../utils/logger');
 const { validateRequest } = require('../middleware/validation');
 const { requireAuth } = require('../middleware/auth');
@@ -337,11 +338,15 @@ class UserController {
 // Create controller instance
 const userController = new UserController();
 
-// Export middleware functions
-module.exports = {
-    getUserProfile: (req, res) => userController.getUserProfile(req, res),
-    updateUserProfile: (req, res) => userController.updateUserProfile(req, res),
-    getUserInsights: (req, res) => userController.getUserInsights(req, res),
-    postUserInsights: (req, res) => userController.postUserInsights(req, res),
-    changePassword: (req, res) => userController.changePassword(req, res)
-};
+// Create Express router
+const router = express.Router();
+
+// Define routes
+router.get('/profile', (req, res) => userController.getUserProfile(req, res));
+router.put('/profile', (req, res) => userController.updateUserProfile(req, res));
+router.get('/insights', (req, res) => userController.getUserInsights(req, res));
+router.post('/insights', (req, res) => userController.postUserInsights(req, res));
+router.post('/change-password', (req, res) => userController.changePassword(req, res));
+
+// Export router
+module.exports = router;

@@ -16,9 +16,9 @@ object AppConfig {
     // Supabase Configuration - LOAD FROM ENVIRONMENT VARIABLES
     val supabaseUrl: String by lazy {
         when (environment) {
-            Environment.PRODUCTION -> System.getenv("SUPABASE_PROD_URL") ?: System.getProperty("supabase.prod.url") ?: "https://your-prod-project.supabase.co"
-            Environment.STAGING -> System.getenv("SUPABASE_STAGING_URL") ?: System.getProperty("supabase.staging.url") ?: "https://your-staging-project.supabase.co"
-            Environment.DEVELOPMENT -> System.getenv("SUPABASE_DEV_URL") ?: System.getProperty("supabase.dev.url") ?: "https://your-dev-project.supabase.co"
+            Environment.PRODUCTION -> System.getenv("SUPABASE_PROD_URL") ?: System.getProperty("supabase.prod.url") ?: "https://placeholder-project.supabase.co"
+            Environment.STAGING -> System.getenv("SUPABASE_STAGING_URL") ?: System.getProperty("supabase.staging.url") ?: "https://placeholder-project.supabase.co"
+            Environment.DEVELOPMENT -> System.getenv("SUPABASE_DEV_URL") ?: System.getProperty("supabase.dev.url") ?: "https://placeholder-project.supabase.co"
         }
     }
     

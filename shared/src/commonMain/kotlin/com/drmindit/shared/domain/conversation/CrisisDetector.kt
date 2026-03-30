@@ -297,10 +297,10 @@ class CrisisDetector @Inject constructor() {
         return when (severity) {
             Severity.CRITICAL -> listOf(
                 EmergencyResource(
-                    id = "emergency_911",
+                    id = "emergency_112",
                     name = "Emergency Services",
-                    description = "Call 911 or go to nearest emergency room",
-                    contact = "911",
+                    description = "Call 112 for India emergency services",
+                    contact = "112",
                     type = ResourceType.HOTLINE,
                     priority = 1,
                     is24Hours = true
@@ -308,8 +308,8 @@ class CrisisDetector @Inject constructor() {
                 EmergencyResource(
                     id = "crisis_text_line",
                     name = "Crisis Text Line",
-                    description = "Text HOME to 741741 for 24/7 crisis support",
-                    contact = "TEXT HOME to 741741",
+                    description = "Text iCall for 24/7 crisis support",
+                    contact = "iCall 9152987821",
                     type = ResourceType.HOTLINE,
                     priority = 2,
                     is24Hours = true
@@ -317,8 +317,8 @@ class CrisisDetector @Inject constructor() {
                 EmergencyResource(
                     id = "suicide_hotline",
                     name = "Suicide Prevention Hotline",
-                    description = "Call 988 for 24/7 suicide prevention support",
-                    contact = "988",
+                    description = "Call 9999666555 for suicide prevention support",
+                    contact = "9999666555",
                     type = ResourceType.HOTLINE,
                     priority = 2,
                     is24Hours = true
@@ -326,10 +326,10 @@ class CrisisDetector @Inject constructor() {
             )
             Severity.HIGH -> listOf(
                 EmergencyResource(
-                    id = "crisis_hotline_988",
+                    id = "crisis_hotline_9999666555",
                     name = "Crisis Hotline",
-                    description = "Call 988 for 24/7 crisis support",
-                    contact = "988",
+                    description = "Call 9999666555 for 24/7 crisis support",
+                    contact = "9999666555",
                     type = ResourceType.HOTLINE,
                     priority = 1,
                     is24Hours = true
@@ -337,8 +337,8 @@ class CrisisDetector @Inject constructor() {
                 EmergencyResource(
                     id = "emergency_services",
                     name = "Emergency Services",
-                    description = "Call 911 if you're in immediate danger",
-                    contact = "911",
+                    description = "Call 112 if you're in immediate danger",
+                    contact = "112",
                     type = ResourceType.HOTLINE,
                     priority = 2,
                     is24Hours = true
@@ -437,9 +437,9 @@ class CrisisDetector @Inject constructor() {
             I'm deeply concerned about your safety right now. Your life is valuable, and I want you to be safe.
             
             IMMEDIATE ACTIONS:
-            🚨 **Call 911** or go to the nearest emergency room
-            📱 **Text HOME to 741741** for 24/7 crisis support
-            📞 **Call 988** for suicide prevention support
+            🚨 **Call 112** or go to nearest emergency room
+            📱 **Text iCall to 9152987821** for 24/7 crisis support
+            📞 **Call 9999666555** for suicide prevention support
             
             RIGHT NOW:
             • Remove any means of harm from your area
@@ -460,18 +460,18 @@ class CrisisDetector @Inject constructor() {
             I can hear that you're going through a really difficult time, and I want you to know that help is available.
             
             IMMEDIATE SUPPORT:
-            📞 **Call 988** for 24/7 crisis support
-            📱 **Text HOME to 741741** for crisis text support
+            📞 **Call 9999666555** for 24/7 crisis support
+            📱 **Text iCall to 9152987821** for crisis text support
             🏥 **Contact local emergency services** if you're in danger
             
             WHILE YOU WAIT FOR HELP:
-            🧘 **Try deep breathing**: Inhale for 4 counts, hold for 4, exhale for 4
+            🧘‍⚕️ **Try deep breathing**: Inhale for 4 counts, hold for 4, exhale for 4
             📍 **Ground yourself**: Name 5 things you can see, 4 things you can touch
             🤝 **Reach out**: Contact a trusted friend, family member, or crisis line
             
             You don't have to go through this alone. There are people who want to help you right now. Please reach out to one of the resources above.
             
-            Your wellbeing matters deeply. I'm here to support you while you get the help you need.
+            Your wellbeing matters deeply. I'm here to support you while you get help you need.
         """.trimIndent()
     }
     

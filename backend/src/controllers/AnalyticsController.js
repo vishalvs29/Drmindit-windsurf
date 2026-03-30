@@ -1,3 +1,4 @@
+const express = require('express');
 const { logger } = require('../utils/logger');
 const { validateRequest } = require('../middleware/validation');
 const { requireAuth } = require('../middleware/auth');
@@ -196,9 +197,13 @@ class AnalyticsController {
 // Create controller instance
 const analyticsController = new AnalyticsController();
 
-// Export middleware functions
-module.exports = {
-    getAnalyticsOverview: (req, res) => analyticsController.getAnalyticsOverview(req, res),
-    getUserAnalytics: (req, res) => analyticsController.getUserAnalytics(req, res),
-    getProgramAnalytics: (req, res) => analyticsController.getProgramAnalytics(req, res)
-};
+// Create Express router
+const router = express.Router();
+
+// Define routes
+router.get('/overview', (req, res) => analyticsController.getAnalyticsOverview(req, res));
+router.get('/users', (req, res) => analyticsController.getUserAnalytics(req, res));
+router.get('/programs', (req, res) => analyticsController.getProgramAnalytics(req, res));
+
+// Export router
+module.exports = router;

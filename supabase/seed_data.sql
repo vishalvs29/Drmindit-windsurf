@@ -162,9 +162,9 @@ INSERT INTO public.emergency_helplines (
     created_at,
     updated_at
 ) VALUES 
-('helpline_001', 'National Suicide Prevention Lifeline', '988', 'https://988lifeline.org', '24/7, free and confidential support for people in distress', 'US', true, 1, NOW(), NOW()),
+('helpline_001', 'National Suicide Prevention Lifeline', '9152987821', 'https://vandrevalafoundation.com', '24/7, free and confidential support for people in distress', 'IN', true, 1, NOW(), NOW()),
 
-('helpline_002', 'Crisis Text Line', 'Text HOME to 741741', 'https://www.crisistextline.org', 'Text with a trained crisis counselor', 'US', true, 2, NOW(), NOW()),
+('helpline_002', 'Crisis Text Line', 'iCall 9152987821', 'https://icall.org.in', 'Text with a trained crisis counselor', 'IN', true, 2, NOW(), NOW()),
 
 ('helpline_003', 'iCall Mental Health Helpline', '9152987821', 'https://icall.org.in', 'Psychological support by trained professionals', 'IN', true, 1, NOW(), NOW()),
 

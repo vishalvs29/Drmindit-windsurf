@@ -1,3 +1,4 @@
+const express = require('express');
 const AuthService = require('../services/AuthService');
 const { validateRequest } = require('../middleware/validation');
 const { rateLimit } = require('../middleware/rateLimit');
@@ -332,11 +333,15 @@ class AuthController {
 // Create controller instance
 const authController = new AuthController();
 
-// Export middleware functions
-module.exports = {
-    register: (req, res) => authController.register(req, res),
-    login: (req, res) => authController.login(req, res),
-    logout: (req, res) => authController.logout(req, res),
-    refreshToken: (req, res) => authController.refreshToken(req, res),
-    verifyEmail: (req, res) => authController.verifyEmail(req, res)
-};
+// Create Express router
+const router = express.Router();
+
+// Define routes
+router.post('/register', (req, res) => authController.register(req, res));
+router.post('/login', (req, res) => authController.login(req, res));
+router.post('/logout', (req, res) => authController.logout(req, res));
+router.post('/refresh', (req, res) => authController.refreshToken(req, res));
+router.post('/verify-email', (req, res) => authController.verifyEmail(req, res));
+
+// Export router
+module.exports = router;
