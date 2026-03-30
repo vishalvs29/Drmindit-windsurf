@@ -25,12 +25,13 @@ export async function POST(request: NextRequest) {
 
     if (hasDistress) {
       return NextResponse.json({
-        response: "I notice you're going through a difficult time. Please reach out to a mental health professional or crisis hotline immediately. In the US, you can call 988 for the Suicide & Crisis Lifeline. You're not alone, and help is available 24/7.",
+        response: "I notice you're going through a difficult time. Please reach out to a mental health professional or crisis hotline immediately. In India, you can call 112 for emergency services or 9152987821 for iCall mental health support. You're not alone, and help is available 24/7.",
         distressDetected: true,
         emergencyResources: [
-          { name: '988 Suicide & Crisis Lifeline', phone: '988' },
-          { name: 'Crisis Text Line', text: 'HOME to 741741' },
-          { name: 'National Suicide Prevention Lifeline', phone: '1-800-273-8255' }
+          { name: 'Emergency Services', phone: '112' },
+          { name: 'iCall Mental Health Helpline', phone: '9152987821' },
+          { name: 'Vandrevala Foundation', phone: '1860-266-2600' },
+          { name: 'AASRA Suicide Prevention', phone: '91-9820466726' }
         ]
       })
     }

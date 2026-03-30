@@ -3,8 +3,8 @@ package com.drmindit.shared.data.config
 import kotlin.properties.Delegates
 
 object EnvironmentConfig {
-    private const val DEFAULT_SUPABASE_URL = "https://swsqirdcmxotncibmgeb.supabase.co"
-    private const val DEFAULT_SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InN3c3FpcmRjbXhvdG5jaWJtZ2ViIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MTM5NzU5MDksImV4cCI6MjAyOTU1MTkwOX0.placeholder"
+    private const val DEFAULT_SUPABASE_URL = "https://placeholder-project.supabase.co"
+    private const val DEFAULT_SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.placeholder.anon.key"
 
     // Environment-based configuration
     val environment: Environment by lazy {

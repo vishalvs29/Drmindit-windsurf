@@ -1,8 +1,8 @@
 const express = require('express');
 const AuthService = require('../services/AuthService');
 const { validateRequest } = require('../middleware/validation');
-const { rateLimit } = require('../middleware/rateLimit');
-const logger = require('../utils/logger');
+const { authRateLimit } = require('../middleware/rateLimit');
+const { logger } = require('../utils/logger');
 
 /**
  * Authentication Controller - API Layer
@@ -336,12 +336,12 @@ const authController = new AuthController();
 // Create Express router
 const router = express.Router();
 
-// Define routes
-router.post('/register', (req, res) => authController.register(req, res));
-router.post('/login', (req, res) => authController.login(req, res));
+// Define routes with rate limiting
+router.post('/register', authRateLimit, (req, res) => authController.register(req, res));
+router.post('/login', authRateLimit, (req, res) => authController.login(req, res));
 router.post('/logout', (req, res) => authController.logout(req, res));
-router.post('/refresh', (req, res) => authController.refreshToken(req, res));
-router.post('/verify-email', (req, res) => authController.verifyEmail(req, res));
+router.post('/refresh', authRateLimit, (req, res) => authController.refreshToken(req, res));
+router.post('/verify-email', authRateLimit, (req, res) => authController.verifyEmail(req, res));
 
 // Export router
 module.exports = router;

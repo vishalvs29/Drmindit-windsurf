@@ -5,6 +5,19 @@
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 CREATE EXTENSION IF NOT EXISTS "pgcrypto";
 
+-- Organizations table for enterprise clients (must be created before profiles)
+CREATE TABLE public.organizations (
+  id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
+  name TEXT NOT NULL,
+  type TEXT NOT NULL CHECK (type IN ('educational', 'corporate', 'government', 'healthcare')),
+  contact_email TEXT,
+  contact_phone TEXT,
+  settings JSONB DEFAULT '{}',
+  is_active BOOLEAN DEFAULT TRUE,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
 -- Users table (extends Supabase auth.users)
 CREATE TABLE public.profiles (
   id UUID REFERENCES auth.users(id) ON DELETE CASCADE PRIMARY KEY,
@@ -19,19 +32,6 @@ CREATE TABLE public.profiles (
   preferences JSONB DEFAULT '{}',
   is_high_risk BOOLEAN DEFAULT FALSE,
   last_crisis_check TIMESTAMP WITH TIME ZONE,
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
-);
-
--- Organizations table for enterprise clients
-CREATE TABLE public.organizations (
-  id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
-  name TEXT NOT NULL,
-  type TEXT NOT NULL CHECK (type IN ('educational', 'corporate', 'government', 'healthcare')),
-  contact_email TEXT,
-  contact_phone TEXT,
-  settings JSONB DEFAULT '{}',
-  is_active BOOLEAN DEFAULT TRUE,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );

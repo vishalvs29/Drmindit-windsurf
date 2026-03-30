@@ -1,5 +1,5 @@
 const redis = require('redis');
-const logger = require('./logger');
+const { logger } = require('./logger');
 
 /**
  * Caching Utility - Redis-based caching with fallback

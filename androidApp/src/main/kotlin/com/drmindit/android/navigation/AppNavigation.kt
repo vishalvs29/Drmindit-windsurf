@@ -29,6 +29,7 @@ import com.drmindit.android.ui.screens.ProgramDetailScreen
 import com.drmindit.android.ui.screens.OnboardingScreen
 import com.drmindit.android.ui.screens.HomeScreen
 import com.drmindit.android.ui.screens.ChatScreen
+import com.drmindit.android.ui.screens.ProfileScreen
 import com.drmindit.android.ui.screens.OrganizationDashboardScreen
 import com.drmindit.android.ui.screens.OnboardingScreen.OnboardingData
 
@@ -238,24 +239,13 @@ fun AppNavigation(
             }
             
             composable("profile") {
-                // Profile screen placeholder
-                Column(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(16.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.Center
-                ) {
-                    Text(
-                        text = "Profile",
-                        style = MaterialTheme.typography.headlineMedium
-                    )
-                    Spacer(modifier = Modifier.height(16.dp))
-                    Text(
-                        text = "Profile screen coming soon",
-                        style = MaterialTheme.typography.bodyLarge
-                    )
-                }
+                ProfileScreen(
+                    onBack = { navController.popBackStack() },
+                    onEditProfile = { /* Navigate to edit profile */ },
+                    onSettings = { /* Navigate to settings */ },
+                    onHelp = { /* Navigate to help */ },
+                    onAbout = { /* Navigate to about */ }
+                )
             }
             
             composable("organization_dashboard") {

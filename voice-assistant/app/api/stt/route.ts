@@ -3,8 +3,8 @@ import { NextRequest, NextResponse } from 'next/server'
 // Speech-to-Text API endpoint
 export async function POST(request: NextRequest) {
   try {
-    const formData = await request.formData()
-    const audioFile = formData.get('audio') as File
+    const requestFormData = await request.formData()
+    const audioFile = requestFormData.get('audio') as File
     
     if (!audioFile) {
       return NextResponse.json(
@@ -15,21 +15,23 @@ export async function POST(request: NextRequest) {
 
     // Convert audio to buffer
     const audioBuffer = await audioFile.arrayBuffer()
-    const audioBase64 = Buffer.from(audioBuffer).toString('base64')
+
+    // Create FormData for OpenAI Whisper API
+    const apiFormData = new FormData()
+    const audioBlob = new Blob([audioBuffer], { type: audioFile.type || 'audio/mpeg' })
+    apiFormData.append('file', audioBlob, audioFile.name || 'audio.mp3')
+    apiFormData.append('model', 'whisper-1')
+    apiFormData.append('language', 'en')
+    apiFormData.append('response_format', 'json')
 
     // Call speech-to-text service (using OpenAI Whisper API as example)
     const response = await fetch('https://api.openai.com/v1/audio/transcriptions', {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${process.env.OPENAI_API_KEY}`,
-        'Content-Type': 'multipart/form-data',
+        // Don't set Content-Type for FormData - browser sets it with boundary
       },
-      body: JSON.stringify({
-        file: audioBase64,
-        model: 'whisper-1',
-        language: 'en',
-        response_format: 'json'
-      })
+      body: apiFormData
     })
 
     if (!response.ok) {
