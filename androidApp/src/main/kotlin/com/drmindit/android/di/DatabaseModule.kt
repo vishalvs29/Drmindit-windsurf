@@ -7,9 +7,7 @@ import com.drmindit.android.data.local.ChatDatabase
 import com.drmindit.android.data.local.ChatLocalDataSourceImpl
 import com.drmindit.android.data.local.provideChatDatabase
 import com.drmindit.android.data.local.provideChatDataStore
-import com.drmindit.android.player.ImprovedAudioPlayerManager
-import com.drmindit.android.player.MeditationAudioPlayerManager
-import com.drmindit.android.player.AudioPlayerManager
+import com.drmindit.android.player.EnhancedAudioPlayerManager
 import com.drmindit.android.notifications.NotificationManager
 import com.drmindit.android.ai.MentalHealthChatManager
 import com.drmindit.shared.data.local.LocalDataSource
@@ -28,20 +26,8 @@ object DatabaseModule {
     // Managers
     @Provides
     @Singleton
-    fun provideMeditationAudioPlayerManager(@ApplicationContext context: Context): MeditationAudioPlayerManager {
-        return MeditationAudioPlayerManager(context)
-    }
-
-    @Provides
-    @Singleton
-    fun provideImprovedAudioPlayerManager(): ImprovedAudioPlayerManager {
-        return ImprovedAudioPlayerManager()
-    }
-
-    @Provides
-    @Singleton
-    fun provideAudioPlayerManager(improvedAudioPlayerManager: ImprovedAudioPlayerManager): AudioPlayerManager {
-        return improvedAudioPlayerManager
+    fun provideEnhancedAudioPlayerManager(@ApplicationContext context: Context): EnhancedAudioPlayerManager {
+        return EnhancedAudioPlayerManager(context)
     }
 
     @Provides

@@ -38,9 +38,9 @@ class SessionRepositoryImpl(
             audioUrl = "https://example.com/audio2.mp3",
             imageUrl = "https://example.com/image2.jpg",
             category = SessionCategory.ANXIETY,
-            tags = listOf("anxiety", "relief", "breathing"),
+            tags = listOf("anxiety", "relief", "calm"),
             rating = 4.9f,
-            totalRatings = 456,
+            totalRatings = 567,
             difficulty = com.drmindit.shared.domain.model.Difficulty.BEGINNER
         ),
         Session(

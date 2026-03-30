@@ -15,4 +15,5 @@ interface SessionRepository {
     suspend fun updateSessionProgress(progress: SessionProgress): Result<Unit>
     suspend fun getSessionProgress(sessionId: String, userId: String): Result<SessionProgress?>
     fun observeSessionProgress(sessionId: String, userId: String): Flow<SessionProgress?>
+    fun getLatestSessions(limit: Int = 5): Flow<List<Session>>
 }

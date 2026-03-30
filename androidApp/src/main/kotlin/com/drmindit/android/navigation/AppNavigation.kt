@@ -32,6 +32,7 @@ import com.drmindit.android.ui.screens.ChatScreen
 import com.drmindit.android.ui.screens.ProfileScreen
 import com.drmindit.android.ui.screens.OrganizationDashboardScreen
 import com.drmindit.android.ui.screens.OnboardingScreen.OnboardingData
+import com.drmindit.android.ui.components.OfflineBanner
 
 // Data class for session information
 data class SessionData(
@@ -97,6 +98,12 @@ fun AppNavigation(
     val currentRoute = navBackStackEntry?.destination?.route
 
     Scaffold(
+        topBar = {
+            // Show offline banner at the top
+            if (currentRoute != "onboarding") {
+                OfflineBanner()
+            }
+        },
         bottomBar = {
             // Show bottom bar only for main app screens (not onboarding)
             if (currentRoute != "onboarding" && 
@@ -169,41 +176,16 @@ fun AppNavigation(
             }
             
             composable("session_player/{sessionId}") { backStackEntry ->
-                val sessionId = backStackEntry.arguments?.getString("sessionId") ?: ""
+                val sessionId = backStackEntry.arguments?.getString("sessionId") ?: return@composable
                 
-                // Mock session data - in real app, this would come from a repository
-                val sessionData = when (sessionId) {
-                    "breathing-exercise" -> SessionData(
-                        title = "Breathing Exercise",
-                        instructor = "Dr. Sarah Johnson",
-                        duration = 300, // 5 minutes
-                        audioUrl = "https://example.com/audio/breathing.mp3"
-                    )
-                    "mindful-minute" -> SessionData(
-                        title = "Mindful Minute",
-                        instructor = "Dr. Michael Chen", 
-                        duration = 60, // 1 minute
-                        audioUrl = "https://example.com/audio/mindful.mp3"
-                    )
-                    "stress-relief" -> SessionData(
-                        title = "Stress Relief",
-                        instructor = "Dr. Emily Davis",
-                        duration = 180, // 3 minutes  
-                        audioUrl = "https://example.com/audio/stress-relief.mp3"
-                    )
-                    else -> SessionData(
-                        title = sessionId,
-                        instructor = "DrMindit Guide",
-                        duration = 300,
-                        audioUrl = "https://example.com/audio/default.mp3"
-                    )
+                // Load session details from repository
+                LaunchedEffect(sessionId) {
+                    // In a real implementation, this would load from Supabase/Room
+                    // For now, we'll use the SessionPlayerScreen with the sessionId
+                    // The screen itself should handle loading the session data
                 }
                 
                 SessionPlayerScreen(
-                    sessionTitle = sessionData.title,
-                    sessionInstructor = sessionData.instructor,
-                    sessionDuration = sessionData.duration,
-                    audioUrl = sessionData.audioUrl,
                     sessionId = sessionId,
                     onBack = { navController.popBackStack() },
                     onComplete = { navController.popBackStack() }
@@ -244,7 +226,9 @@ fun AppNavigation(
                     onEditProfile = { /* Navigate to edit profile */ },
                     onSettings = { /* Navigate to settings */ },
                     onHelp = { /* Navigate to help */ },
-                    onAbout = { /* Navigate to about */ }
+                    onAbout = { /* Navigate to about */ },
+                    onNotificationSettings = { /* Navigate to notification settings */ },
+                    onLogout = { /* Handle logout */ }
                 )
             }
             
