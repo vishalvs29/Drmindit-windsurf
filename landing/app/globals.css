@@ -1,0 +1,141 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+  
+  body {
+    background: linear-gradient(135deg, #0D1B2A 0%, #1B263B 100%);
+    min-height: 100vh;
+  }
+}
+
+@layer components {
+  .glass-card {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+  }
+  
+  .glass-card-hover {
+    transition: all 0.3s ease;
+  }
+  
+  .glass-card-hover:hover {
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(15px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    box-shadow: 0 8px 40px 0 rgba(31, 38, 135, 0.5);
+    transform: translateY(-2px);
+  }
+  
+  .pill-button {
+    border-radius: 9999px;
+    padding: 12px 32px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    border: none;
+    cursor: pointer;
+  }
+  
+  .pill-button-primary {
+    background: linear-gradient(135deg, #14B8A6 0%, #10B981 100%);
+    color: white;
+    box-shadow: 0 4px 15px rgba(20, 184, 166, 0.3);
+  }
+  
+  .pill-button-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(20, 184, 166, 0.4);
+  }
+  
+  .pill-button-secondary {
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    backdrop-filter: blur(10px);
+  }
+  
+  .pill-button-secondary:hover {
+    background: rgba(255, 255, 255, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    transform: translateY(-2px);
+  }
+  
+  .feature-icon {
+    width: 64px;
+    height: 64px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #14B8A6 0%, #10B981 100%);
+    border-radius: 16px;
+    color: white;
+    font-size: 28px;
+    margin-bottom: 20px;
+    box-shadow: 0 4px 15px rgba(20, 184, 166, 0.3);
+  }
+  
+  .hero-gradient {
+    background: linear-gradient(135deg, #0D1B2A 0%, #1B263B 50%, #14B8A6 100%);
+  }
+  
+  .text-gradient {
+    background: linear-gradient(135deg, #14B8A6 0%, #5EEAD4 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  
+  .section-padding {
+    padding: 80px 0;
+  }
+  
+  @media (max-width: 768px) {
+    .section-padding {
+      padding: 60px 0;
+    }
+  }
+}
+
+@layer utilities {
+  .animate-fade-in {
+    animation: fadeIn 0.8s ease-in-out;
+  }
+  
+  .animate-slide-up {
+    animation: slideUp 0.6s ease-out;
+  }
+  
+  .animate-float {
+    animation: float 6s ease-in-out infinite;
+  }
+  
+  .animate-delay-100 {
+    animation-delay: 100ms;
+  }
+  
+  .animate-delay-200 {
+    animation-delay: 200ms;
+  }
+  
+  .animate-delay-300 {
+    animation-delay: 300ms;
+  }
+  
+  .animate-delay-400 {
+    animation-delay: 400ms;
+  }
+  
+  .animate-delay-500 {
+    animation-delay: 500ms;
+  }
+}
