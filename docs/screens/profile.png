@@ -1,0 +1,65 @@
+# Profile Screen Mockup
+[Mobile Frame - 375x812 iPhone X dimensions]
+
+┌─────────────────────────────────────┐
+│ ← Profile                ⚙️ 📋 ❓  │
+├─────────────────────────────────────┤
+│                                     │
+│  ┌─────────────────────────────────┐ │
+│  │  👤 Sarah Johnson              │ │
+│  │  📧 sarah.johnson@email.com    │ │
+│  │  🏷️  Student Member           │ │
+│  │  📅 Member since March 2024    │ │
+│  └─────────────────────────────────┘ │
+│                                     │
+│  ┌─────────────────────────────────┐ │
+│  │ 🎯 Stress Level & Goals         │ │
+│  │                                │ │
+│  │ Stress: ████████░░ 6/10        │ │
+│  │ [Adjust]                       │ │
+│  │                                │ │
+│  │ 🎯 Personal Goals:             │ │
+│  │ ✓ Reduce anxiety               │ │
+│  │ ✓ Better sleep                 │ │
+│  │ ✓ Daily mindfulness            │ │
+│  │ [Edit Goals]                   │ │
+│  └─────────────────────────────────┘ │
+│                                     │
+│  ┌─────────────────────────────────┐ │
+│  │ 📊 Session Statistics          │ │
+│  │ • Total Sessions: 47           │ │
+│  │ • Total Minutes: 312           │ │
+│  │ • Current Streak: 7 🔥        │ │
+│  │ • Longest Streak: 14 days      │ │
+│  └─────────────────────────────────┘ │
+│                                     │
+│  ┌─────────────────────────────────┐ │
+│  │ 🔔 Notification Settings       │ │
+│  │ Daily reminders: ON            │ │
+│  │ Session tips: ON               │ │
+│  │ Progress updates: ON           │ │
+│  └─────────────────────────────────┘ │
+│                                     │
+│  ┌─────────────────────────────────┐ │
+│  │ 🌙 Dark Mode                   │ │
+│  │ [OFF] [ON]                     │ │
+│  │ Reduce eye strain at night     │ │
+│  └─────────────────────────────────┘ │
+│                                     │
+│  ┌─────────────────────────────────┐ │
+│  │ ⚙️ Settings                    │ │
+│  │ 📋 Help & Support              │ │
+│  │ ❓ About DrMindit               │ │
+│  │ 🚪 Sign Out                    │ │
+│  └─────────────────────────────────┘ │
+│                                     │
+└─────────────────────────────────────┘
+
+# Complete profile interface
+- User information and membership
+- Stress level slider and goals
+- Session statistics
+- Notification preferences
+- Dark mode toggle
+- Settings and sign out options
+- Clean Material Design 3 layout

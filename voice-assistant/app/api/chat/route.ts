@@ -1,14 +1,31 @@
 import { NextRequest, NextResponse } from 'next/server'
+import RateLimiter from '../../lib/rateLimiter'
+import ConversationHistory from '../../lib/conversationHistory'
 
 // Mental health AI chat endpoint
 export async function POST(request: NextRequest) {
   try {
-    const { message, context, sessionId } = await request.json()
+    const { message, context, sessionId, userId } = await request.json()
 
     if (!message) {
       return NextResponse.json(
         { error: 'No message provided' },
         { status: 400 }
+      )
+    }
+
+    // Rate limiting based on userId or IP
+    const identifier = userId || request.ip || 'anonymous'
+    const rateLimiter = RateLimiter.getInstance()
+    const rateLimit = rateLimiter.isAllowed(identifier)
+
+    if (!rateLimit.allowed) {
+      return NextResponse.json(
+        { 
+          error: 'Too many requests. Please wait a moment before trying again.',
+          resetTime: rateLimit.resetTime 
+        },
+        { status: 429 }
       )
     }
 
@@ -24,26 +41,57 @@ export async function POST(request: NextRequest) {
     )
 
     if (hasDistress) {
+      const distressResponse = "I notice you're going through a difficult time. Please reach out to a mental health professional or crisis hotline immediately. In India, you can call 112 for emergency services or 9152987821 for iCall mental health support. You're not alone, and help is available 24/7."
+      
+      // Store distress message in conversation history
+      if (sessionId) {
+        const conversationHistory = ConversationHistory.getInstance()
+        conversationHistory.addMessage(sessionId, identifier, message, distressResponse, true, context)
+      }
+      
       return NextResponse.json({
-        response: "I notice you're going through a difficult time. Please reach out to a mental health professional or crisis hotline immediately. In India, you can call 112 for emergency services or 9152987821 for iCall mental health support. You're not alone, and help is available 24/7.",
+        response: distressResponse,
         distressDetected: true,
         emergencyResources: [
           { name: 'Emergency Services', phone: '112' },
           { name: 'iCall Mental Health Helpline', phone: '9152987821' },
           { name: 'Vandrevala Foundation', phone: '1860-266-2600' },
           { name: 'AASRA Suicide Prevention', phone: '91-9820466726' }
-        ]
+        ],
+        sessionId: sessionId || generateSessionId(),
+        timestamp: new Date().toISOString()
       })
     }
 
-    // Generate AI response for mental wellness
-    const aiResponse = await generateMentalWellnessResponse(message, context)
+    // Get conversation context for better responses
+    const conversationHistory = ConversationHistory.getInstance()
+    const contextSummary = sessionId ? conversationHistory.getContextSummary(sessionId) : ""
+    const recentMessages = sessionId ? conversationHistory.getRecentMessages(sessionId, 3) : []
+    
+    // Enhanced context with conversation history
+    const enhancedContext = {
+      ...context,
+      conversationSummary: contextSummary,
+      recentTopics: recentMessages.map(msg => msg.message).join(' | '),
+      messageCount: recentMessages.length
+    }
+
+    const aiResponse = await generateMentalWellnessResponse(message, enhancedContext)
+
+    // Store conversation in history
+    if (sessionId) {
+      conversationHistory.addMessage(sessionId, identifier, message, aiResponse, false, enhancedContext)
+    }
 
     return NextResponse.json({
       response: aiResponse,
       sessionId: sessionId || generateSessionId(),
       timestamp: new Date().toISOString(),
-      distressDetected: false
+      distressDetected: false,
+      context: {
+        messageCount: recentMessages.length + 1,
+        topics: contextSummary
+      }
     })
 
   } catch (error) {

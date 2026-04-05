@@ -236,8 +236,8 @@ backup/
 nobackup/
 
 # Generated files
-generated/
-codegen/
+/generated/
+/codegen/
 
 # Performance profiles
 *.prof
@@ -256,34 +256,34 @@ codegen/
 *.dylib
 
 # Assets that should be optimized
-assets/
-raw/
+/assets/
+/raw/
 
 # Backup and archive
-archives/
-backups/
+/archives/
+/backups/
 
 # Documentation build
 docs/_build/
 
 # Testing and QA
-qa/
-uat/
-stage/
+/qa/
+/uat/
+/stage/
 
 # Data and analytics
-data/
-analytics/
-reports/
+/data/
+/analytics/
+/reports/
 
 # Logs and debugging
-debug/
-traces/
+/debug/
+/traces/
 
 # Temporary and cache files
-cache/
-tmp/
-temp/
+/cache/
+/tmp/
+/temp/
 
 # Package files
 *.zip
@@ -305,31 +305,31 @@ temp/
 *.lock
 
 # Database migrations
-migrations/
-flyway/
-liquibase/
+/migrations/
+/flyway/
+/liquibase/
 
 # Search and indexing
-index/
-search/
+/index/
+/search/
 
 # Temporary uploads
-uploads/
+/uploads/
 
 # Local development overrides
 development.properties
 local-overrides.properties
 
 # Build artifacts
-artifacts/
-releases/
+/artifacts/
+/releases/
 
 # Documentation
-doc/
+/doc/
 
 # External integrations
-webhooks/
-integrations/
+/webhooks/
+/integrations/
 
 # Local development
 .devcontainer/

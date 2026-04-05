@@ -255,7 +255,7 @@ class TestRunner {
         
         try {
             const request = require('supertest');
-            const app = require('../src/app');
+            const app = require('../src/app').getApp();
             
             // Test various endpoints for consistent response structure
             const endpoints = [
@@ -304,7 +304,7 @@ class TestRunner {
         
         try {
             const request = require('supertest');
-            const app = require('../src/app');
+            const app = require('../src/app').getApp();
             
             // Make multiple rapid requests to test rate limiting
             const promises = [];
@@ -390,7 +390,7 @@ class TestRunner {
         
         try {
             const request = require('supertest');
-            const app = require('../src/app');
+            const app = require('../src/app').getApp();
             
             // Test various error scenarios
             const errorTests = [

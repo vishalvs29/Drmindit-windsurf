@@ -6,13 +6,14 @@ import io.ktor.http.*
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.serialization.SerializationException
 
 class ErrorHandler {
     
     private val _errorState = MutableStateFlow<ErrorState>(ErrorState.None)
     val errorState: StateFlow<ErrorState> = _errorState.asStateFlow()
     
-    private val _networkState = MutableStateFlow(NetworkState.Connected)
+    private val _networkState = MutableStateFlow<NetworkState>(NetworkState.Connected)
     val networkState: StateFlow<NetworkState> = _networkState.asStateFlow()
     
     fun handleError(throwable: Throwable): ErrorState {
@@ -68,12 +69,12 @@ class ErrorHandler {
     
     private fun handleApiException(exception: ApiException): ErrorState {
         return when (exception) {
-            is ApiException.Unauthorized -> ErrorState.AuthenticationError(exception.message)
-            is ApiException.Forbidden -> ErrorState.AuthorizationError(exception.message)
-            is ApiException.NotFound -> ErrorState.NotFoundError(exception.message)
-            is ApiException.ServerError -> ErrorState.ServerError(exception.message)
-            is ApiException.NetworkError -> ErrorState.NetworkError(exception.message)
-            is ApiException.UnknownError -> ErrorState.UnknownError(exception.message)
+            is ApiException.Unauthorized -> ErrorState.AuthenticationError(exception.message ?: "Unauthorized")
+            is ApiException.Forbidden -> ErrorState.AuthorizationError(exception.message ?: "Forbidden")
+            is ApiException.NotFound -> ErrorState.NotFoundError(exception.message ?: "Not found")
+            is ApiException.ServerError -> ErrorState.ServerError(exception.message ?: "Server error")
+            is ApiException.NetworkError -> ErrorState.NetworkError(exception.message ?: "Network error")
+            is ApiException.UnknownError -> ErrorState.UnknownError(exception.message ?: "Unknown error")
         }
     }
     
@@ -214,12 +215,12 @@ fun Throwable.toErrorState(): ErrorState {
         is SocketTimeoutException -> ErrorState.NetworkError("Socket timeout")
         is UnknownHostException -> ErrorState.NetworkError("Unknown host")
         is ApiException -> when (this) {
-            is ApiException.Unauthorized -> ErrorState.AuthenticationError(this.message)
-            is ApiException.Forbidden -> ErrorState.AuthorizationError(this.message)
-            is ApiException.NotFound -> ErrorState.NotFoundError(this.message)
-            is ApiException.ServerError -> ErrorState.ServerError(this.message)
-            is ApiException.NetworkError -> ErrorState.NetworkError(this.message)
-            is ApiException.UnknownError -> ErrorState.UnknownError(this.message)
+            is ApiException.Unauthorized -> ErrorState.AuthenticationError(this.message ?: "Unauthorized")
+            is ApiException.Forbidden -> ErrorState.AuthorizationError(this.message ?: "Forbidden")
+            is ApiException.NotFound -> ErrorState.NotFoundError(this.message ?: "Not found")
+            is ApiException.ServerError -> ErrorState.ServerError(this.message ?: "Server error")
+            is ApiException.NetworkError -> ErrorState.NetworkError(this.message ?: "Network error")
+            is ApiException.UnknownError -> ErrorState.UnknownError(this.message ?: "Unknown error")
         }
         is SerializationException -> ErrorState.ParseError("Data parsing failed")
         is IllegalArgumentException -> ErrorState.ValidationError(this.message ?: "Invalid input")

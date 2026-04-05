@@ -1,6 +1,6 @@
 package com.drmindit.shared.data.config
 
-import kotlin.properties.Delegates
+import kotlinx.serialization.Serializable
 
 object AppConfig {
     // Environment detection
@@ -230,6 +230,7 @@ object AppConfig {
     }
 }
 
+@Serializable
 enum class Environment {
     DEVELOPMENT,
     STAGING,

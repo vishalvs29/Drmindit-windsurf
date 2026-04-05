@@ -1,26 +1,22 @@
 package com.drmindit.android.workers
 
 import android.content.Context
+import androidx.hilt.work.HiltWorker
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import com.drmindit.android.data.database.SessionDao
 import com.drmindit.android.data.database.SessionEntity
 import com.drmindit.android.data.repository.SessionRepository
-import dagger.hilt.android.AndroidEntryPoint
+import dagger.assisted.AssistedInject
 import kotlinx.coroutines.flow.first
-import javax.inject.Inject
 
-@AndroidEntryPoint
-class SessionPrefetchWorker(
-    context: Context,
-    params: WorkerParameters
-) : CoroutineWorker(context, params) {
-
-    @Inject
-    lateinit var sessionRepository: SessionRepository
-
-    @Inject
-    lateinit var sessionDao: SessionDao
+@HiltWorker
+class SessionPrefetchWorker @AssistedInject constructor(
+    @Assisted context: Context,
+    @Assisted workerParams: WorkerParameters,
+    private val sessionRepository: SessionRepository,
+    private val sessionDao: SessionDao
+) : CoroutineWorker(context, workerParams) {
 
     override suspend fun doWork(): Result {
         return try {
@@ -36,7 +32,7 @@ class SessionPrefetchWorker(
                     duration = session.duration,
                     audioUrl = session.audioUrl,
                     imageUrl = session.imageUrl,
-                    category = session.category,
+                    category = session.category.name,
                     description = session.description,
                     isOfflineAvailable = false // Will be marked true when audio is downloaded
                 )

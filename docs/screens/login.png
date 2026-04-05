@@ -1,0 +1,46 @@
+# Login Screen Mockup
+[Mobile Frame - 375x812 iPhone X dimensions]
+
+┌─────────────────────────────────────┐
+│                                     │
+│                                     │
+│             🌿 DrMindit             │
+│                                     │
+│         Mental Wellness            │
+│                                     │
+│    Your journey to inner peace     │
+│                                     │
+│                                     │
+│  ┌─────────────────────────────────┐ │
+│  │ 📧 Email                       │ │
+│  │ sarah.johnson@email.com        │ │
+│  └─────────────────────────────────┘ │
+│                                     │
+│  ┌─────────────────────────────────┐ │
+│  │ 🔒 Password                    │ │
+│  │ •••••••••••••••••              │ │
+│  └─────────────────────────────────┘ │
+│                                     │
+│  ☑️ Remember me                    │
+│                                     │
+│  Forgot password?                 │
+│                                     │
+│  ┌─────────────────────────────────┐ │
+│  │      Sign In                    │ │
+│  └─────────────────────────────────┘ │
+│                                     │
+│  ────────── OR ──────────          │
+│                                     │
+│  [Google] [Apple] [Facebook]        │
+│                                     │
+│  Don't have an account? Sign up    │
+│                                     │
+│                                     │
+│                                     │
+│                                     │
+└─────────────────────────────────────┘
+
+# Clean login interface with social auth options
+# Pre-filled email for realistic appearance
+# Material Design 3 with purple accent colors
+# Professional healthcare app aesthetic

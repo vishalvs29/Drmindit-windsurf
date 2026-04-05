@@ -2,10 +2,11 @@ package com.drmindit.shared.data.config
 
 object BuildConfig {
     // These values are set at build time from build.gradle
-    const val DEBUG = false // Will be overridden by build config
+    const val DEBUG = true 
     const val APPLICATION_ID = "com.drmindit.android"
     const val VERSION_CODE = 1
     const val VERSION_NAME = "1.0.0"
+    const val API_VERSION = "v1"
     
     // Build type specific values
     const val BUILD_TYPE = "debug"
@@ -28,4 +29,7 @@ object BuildConfig {
     // Performance settings
     const val ENABLE_PERFORMANCE_MONITORING = false
     const val ENABLE_CRASH_REPORTING = false
+    
+    // Logging level
+    const val LOG_LEVEL = "DEBUG"
 }

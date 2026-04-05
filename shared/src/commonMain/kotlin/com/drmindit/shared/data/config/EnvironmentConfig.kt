@@ -59,16 +59,3 @@ object EnvironmentConfig {
     fun getAnonKey(): String = supabaseAnonKey
     fun getServiceKey(): String = supabaseServiceKey
 }
-
-enum class Environment {
-    DEVELOPMENT,
-    STAGING,
-    PRODUCTION
-}
-
-enum class LogLevel {
-    DEBUG,
-    INFO,
-    WARN,
-    ERROR
-}

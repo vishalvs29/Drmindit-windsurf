@@ -1,0 +1,50 @@
+# Audio Session Player Mockup
+[Mobile Frame - 375x812 iPhone X dimensions]
+
+┌─────────────────────────────────────┐
+│ ← Morning Meditation      ⋯ ⏪ ⏸️ ⏩ │
+├─────────────────────────────────────┤
+│                                     │
+│  ┌─────────────────────────────────┐ │
+│  │                                 │ │
+│  │        🌅 🌿 🌸 🌙             │ │
+│  │                                 │ │
+│  │      Breathing Exercise         │ │
+│  │                                 │ │
+│  │                                 │ │
+│  │                                 │ │
+│  │                                 │ │
+│  └─────────────────────────────────┘ │
+│                                     │
+│  Dr. Sarah Chen                    │
+│  10 minutes • Mindfulness          │
+│                                     │
+│  ┌─────────────────────────────────┐ │
+│  │ ●─────────────────────────────│ │ │
+│  │ 3:24 / 10:00                   │ │ │
+│  └─────────────────────────────────┘ │
+│                                     │
+│  ┌─────────────────────────────────┐ │
+│  │ 🎵 ⏪ ⏸️ ⏩ ⏹️ 🔊               │ │ │
+│  │ Play  Back  Pause  Forward Stop │ │ │
+│  └─────────────────────────────────┘ │
+│                                     │
+│  ┌─────────────────────────────────┐ │
+│  │ 📝 Session Notes                │ │
+│  │ Feeling calm and centered...    │ │
+│  │ [Save Note]                     │ │
+│  └─────────────────────────────────┘ │
+│                                     │
+│  ┌─────────────────────────────────┐ │
+│  │ ⭐ Rate this session             │ │
+│  │ ☆☆☆☆☆                          │ │ │
+│  └─────────────────────────────────┘ │
+│                                     │
+└─────────────────────────────────────┘
+
+# Professional audio player interface
+# Shows breathing exercise with nature imagery
+- Progress bar at 3:24 of 10:00
+- Full playback controls
+- Session notes and rating features
+- Clean Material Design 3 aesthetic

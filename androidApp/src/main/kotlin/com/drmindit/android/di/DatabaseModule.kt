@@ -3,6 +3,7 @@ package com.drmindit.android.di
 import android.content.Context
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
+import androidx.work.WorkManager
 import com.drmindit.android.data.local.ChatDatabase
 import com.drmindit.android.data.local.ChatLocalDataSourceImpl
 import com.drmindit.android.data.local.provideChatDatabase
@@ -32,14 +33,23 @@ object DatabaseModule {
 
     @Provides
     @Singleton
-    fun provideMentalHealthChatManager(): MentalHealthChatManager {
-        return MentalHealthChatManager(get(), get(), get(), get())
+    fun provideMentalHealthChatManager(
+        @ApplicationContext context: Context,
+        workManager: WorkManager,
+        dataStore: DataStore<Preferences>,
+        chatDatabase: ChatDatabase
+    ): MentalHealthChatManager {
+        return MentalHealthChatManager(context, workManager, dataStore, chatDatabase)
     }
 
     @Provides
     @Singleton
-    fun provideNotificationManager(): NotificationManager {
-        return NotificationManager(get(), get(), get())
+    fun provideNotificationManager(
+        @ApplicationContext context: Context,
+        workManager: WorkManager,
+        chatDatabase: ChatDatabase
+    ): NotificationManager {
+        return NotificationManager(context, workManager, chatDatabase)
     }
 
     @Provides

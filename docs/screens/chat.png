@@ -1,0 +1,58 @@
+# AI Chat Screen Mockup
+[Mobile Frame - 375x812 iPhone X dimensions]
+
+┌─────────────────────────────────────┐
+│ ← AI Wellness Assistant      🎤 📎  │
+├─────────────────────────────────────┤
+│                                     │
+│  ┌─────────────────────────────────┐ │
+│  │ 🤖 AI Assistant                │ │
+│  │ Hi! I'm here to support your    │ │
+│  │ mental wellness journey. How   │ │
+│  │ are you feeling today?          │ │
+│  │ 10:30 AM                       │ │
+│  └─────────────────────────────────┘ │
+│                                     │
+│  ┌─────────────────────────────────┐ │
+│  │ 👤 Sarah                       │ │
+│  │ I've been feeling quite        │ │
+│  │ stressed about work lately.     │ │
+│  │ 10:32 AM                       │ │
+│  └─────────────────────────────────┘ │
+│                                     │
+│  ┌─────────────────────────────────┐ │
+│  │ 🤖 AI Assistant                │ │
+│  │ I understand work stress can be │ │
+│  │ overwhelming. Let's try a       │ │
+│  │ quick breathing exercise:       │ │
+│  │                                │ │
+│  │ 🧘 4-7-8 Breathing:           │ │
+│  │ • Inhale for 4 counts          │ │
+│  │ • Hold for 7 counts             │ │
+│  │ • Exhale for 8 counts          │ │
+│  │                                │ │
+│  │ Would you like me to guide you │ │
+│  │ through this exercise now?     │ │
+│  │ 10:33 AM                       │ │
+│  └─────────────────────────────────┘ │
+│                                     │
+│  ┌─────────────────────────────────┐ │
+│  │ 👤 Sarah                       │ │
+│  │ Yes, please guide me through   │ │
+│  │ the breathing exercise.         │ │
+│  │ 10:34 AM                       │ │
+│  └─────────────────────────────────┘ │
+│                                     │
+│  🎤 [Tap to speak]                 │
+│  ┌─────────────────────────────────┐ │
+│  │ Type your message...            │ │
+│  └─────────────────────────────────┘ │
+│                                     │
+└─────────────────────────────────────┘
+
+# Realistic AI chat conversation
+- Shows work stress discussion
+- AI provides breathing exercise guidance
+- Voice input option available
+- Clean chat interface with timestamps
+- Professional mental health support tone

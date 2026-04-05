@@ -9,7 +9,7 @@ const { performance } = require('perf_hooks');
 
 class SimpleValidator {
     constructor() {
-        this.app = require('../src/app');
+        this.app = require('../src/app').getApp();
         this.testResults = {
             loadTesting: {},
             performanceBottlenecks: {},

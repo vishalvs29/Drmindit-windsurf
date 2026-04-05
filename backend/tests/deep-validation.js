@@ -14,7 +14,7 @@ const path = require('path');
 
 class DeepValidator {
     constructor() {
-        this.app = require('../src/app');
+        this.app = require('../src/app').getApp();
         this.dbPool = new Pool({
             user: process.env.DB_USER || 'postgres',
             host: process.env.DB_HOST || 'localhost',

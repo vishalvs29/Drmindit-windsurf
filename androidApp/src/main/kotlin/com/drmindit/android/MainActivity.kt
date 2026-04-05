@@ -30,12 +30,14 @@ class MainActivity : ComponentActivity() {
             val systemUiController = rememberSystemUiController()
             val systemDarkTheme = isSystemInDarkTheme()
             
+            // Collect theme preferences as State
+            val isDarkMode by themePreferences.isDarkMode.collectAsState(initial = false)
+            val themeSource by themePreferences.themeSource.collectAsState(initial = "system")
+            
             // Determine dark theme based on user preference or system setting
-            val darkTheme = remember(systemDarkTheme) {
-                when (themePreferences.themeSource) {
-                    "user" -> themePreferences.isDarkMode
-                    else -> systemDarkTheme
-                }
+            val darkTheme = when (themeSource) {
+                "user" -> isDarkMode
+                else -> systemDarkTheme
             }
             
             DrMinditTheme(darkTheme = darkTheme) {

@@ -1,5 +1,5 @@
 const request = require('supertest');
-const app = require('../src/app');
+const app = require('../src/app').getApp();
 const { cache } = require('../src/utils/cache');
 const AuthService = require('../src/services/AuthService');
 

@@ -18,6 +18,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.drmindit.android.data.preferences.ThemePreferences
 import androidx.hilt.navigation.compose.hiltViewModel
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -43,7 +44,8 @@ fun ProfileScreen(
     var showLogoutDialog by remember { mutableStateOf(false) }
     
     // Get current dark mode state from preferences
-    var isDarkMode by remember { mutableStateOf(themePreferences.isDarkMode) }
+    val isDarkMode by themePreferences.isDarkMode.collectAsState(initial = false)
+    val scope = rememberCoroutineScope()
 
     Column(
         modifier = Modifier
@@ -305,8 +307,9 @@ fun ProfileScreen(
                     Switch(
                         checked = isDarkMode,
                         onCheckedChange = { 
-                            isDarkMode = it
-                            themePreferences.setUserPreference(it)
+                            scope.launch {
+                                themePreferences.setDarkMode(it)
+                            }
                         }
                     )
                 }

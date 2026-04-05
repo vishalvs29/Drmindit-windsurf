@@ -1,14 +1,28 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { getLanguageConfig, SUPPORTED_LANGUAGES } from '../../lib/languageMapping'
 
 // Speech-to-Text API endpoint
 export async function POST(request: NextRequest) {
   try {
     const requestFormData = await request.formData()
     const audioFile = requestFormData.get('audio') as File
+    const languageCode = requestFormData.get('language') as string || 'en'
     
     if (!audioFile) {
       return NextResponse.json(
         { error: 'No audio file provided' },
+        { status: 400 }
+      )
+    }
+
+    // Validate language code
+    const languageConfig = getLanguageConfig(languageCode)
+    if (!languageConfig) {
+      return NextResponse.json(
+        { 
+          error: 'Unsupported language',
+          supportedLanguages: Object.keys(SUPPORTED_LANGUAGES)
+        },
         { status: 400 }
       )
     }
@@ -21,7 +35,9 @@ export async function POST(request: NextRequest) {
     const audioBlob = new Blob([audioBuffer], { type: audioFile.type || 'audio/mpeg' })
     apiFormData.append('file', audioBlob, audioFile.name || 'audio.mp3')
     apiFormData.append('model', 'whisper-1')
-    apiFormData.append('language', 'en')
+    
+    // Use language code for Whisper API (empty string for auto-detect)
+    apiFormData.append('language', languageConfig.whisperCode)
     apiFormData.append('response_format', 'json')
 
     // Call speech-to-text service (using OpenAI Whisper API as example)
@@ -29,37 +45,54 @@ export async function POST(request: NextRequest) {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${process.env.OPENAI_API_KEY}`,
-        // Don't set Content-Type for FormData - browser sets it with boundary
       },
       body: apiFormData
     })
 
     if (!response.ok) {
-      throw new Error('Speech-to-text service failed')
+      const errorData = await response.json().catch(() => ({}))
+      console.error('STT API Error:', errorData)
+      return NextResponse.json(
+        { error: 'Speech-to-text service temporarily unavailable' },
+        { status: 500 }
+      )
     }
 
-    const result = await response.json()
+    const transcriptionData = await response.json()
     
     return NextResponse.json({
-      text: result.text,
-      confidence: result.confidence || 0.95,
-      duration: result.duration || 0
+      text: transcriptionData.text,
+      language: languageConfig.code,
+      languageName: languageConfig.displayName,
+      confidence: transcriptionData.confidence || null,
+      duration: transcriptionData.duration || null
     })
 
   } catch (error) {
     console.error('STT Error:', error)
     return NextResponse.json(
-      { error: 'Speech-to-text conversion failed' },
+      { error: 'Speech-to-text service temporarily unavailable' },
       { status: 500 }
     )
   }
 }
 
-// Health check for STT service
+// GET endpoint to retrieve supported languages
 export async function GET() {
-  return NextResponse.json({
-    status: 'healthy',
-    service: 'speech-to-text',
-    timestamp: new Date().toISOString()
-  })
+  try {
+    return NextResponse.json({
+      supportedLanguages: SUPPORTED_LANGUAGES,
+      defaultLanguage: 'en',
+      indianLanguages: ['hi', 'ta', 'mr', 'bn', 'gu', 'te', 'kn', 'ml', 'pa', 'ur'],
+      status: 'healthy',
+      service: 'speech-to-text',
+      timestamp: new Date().toISOString()
+    })
+  } catch (error) {
+    console.error('Language List Error:', error)
+    return NextResponse.json(
+      { error: 'Unable to retrieve supported languages' },
+      { status: 500 }
+    )
+  }
 }

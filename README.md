@@ -19,27 +19,31 @@ A production-ready mental health application built with Kotlin Multiplatform (KM
 - Depression support
 - Focus & productivity
 
-## 📸 Screenshots
+## 📸 Application Screens
 
-### 🏠 Home Screen
-![Home Screen](assets/screenshots/home_screen.png)
-*Personal dashboard with quick access to all features, mood check-ins, and personalized recommendations.*
+### 🏠 Home
+![Home](docs/screens/home.png)
+*Personal dashboard with mood tracking, daily goals, session recommendations, and progress insights.*
 
-### 💬 AI Chat
-![Chat Screen](assets/screenshots/chat_screen.png)
-*Compassionate AI-powered mental health support with crisis detection and 24/7 availability.*
+### � Login
+![Login](docs/screens/login.png)
+*Secure authentication with social login options and professional healthcare interface.*
 
-### 🎧 Session Player
-![Session Player](assets/screenshots/session_player.png)
-*Immersive meditation player with audio controls, progress tracking, and background playback support.*
+### 🎧 Session
+![Session](docs/screens/session.png)
+*Immersive audio player with breathing exercises, progress tracking, and session notes.*
 
-### 📊 Mood Dashboard
-![Mood Dashboard](assets/screenshots/mood_dashboard.png)
-*Comprehensive mood analytics with trend charts, AI insights, and personalized recommendations.*
+### 💬 Chat
+![Chat](docs/screens/chat.png)
+*AI-powered mental health assistant with voice input and contextual conversation history.*
 
-### 🚀 Onboarding
-![Onboarding](assets/screenshots/onboarding.png)
-*Welcoming onboarding flow with personalization, goal setting, and privacy assurance.*
+### 📊 Dashboard
+![Dashboard](docs/screens/dashboard.png)
+*Comprehensive analytics with mood trends, session statistics, and personalized insights.*
+
+### � Profile
+![Profile](docs/screens/profile.png)
+*User profile with stress management, personal goals, session statistics, and app settings.*
 
 ## 🛡️ Security
 
