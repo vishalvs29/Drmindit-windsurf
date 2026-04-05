@@ -51,7 +51,7 @@ class MainActivity : ComponentActivity() {
                         darkIcons = !darkTheme
                     )
                     
-                    AppNavigation()
+                    AppNavigation(themePreferences = themePreferences)
                 }
             }
         }

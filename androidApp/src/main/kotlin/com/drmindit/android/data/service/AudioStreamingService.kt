@@ -13,6 +13,7 @@ import com.drmindit.shared.domain.model.AudioQuality
 import kotlinx.coroutines.flow.*
 import javax.inject.Inject
 import javax.inject.Singleton
+import dagger.hilt.android.qualifiers.ApplicationContext
 
 /**
  * Audio Streaming Service
@@ -20,7 +21,7 @@ import javax.inject.Singleton
  */
 @Singleton
 class AudioStreamingService @Inject constructor(
-    private val context: Context
+    @ApplicationContext private val context: Context
 ) {
     
     private val _playerState = MutableStateFlow(AudioPlayerState())

@@ -2,7 +2,8 @@
 
 import { useState, useRef, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Mic, MicOff, Play, Pause, Volume2, AlertCircle, Phone } from 'lucide-react'
+import { Mic, MicOff, Play, Pause, Volume2, AlertCircle, Phone, Globe } from 'lucide-react'
+import LanguageSelector from './LanguageSelector'
 
 interface VoiceAssistantProps {
   onTranscript?: (text: string) => void
@@ -18,6 +19,37 @@ export default function VoiceAssistant({ onTranscript, onAIResponse, className }
   const [aiResponse, setAiResponse] = useState('')
   const [showTranscript, setShowTranscript] = useState(false)
   const [distressAlert, setDistressAlert] = useState(false)
+  const [selectedLanguage, setSelectedLanguage] = useState('en')
+  const [availableLanguages, setAvailableLanguages] = useState<Array<{code: string, name: string, displayName: string}>>([])
+  
+  // Load available languages on mount
+  useEffect(() => {
+    const loadLanguages = async () => {
+      try {
+        const response = await fetch('/api/stt')
+        if (response.ok) {
+          const data = await response.json()
+          const languages = Object.entries(data.supportedLanguages || {}).map(([code, config]: [string, any]) => ({
+            code,
+            name: config.name || code,
+            displayName: config.displayName || code.toUpperCase()
+          }))
+          setAvailableLanguages(languages)
+        }
+      } catch (error) {
+        console.error('Failed to load languages:', error)
+        // Fallback to basic languages
+        setAvailableLanguages([
+          { code: 'en', name: 'english', displayName: 'English' },
+          { code: 'hi', name: 'hindi', displayName: 'हिन्दी' },
+          { code: 'ta', name: 'tamil', displayName: 'தமிழ்' },
+          { code: 'mr', name: 'marathi', displayName: 'मराठी' }
+        ])
+      }
+    }
+    
+    loadLanguages()
+  }, [])
   
   const mediaRecorderRef = useRef<MediaRecorder | null>(null)
   const audioChunksRef = useRef<Blob[]>([])
@@ -77,6 +109,7 @@ export default function VoiceAssistant({ onTranscript, onAIResponse, className }
     try {
       const formData = new FormData()
       formData.append('audio', audioBlob, 'recording.wav')
+      formData.append('language', selectedLanguage) // Add selected language
 
       const response = await fetch('/api/stt', {
         method: 'POST',
@@ -230,6 +263,14 @@ export default function VoiceAssistant({ onTranscript, onAIResponse, className }
         <div className="text-center mb-6">
           <h2 className="text-2xl font-bold mb-2 text-gradient">AI Voice Assistant</h2>
           <p className="text-gray-300">Click the microphone to speak with me</p>
+        </div>
+
+        {/* Language Selector */}
+        <div className="flex justify-center mb-6">
+          <LanguageSelector
+            selectedLanguage={selectedLanguage}
+            onLanguageChange={setSelectedLanguage}
+          />
         </div>
 
         {/* Voice Button */}

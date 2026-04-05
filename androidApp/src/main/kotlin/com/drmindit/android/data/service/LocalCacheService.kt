@@ -14,6 +14,7 @@ import java.io.File
 import java.io.IOException
 import javax.inject.Inject
 import javax.inject.Singleton
+import dagger.hilt.android.qualifiers.ApplicationContext
 
 /**
  * Local Cache Service
@@ -21,7 +22,7 @@ import javax.inject.Singleton
  */
 @Singleton
 class LocalCacheService @Inject constructor(
-    private val context: Context,
+    @ApplicationContext private val context: Context,
     private val dataStore: DataStore<Preferences>
 ) {
     

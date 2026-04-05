@@ -7,6 +7,27 @@ process.env.JWT_SECRET = 'test-jwt-secret-key-for-testing-purposes-only';
 process.env.DB_NAME = 'drmindit_test';
 process.env.REDIS_URL = 'redis://localhost:6379/1';
 
+// Mock PostgreSQL for testing
+const { Pool } = require('pg');
+
+jest.mock('pg', () => ({
+  Pool: jest.fn(() => {
+    const mockPool = {
+      query: jest.fn().mockResolvedValue({ rows: [], rowCount: 0 }),
+      connect: jest.fn().mockResolvedValue({ 
+        query: jest.fn().mockResolvedValue({ rows: [], rowCount: 0 }),
+        end: jest.fn().mockResolvedValue(),
+        on: jest.fn(),
+        release: jest.fn().mockResolvedValue()
+      }),
+      end: jest.fn().mockResolvedValue(),
+      on: jest.fn(),
+      release: jest.fn().mockResolvedValue()
+    };
+    return mockPool;
+  })
+}));
+
 // Mock external services
 jest.mock('nodemailer', () => ({
     createTransporter: jest.fn(() => ({
@@ -47,12 +68,10 @@ afterEach(() => {
 
 // Setup database connection before tests
 beforeAll(async () => {
-    // Note: In a real setup, you would initialize test database here
-    console.log('Test environment initialized');
+    console.log('Test environment initialized with PostgreSQL mock');
 });
 
 // Cleanup database after tests
 afterAll(async () => {
-    // Note: In a real setup, you would clean up test database here
     console.log('Test environment cleaned up');
 });

@@ -26,6 +26,7 @@ object RoomModule {
     }
 
     @Provides
+    @Singleton
     fun provideSessionDao(database: AppDatabase): SessionDao {
         return database.sessionDao()
     }

@@ -33,6 +33,10 @@ import com.drmindit.android.ui.screens.ProfileScreen
 import com.drmindit.android.ui.screens.OrganizationDashboardScreen
 import com.drmindit.android.ui.screens.OnboardingScreen.OnboardingData
 import com.drmindit.android.ui.components.OfflineBanner
+import com.drmindit.android.data.preferences.ThemePreferences
+import androidx.hilt.android.AndroidEntryPoint
+import androidx.hilt.android.HiltAndroidApp
+import dagger.hilt.android.HiltAndroidApp
 
 // Data class for session information
 data class SessionData(
@@ -92,7 +96,8 @@ fun BottomNavigationBar(
 @Composable
 fun AppNavigation(
     navController: NavHostController = rememberNavController(),
-    startDestination: String = "onboarding"
+    startDestination: String = "onboarding",
+    themePreferences: ThemePreferences
 ) {
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
@@ -228,7 +233,8 @@ fun AppNavigation(
                     onHelp = { /* Navigate to help */ },
                     onAbout = { /* Navigate to about */ },
                     onNotificationSettings = { /* Navigate to notification settings */ },
-                    onLogout = { /* Handle logout */ }
+                    onLogout = { /* Handle logout */ },
+                    themePreferences = themePreferences
                 )
             }
             

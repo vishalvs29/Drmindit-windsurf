@@ -243,18 +243,6 @@ nobackup/
 *.prof
 *.trace
 
-# Memory dumps
-*.hprof
-*.dump
-
-# Thread dumps
-*.tdump
-
-# Native libraries
-*.so
-*.dll
-*.dylib
-
 # Assets that should be optimized
 /assets/
 /raw/
@@ -297,6 +285,11 @@ docs/_build/
 
 # Merge artifacts
 *.orig
+
+# Build artifacts and reports
+/landing/.next/
+/backend/reports/
+/backend/reports/deep-validation-report.json
 *.rej
 .DS_Store?
 

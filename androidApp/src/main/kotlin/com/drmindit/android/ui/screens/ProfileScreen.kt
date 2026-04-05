@@ -17,7 +17,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.drmindit.android.data.preferences.ThemePreferences
-import androidx.hilt.navigation.compose.hiltViewModel
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -30,7 +29,7 @@ fun ProfileScreen(
     onAbout: () -> Unit = {},
     onNotificationSettings: () -> Unit = {},
     onLogout: () -> Unit = {},
-    themePreferences: ThemePreferences = hiltViewModel()
+    themePreferences: ThemePreferences
 ) {
     var userName by remember { mutableStateOf("John Doe") }
     var userEmail by remember { mutableStateOf("john.doe@example.com") }

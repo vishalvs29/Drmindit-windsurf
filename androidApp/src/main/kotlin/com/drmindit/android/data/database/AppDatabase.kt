@@ -13,7 +13,6 @@ import javax.inject.Singleton
     version = 1,
     exportSchema = false
 )
-@Singleton
 abstract class AppDatabase : RoomDatabase() {
     abstract fun sessionDao(): SessionDao
 }

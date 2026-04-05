@@ -1,11 +1,13 @@
 package com.drmindit.android.data.repository
 
 import com.drmindit.shared.domain.model.*
+import com.drmindit.shared.data.supabase.SupabaseClient
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.serialization.json.Json
 import javax.inject.Inject
 import javax.inject.Singleton
+import io.github.jan.supabase.SupabaseClient
 
 /**
  * Content Management Repository
