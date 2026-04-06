@@ -49,10 +49,6 @@ class ApiClient(
             level = LogLevel.INFO
         }
 
-        install(DefaultRequest) {
-            header("Prefer", "return=representation")
-        }
-
         HttpResponseValidator {
             handleResponseExceptionWithRequest { exception, request ->
                 when (exception) {
@@ -65,7 +61,7 @@ class ApiClient(
                             else -> throw ApiException.UnknownError(exception.message ?: "Unknown error")
                         }
                     }
-                    is ClientRequestException -> throw ApiException.NetworkError(exception.message ?: "Network error")
+                    is ServerResponseException -> throw ApiException.ServerError(exception.message ?: "Server error")
                     else -> throw ApiException.UnknownError(exception.message ?: "Unknown error")
                 }
             }
@@ -92,9 +88,12 @@ class ApiClient(
     suspend fun delete(path: String) =
         httpClient.delete(path)
 
-    suspend fun patch(path: String, body: Any) =
+    suspend fun patch(path: String, body: Any, parameters: Map<String, String> = emptyMap()) =
         httpClient.patch(path) {
             setBody(body)
+            parameters.forEach { (key, value) ->
+                parameter(key, value)
+            }
         }
 }
 

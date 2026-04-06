@@ -1,364 +1,296 @@
 package com.drmindit.shared.domain.conversation
 
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flow
-import javax.inject.Inject
-import javax.inject.Singleton
+import com.drmindit.shared.domain.model.*
+import kotlinx.serialization.json.Json
+import kotlin.random.Random
 
 /**
  * Response Generator
- * Generates AI responses and manages hybrid response system
+ * Generates contextual responses based on user intent and conversation state
  */
-@Singleton
-class ResponseGenerator @Inject constructor(
-    private val aiService: AIService,
-    private val contentLibrary: ContentLibrary
-) {
+class ResponseGenerator {
+    
+    private val json = Json { ignoreUnknownKeys = true }
+    private val random = Random.Default
     
     /**
-     * Generate AI response for general conversation
+     * Generate response for user message
      */
-    suspend fun generateGeneralChatResponse(
-        message: String,
-        userProfile: UserProfile
-    ): String {
-        val prompt = buildGeneralChatPrompt(message, userProfile)
-        return aiService.generateResponse(prompt)
-    }
-    
-    /**
-     * Generate AI response for specific flow step
-     */
-    suspend fun generateAIResponse(
-        message: String,
-        flowStep: FlowStep,
-        userProfile: UserProfile
-    ): String {
-        val prompt = buildFlowStepPrompt(message, flowStep, userProfile)
-        return aiService.generateResponse(prompt)
+    fun generateResponse(
+        intent: ConversationIntent,
+        context: ConversationContext,
+        sentiment: Sentiment,
+        riskLevel: RiskLevel
+    ): GeneratedResponse {
+        
+        val baseResponse = getBaseResponse(intent, sentiment)
+        val suggestions = getSuggestions(intent)
+        val followUpQuestions = getFollowUpQuestions(intent)
+        val sessionRecommendations = getSessionRecommendations(intent)
+        
+        return GeneratedResponse(
+            message = baseResponse,
+            confidence = calculateConfidence(intent, context),
+            suggestions = suggestions,
+            followUpQuestions = followUpQuestions,
+            sessionRecommendations = sessionRecommendations,
+            riskLevel = riskLevel,
+            requiresEscalation = riskLevel == RiskLevel.CRITICAL,
+            metadata = mapOf(
+                "intent" to intent.name,
+                "sentiment" to sentiment.name,
+                "risk_level" to riskLevel.name,
+                "timestamp" to System.currentTimeMillis().toString()
+            )
+        )
     }
     
     /**
      * Generate crisis response
      */
-    fun generateCrisisResponse(message: String, userProfile: UserProfile): CrisisResponse {
-        val crisisDetector = CrisisDetector()
-        return crisisDetector.generateCrisisResponse(message, userProfile)
-    }
-    
-    /**
-     * Generate flow completion response
-     */
-    suspend fun generateFlowCompletionResponse(
-        flow: ConversationFlow,
-        userProfile: UserProfile
-    ): String {
-        val prompt = buildFlowCompletionPrompt(flow, userProfile)
-        return aiService.generateResponse(prompt)
-    }
-    
-    /**
-     * Get emergency resources
-     */
-    fun getEmergencyResources(userProfile: UserProfile): List<Resource> {
-        return contentLibrary.getEmergencyResources()
-    }
-    
-    /**
-     * Generate exercise recommendations
-     */
-    fun generateExerciseRecommendations(
-        flow: ConversationFlow,
-        userProfile: UserProfile,
-        currentStep: FlowStep
-    ): List<Exercise> {
-        val userPreferences = userProfile.preferences
-        val availableExercises = currentStep.exercises
-        
-        // Filter exercises based on user preferences
-        return availableExercises.filter { exercise ->
-            userPreferences.exerciseTypes.contains(exercise.type) ||
-            exercise.difficulty == Difficulty.EASY
-        }
-    }
-    
-    /**
-     * Generate resource recommendations
-     */
-    fun generateResourceRecommendations(
-        flow: ConversationFlow,
-        userProfile: UserProfile,
-        currentStep: FlowStep
-    ): List<Resource> {
-        val userPreferences = userProfile.preferences
-        val availableResources = currentStep.resources
-        
-        // Filter resources based on user preferences and access level
-        return availableResources.filter { resource ->
-            (!resource.isPremium || userPreferences.privacyLevel != PrivacyLevel.MINIMAL) &&
-            resource.category != ResourceCategory.CRISIS
-        }
-    }
-    
-    /**
-     * Generate follow-up questions
-     */
-    suspend fun generateFollowUpQuestions(
-        conversation: List<ConversationMessage>,
-        userProfile: UserProfile
-    ): List<String> {
-        val recentMessages = conversation.takeLast(5)
-        val context = buildFollowUpContext(recentMessages, userProfile)
-        val prompt = buildFollowUpPrompt(context)
-        
-        return aiService.generateFollowUpQuestions(prompt)
-    }
-    
-    /**
-     * Generate personalized content suggestions
-     */
-    suspend fun generatePersonalizedSuggestions(
-        userProfile: UserProfile,
-        conversationHistory: ConversationHistory
-    ): List<PersonalizedSuggestion> {
-        val prompt = buildPersonalizationPrompt(userProfile, conversationHistory)
-        val aiResponse = aiService.generateResponse(prompt)
-        
-        return parsePersonalizedSuggestions(aiResponse)
-    }
-    
-    /**
-     * Build prompt for general chat
-     */
-    private fun buildGeneralChatPrompt(message: String, userProfile: UserProfile): String {
-        return """
-            You are DrMindit, an AI mental health companion. Your role is to provide supportive, empathetic, and safe mental health guidance.
-            
-            User Profile:
-            - Name: ${userProfile.name}
-            - Preferences: ${userProfile.preferences.communicationStyle.name} communication style
-            - Previous sessions: ${userProfile.totalSessions}
-            - Current streak: ${userProfile.progress.currentStreak} days
-            - Risk factors: ${userProfile.riskFactors.joinToString(", ")}
-            - Strengths: ${userProfile.strengths.joinToString(", ")}
-            
-            User's message: "$message"
-            
-            Guidelines:
-            1. Be warm, supportive, and empathetic
-            2. Use ${userProfile.preferences.communicationStyle.name.lowercase()} communication style
-            3. Reference their strengths and progress when appropriate
-            4. Ask thoughtful follow-up questions to deepen understanding
-            5. If they mention concerning content, gently suggest professional help
-            6. Keep responses concise but thorough (2-3 paragraphs max)
-            7. Always prioritize safety and wellbeing
-            
-            Respond to the user's message with empathy and support.
-        """.trimIndent()
-    }
-    
-    /**
-     * Build prompt for flow step
-     */
-    private fun buildFlowStepPrompt(
-        message: String,
-        flowStep: FlowStep,
-        userProfile: UserProfile
-    ): String {
-        return """
-            You are DrMindit, an AI mental health companion guiding a user through a structured therapeutic flow.
-            
-            Current Flow: ${flowStep.title}
-            Flow Step: ${flowStep.step + 1}/${flowStep.maxSteps}
-            Step Purpose: ${flowStep.prompt}
-            
-            User Profile:
-            - Name: ${userProfile.name}
-            - Communication Style: ${userProfile.preferences.communicationStyle.name}
-            - Experience Level: ${userProfile.totalSessions} previous sessions
-            
-            User's message: "$message"
-            
-            Guidelines:
-            1. Acknowledge and validate their response
-            2. Guide them toward the step's objectives
-            3. Use ${userProfile.preferences.communicationStyle.name.lowercase()} style
-            4. Reference the flow's purpose and progress
-            5. Encourage engagement with exercises if available
-            6. Maintain therapeutic boundaries and safety
-            7. Keep responses focused on the current step's goals
-            
-            Respond to support their progress through this therapeutic step.
-        """.trimIndent()
-    }
-    
-    /**
-     * Build prompt for flow completion
-     */
-    private fun buildFlowCompletionPrompt(
-        flow: ConversationFlow,
-        userProfile: UserProfile
-    ): String {
-        return """
-            You are DrMindit, an AI mental health companion completing a structured therapeutic flow with a user.
-            
-            Completed Flow: ${flow.name}
-            Flow Description: ${flow.description}
-            Total Steps: ${flow.steps.size}
-            Flow Outcomes: ${flow.outcomes.joinToString(", ")}
-            
-            User Profile:
-            - Name: ${userProfile.name}
-            - Communication Style: ${userProfile.preferences.communicationStyle.name}
-            - Progress: ${userProfile.progress.currentStreak} day streak
-            
-            Guidelines:
-            1. Celebrate their completion and progress
-            2. Summarize key learnings from the flow
-            3. Provide encouragement for continued practice
-            4. Suggest next steps or maintenance strategies
-            5. Offer ongoing support
-            6. Use ${userProfile.preferences.communicationStyle.name.lowercase()} style
-            7. Keep responses positive and forward-looking
-            
-            Generate a completion response that acknowledges their achievement and encourages continued growth.
-        """.trimIndent()
-    }
-    
-    /**
-     * Build follow-up context
-     */
-    private fun buildFollowUpContext(
-        messages: List<ConversationMessage>,
-        userProfile: UserProfile
-    ): String {
-        val conversationSummary = messages.joinToString("\n") { message ->
-            "${message.sender.name}: ${message.content}"
+    fun generateCrisisResponse(riskLevel: RiskLevel): GeneratedResponse {
+        val message = when (riskLevel) {
+            RiskLevel.CRITICAL -> "I'm very concerned about your safety. Please reach out to a crisis helpline immediately. Your life matters."
+            RiskLevel.HIGH -> "I understand you're going through a difficult time. Let me connect you with support resources."
+            RiskLevel.MEDIUM -> "It sounds like you're dealing with a lot. I'm here to help you work through this."
+            RiskLevel.LOW -> "I'm here to support you. Let's talk about what's on your mind."
         }
         
-        return """
-            Recent Conversation:
-            $conversationSummary
-            
-            User Profile:
-            - Name: ${userProfile.name}
-            - Communication Style: ${userProfile.preferences.communicationStyle.name}
-            - Current Streak: ${userProfile.progress.currentStreak} days
-            
-            Generate thoughtful follow-up questions to deepen the conversation and support the user's mental health journey.
-        """.trimIndent()
-    }
-    
-    /**
-     * Build follow-up prompt
-     */
-    private fun buildFollowUpPrompt(context: String): String {
-        return """
-            $context
-            
-            Generate 3-5 thoughtful follow-up questions that:
-            1. Are open-ended and encourage reflection
-            2. Are relevant to the conversation context
-            3. Support the user's mental health journey
-            4. Are empathetic and non-judgmental
-            5. Help deepen understanding of their experience
-            
-            Format as a numbered list of questions.
-        """.trimIndent()
-    }
-    
-    /**
-     * Build personalization prompt
-     */
-    private fun buildPersonalizationPrompt(
-        userProfile: UserProfile,
-        conversationHistory: ConversationHistory
-    ): String {
-        return """
-            Generate personalized suggestions for a user based on their profile and conversation history.
-            
-            User Profile:
-            - Name: ${userProfile.name}
-            - Preferences: ${userProfile.preferences}
-            - Progress: ${userProfile.progress}
-            - History: ${conversationHistory}
-            
-            Generate 3-5 personalized suggestions that include:
-            1. Exercise recommendations based on their preferences
-            2. Resource suggestions relevant to their needs
-            3. Goal suggestions for their mental health journey
-            4. Practice recommendations based on their history
-            5. Support strategies aligned with their strengths
-            
-            Format as a JSON array of suggestion objects with id, title, description, and type fields.
-        """.trimIndent()
-    }
-    
-    /**
-     * Parse personalized suggestions from AI response
-     */
-    private fun parsePersonalizedSuggestions(aiResponse: String): List<PersonalizedSuggestion> {
-        // This would parse the AI response into structured suggestions
-        // For now, return placeholder suggestions
-        return listOf(
-            PersonalizedSuggestion(
-                id = "daily_mindfulness",
-                title = "Daily Mindfulness Practice",
-                description = "Start your day with 5 minutes of mindful breathing",
-                type = SuggestionType.EXERCISE
+        val helplines = listOf(
+            EmergencyHelpline(
+                id = "988",
+                name = "988 Suicide & Crisis Lifeline",
+                phoneNumber = "988",
+                country = "US"
             ),
-            PersonalizedSuggestion(
-                id = "gratitude_journal",
-                title = "Gratitude Journal",
-                description = "Write down 3 things you're grateful for each evening",
-                type = SuggestionType.PRACTICE
-            ),
-            PersonalizedSuggestion(
-                id = "stress_management",
-                title = "Stress Management Techniques",
-                description = "Learn quick stress relief exercises for busy moments",
-                type = SuggestionType.RESOURCE
+            EmergencyHelpline(
+                id = "crisis-text",
+                name = "Crisis Text Line",
+                phoneNumber = "741741",
+                country = "US"
+            )
+        )
+        
+        return GeneratedResponse(
+            message = message,
+            confidence = 0.95f,
+            suggestions = listOf("Call 988", "Text HOME to 741741", "Talk to a therapist"),
+            followUpQuestions = emptyList(),
+            sessionRecommendations = emptyList(),
+            riskLevel = riskLevel,
+            requiresEscalation = riskLevel == RiskLevel.CRITICAL,
+            metadata = mapOf(
+                "crisis_response" to "true",
+                "risk_level" to riskLevel.name
             )
         )
     }
+    
+    private fun getBaseResponse(intent: ConversationIntent, sentiment: Sentiment): String {
+        val responses = mapOf(
+            ConversationIntent.STRESS_RELIEF to mapOf(
+                Sentiment.NEGATIVE to listOf(
+                    "I understand you're feeling stressed. Let's work together to find some relief.",
+                    "Stress can be overwhelming. I'm here to help you through this.",
+                    "It sounds like you're under a lot of pressure. Let's take a moment to breathe."
+                ),
+                Sentiment.NEUTRAL to listOf(
+                    "Stress management is an important skill. What's been on your mind?",
+                    "I can help you develop stress coping strategies. Where would you like to start?"
+                ),
+                Sentiment.POSITIVE to listOf(
+                    "It's great that you're being proactive about stress management!",
+                    "Taking care of stress is important. How can I support you?"
+                )
+            ),
+            ConversationIntent.SLEEP_SUPPORT to mapOf(
+                Sentiment.NEGATIVE to listOf(
+                    "Sleep issues can be really challenging. I'm here to help you find solutions.",
+                    "I understand how frustrating sleep problems can be. Let's work on this together."
+                ),
+                Sentiment.NEUTRAL to listOf(
+                    "Good sleep is essential for wellness. What sleep challenges are you facing?",
+                    "I can help you improve your sleep quality. What would you like to focus on?"
+                ),
+                Sentiment.POSITIVE to listOf(
+                    "Working on sleep health is wonderful! How can I support your goals?"
+                )
+            ),
+            ConversationIntent.EMOTIONAL_SUPPORT to mapOf(
+                Sentiment.NEGATIVE to listOf(
+                    "It's brave to share your feelings. I'm here to listen and support you.",
+                    "Thank you for trusting me with your emotions. You're not alone in this.",
+                    "Your feelings are valid. Let's work through this together."
+                ),
+                Sentiment.NEUTRAL to listOf(
+                    "I'm here to help you explore your emotions. What's on your heart?",
+                    "Emotional wellness is a journey. How can I support you today?"
+                ),
+                Sentiment.POSITIVE to listOf(
+                    "It's wonderful that you're in touch with your emotions!",
+                    "Your emotional awareness is impressive. How can I help you grow?"
+                )
+            ),
+            ConversationIntent.MEDITATION_GUIDE to mapOf(
+                Sentiment.NEUTRAL to listOf(
+                    "Meditation is a powerful practice. Let me guide you through it.",
+                    "I'd love to help you with meditation. Are you new to the practice?"
+                ),
+                Sentiment.POSITIVE to listOf(
+                    "Your interest in meditation is wonderful! Let's find the right approach for you."
+                )
+            ),
+            ConversationIntent.WELLNESS_CHECK to mapOf(
+                Sentiment.NEUTRAL to listOf(
+                    "Let's check in on your overall wellness. How have you been feeling?",
+                    "I'm here to support your wellness journey. What would you like to explore?"
+                ),
+                Sentiment.POSITIVE to listOf(
+                    "It's great that you're focusing on wellness! How can I help you thrive?"
+                )
+            )
+        )
+        
+        val intentResponses = responses[intent] ?: mapOf(
+            Sentiment.NEUTRAL to listOf("I'm here to help. What would you like to talk about?")
+        )
+        
+        val sentimentResponses = intentResponses[sentiment] ?: intentResponses[Sentiment.NEUTRAL] ?: listOf("I'm here to support you.")
+        
+        return sentimentResponses.random()
+    }
+    
+    private fun getSuggestions(intent: ConversationIntent): List<String> {
+        return when (intent) {
+            ConversationIntent.STRESS_RELIEF -> listOf(
+                "Try deep breathing exercises",
+                "Take a short walk",
+                "Practice progressive muscle relaxation",
+                "Listen to calming music"
+            )
+            ConversationIntent.SLEEP_SUPPORT -> listOf(
+                "Establish a bedtime routine",
+                "Try sleep meditation",
+                "Practice good sleep hygiene",
+                "Consider a warm bath before bed"
+            )
+            ConversationIntent.EMOTIONAL_SUPPORT -> listOf(
+                "Practice self-compassion",
+                "Write in a journal",
+                "Talk to a trusted friend",
+                "Engage in a hobby you enjoy"
+            )
+            ConversationIntent.MEDITATION_GUIDE -> listOf(
+                "Start with 5-minute meditation",
+                "Focus on your breath",
+                "Try body scan meditation",
+                "Use a guided meditation app"
+            )
+            ConversationIntent.WELLNESS_CHECK -> listOf(
+                "Check your mood daily",
+                "Practice gratitude",
+                "Stay hydrated",
+                "Get regular exercise"
+            )
+            ConversationIntent.CRISES_INTERVENTION -> listOf(
+                "Call 988 Suicide & Crisis Lifeline",
+                "Text HOME to 741741",
+                "Contact emergency services",
+                "Reach out to a trusted person"
+            )
+            else -> listOf(
+                "Take a moment to breathe",
+                "Practice mindfulness",
+                "Connect with nature",
+                "Listen to calming music"
+            )
+        }
+    }
+    
+    private fun getFollowUpQuestions(intent: ConversationIntent): List<String> {
+        return when (intent) {
+            ConversationIntent.STRESS_RELIEF -> listOf(
+                "What's been causing you the most stress lately?",
+                "Have you tried any stress management techniques before?",
+                "How does stress typically affect your daily life?"
+            )
+            ConversationIntent.SLEEP_SUPPORT -> listOf(
+                "How long have you been having sleep issues?",
+                "What does your current bedtime routine look like?",
+                "How do you feel when you wake up in the morning?"
+            )
+            ConversationIntent.EMOTIONAL_SUPPORT -> listOf(
+                "How long have you been feeling this way?",
+                "What triggered these feelings?",
+                "What would make you feel even a little better right now?"
+            )
+            ConversationIntent.MEDITATION_GUIDE -> listOf(
+                "Have you meditated before?",
+                "What are you hoping to achieve with meditation?",
+                "How much time can you dedicate to practice?"
+            )
+            ConversationIntent.WELLNESS_CHECK -> listOf(
+                "How has your energy been lately?",
+                "Are there any areas of wellness you'd like to improve?",
+                "What does self-care look like for you?"
+            )
+            else -> emptyList()
+        }
+    }
+    
+    private fun getSessionRecommendations(intent: ConversationIntent): List<String> {
+        return when (intent) {
+            ConversationIntent.STRESS_RELIEF -> listOf(
+                "Stress Relief Meditation",
+                "Deep Breathing Exercise",
+                "Progressive Muscle Relaxation"
+            )
+            ConversationIntent.SLEEP_SUPPORT -> listOf(
+                "Bedtime Meditation",
+                "Sleep Stories",
+                "Body Scan for Sleep"
+            )
+            ConversationIntent.EMOTIONAL_SUPPORT -> listOf(
+                "Self-Compassion Meditation",
+                "Emotional Regulation",
+                "Loving-Kindness Meditation"
+            )
+            ConversationIntent.MEDITATION_GUIDE -> listOf(
+                "Beginner's Meditation",
+                "Mindfulness Basics",
+                "Breath Awareness"
+            )
+            ConversationIntent.WELLNESS_CHECK -> listOf(
+                "Daily Wellness Check",
+                "Gratitude Practice",
+                "Mindful Movement"
+            )
+            else -> emptyList()
+        }
+    }
+    
+    private fun calculateConfidence(intent: ConversationIntent, context: ConversationContext): Float {
+        val baseConfidence = 0.8f
+        val contextBonus = if (context.step > 0) 0.1f else 0.0f
+        val intentBonus = when (intent) {
+            ConversationIntent.CRISES_INTERVENTION -> 0.15f
+            ConversationIntent.STRESS_RELIEF -> 0.1f
+            ConversationIntent.EMOTIONAL_SUPPORT -> 0.1f
+            else -> 0.05f
+        }
+        
+        return (baseConfidence + contextBonus + intentBonus).coerceAtMost(1.0f)
+    }
 }
 
-/**
- * AI Service interface
- */
-interface AIService {
-    suspend fun generateResponse(prompt: String): String
-    suspend fun generateFollowUpQuestions(prompt: String): List<String>
-}
-
-/**
- * Content Library interface
- */
-interface ContentLibrary {
-    fun getEmergencyResources(): List<Resource>
-    fun getExercisesByType(type: ExerciseType): List<Exercise>
-    fun getResourcesByCategory(category: ResourceCategory): List<Resource>
-}
-
-/**
- * Personalized suggestion data
- */
-data class PersonalizedSuggestion(
-    val id: String,
-    val title: String,
-    val description: String,
-    val type: SuggestionType,
-    val isPremium: Boolean = false,
-    val estimatedTime: Int? = null
+// Supporting data classes
+data class GeneratedResponse(
+    val message: String,
+    val confidence: Float,
+    val suggestions: List<String>,
+    val followUpQuestions: List<String>,
+    val sessionRecommendations: List<String>,
+    val riskLevel: RiskLevel,
+    val requiresEscalation: Boolean,
+    val metadata: Map<String, String>
 )
-
-/**
- * Suggestion types
- */
-enum class SuggestionType {
-    EXERCISE,
-    PRACTICE,
-    RESOURCE,
-    GOAL,
-    STRATEGY
-}

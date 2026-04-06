@@ -6,8 +6,9 @@ plugins {
     id("com.google.gms.google-services")
     id("com.google.firebase.crashlytics")
     id("com.google.firebase.firebase-perf")
-    id("com.google.dagger.hilt.android")
-    id("kotlin-kapt")
+    // Temporarily disabled Hilt due to Kotlin 2.0 compatibility issues
+    // id("com.google.dagger.hilt.android")
+    // id("kotlin-kapt")
 }
 
 android {
@@ -116,10 +117,10 @@ dependencies {
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.8.2")
     implementation("androidx.lifecycle:lifecycle-runtime-compose:2.8.2")
     
-    // Dependency Injection - Hilt
-    implementation("com.google.dagger:hilt-android:2.51.1")
-    implementation("androidx.hilt:hilt-navigation-compose:1.2.0")
-    kapt("com.google.dagger:hilt-compiler:2.51.1")
+    // Dependency Injection - Hilt (temporarily disabled)
+    // implementation("com.google.dagger:hilt-android:2.51.1")
+    // implementation("androidx.hilt:hilt-navigation-compose:1.2.0")
+    // kapt("com.google.dagger:hilt-android-compiler:2.51.1")
     
     // Network
     implementation("io.ktor:ktor-client-android:2.3.12")
@@ -139,6 +140,9 @@ dependencies {
     // Coroutines
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.8.1")
     
+    // Logging
+    implementation("com.jakewharton.timber:timber:5.0.1")
+    
     // Image Loading
     implementation("io.coil-kt:coil-compose:2.7.0")
     
@@ -148,12 +152,12 @@ dependencies {
     // Room Database
     implementation("androidx.room:room-runtime:2.6.1")
     implementation("androidx.room:room-ktx:2.6.1")
-    kapt("androidx.room:room-compiler:2.6.1")
+    // kapt("androidx.room:room-compiler:2.6.1")
     
     // WorkManager
     implementation("androidx.work:work-runtime-ktx:2.9.1")
-    implementation("androidx.hilt:hilt-work:1.2.0")
-    kapt("androidx.hilt:hilt-compiler:2.51.1")
+    // implementation("androidx.hilt:hilt-work:1.2.0")
+    // kapt("com.google.dagger:hilt-android-compiler:2.51.1")
     
     // DataStore
     implementation("androidx.datastore:datastore-preferences:1.1.1")
@@ -180,12 +184,12 @@ dependencies {
     testImplementation("androidx.test.ext:junit:1.1.5")
     testImplementation("androidx.test.espresso:espresso-core:3.5.1")
     testImplementation("androidx.compose.ui:ui-test-junit4")
-    testImplementation("com.google.dagger:hilt-android-testing:2.51.1")
-    kaptTest("com.google.dagger:hilt-android-compiler:2.51.1")
+    // testImplementation("com.google.dagger:hilt-android-testing:2.51.1")
+    // kaptTest("com.google.dagger:hilt-android-compiler:2.51.1")
     
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
     androidTestImplementation("androidx.compose.ui:ui-test-junit4")
-    androidTestImplementation("com.google.dagger:hilt-android-testing:2.51.1")
-    kaptAndroidTest("com.google.dagger:hilt-android-compiler:2.51.1")
+    // androidTestImplementation("com.google.dagger:hilt-android-testing:2.51.1")
+    // kaptAndroidTest("com.google.dagger:hilt-android-compiler:2.51.1")
 }

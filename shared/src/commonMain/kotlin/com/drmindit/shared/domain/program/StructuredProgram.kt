@@ -1,11 +1,11 @@
 package com.drmindit.shared.domain.program
 
 import kotlinx.serialization.Serializable
-import com.drmindit.shared.domain.audience.AudienceType
+import com.drmindit.shared.domain.model.*
 
 /**
- * Structured Program Domain Models
- * Replaces generic AI chat with guided, step-by-step programs
+ * Structured Program definitions
+ * Consolidated from multiple files to avoid redeclarations
  */
 
 @Serializable
@@ -13,17 +13,11 @@ data class StructuredProgram(
     val id: String,
     val name: String,
     val description: String,
-    val targetAudience: AudienceType,
     val category: ProgramCategory,
     val duration: ProgramDuration,
     val difficulty: ProgramDifficulty,
-    val currentStep: Int = 1,
-    val totalSteps: Int,
-    val isCompleted: Boolean = false,
-    val startedAt: Long? = null,
-    val completedAt: Long? = null,
-    val progress: ProgramProgress,
-    val steps: List<ProgramStep>
+    val steps: List<ProgramStep>,
+    val tags: List<String> = emptyList()
 )
 
 @Serializable
@@ -31,9 +25,8 @@ data class ProgramProgress(
     val currentStepIndex: Int,
     val completedSteps: Set<Int>,
     val stepProgress: Map<Int, StepProgress>,
-    val overallCompletionPercentage: Float,
-    val timeSpentMinutes: Long,
-    val lastAccessedAt: Long
+    val startDate: Long,
+    val lastAccessDate: Long
 )
 
 @Serializable
@@ -41,12 +34,8 @@ data class StepProgress(
     val stepId: String,
     val isStarted: Boolean,
     val isCompleted: Boolean,
-    val timeSpentMinutes: Long,
-    val exerciseCompleted: Boolean = false,
-    val reflectionCompleted: Boolean = false,
-    val audioCompleted: Boolean = false,
-    val rating: Int? = null, // 1-5 rating for the step
-    val notes: String? = null
+    val timeSpentMinutes: Int,
+    val completionDate: Long? = null
 )
 
 @Serializable
@@ -56,26 +45,26 @@ data class ProgramStep(
     val title: String,
     val description: String,
     val type: StepType,
-    val exercise: ExerciseDefinition?,
-    val reflection: ReflectionDefinition?,
-    val audioSession: AudioDefinition?,
-    val isRequired: Boolean = true,
-    val estimatedDurationMinutes: Int
+    val exercise: ExerciseDefinition? = null,
+    val reflection: ReflectionDefinition? = null,
+    val audio: AudioDefinition? = null,
+    val durationMinutes: Int
 )
 
+// Enums - single declarations
 @Serializable
 enum class StepType {
     INSTRUCTION,     // Educational content
     EXERCISE,        // Interactive exercise
     REFLECTION,      // Self-reflection prompt
-    AUDIO_SESSION,   // Guided audio
-    ASSESSMENT,      // Progress check
-    PRACTICE         // Practice activity
+    BREATHING,       // Breathing exercise
+    MEDITATION,      // Meditation practice
+    ASSESSMENT       // Progress assessment
 }
 
 @Serializable
 enum class ProgramCategory {
-    ANXIETY, STRESS, FOCUS, SLEEP, TRAUMA, RESILIENCE, BURNOUT
+    ANXIETY, STRESS, FOCUS, SLEEP, TRAUMA, RESILIENCE, BURNOUT, MINDFULNESS
 }
 
 @Serializable
@@ -88,33 +77,16 @@ enum class ProgramDifficulty {
     BEGINNER, INTERMEDIATE, ADVANCED
 }
 
-/**
- * Exercise definition for program steps
- */
-@Serializable
-data class ExerciseDefinition(
-    val type: ExerciseType,
-    val instructions: String,
-    val durationMinutes: Int,
-    val difficulty: ExerciseDifficulty,
-    val equipment: List<String> = emptyList(),
-    val steps: List<ExerciseStep>? = null,
-    val successCriteria: String? = null
-)
-
 @Serializable
 enum class ExerciseType {
     BREATHING,
     MEDITATION,
     GROUNDING,
-    VISUALIZATION,
-    JOURNALING,
-    BODY_SCAN,
-    PROGRESSIVE_RELAXATION,
     COGNITIVE_RESTRUCTURING,
-    AFFIRMATIONS,
-    POMODORO,
-    STRETCHING
+    PROGRESSIVE_MUSCLE_RELAXATION,
+    BODY_SCAN,
+    VISUALIZATION,
+    MINDFUL_MOVEMENT
 }
 
 @Serializable
@@ -123,25 +95,18 @@ enum class ExerciseDifficulty {
 }
 
 @Serializable
-data class ExerciseStep(
-    val stepNumber: Int,
-    val instruction: String,
-    val durationSeconds: Int,
-    val isOptional: Boolean = false
-)
+enum class VoiceGender {
+    MALE, FEMALE, NEUTRAL
+}
 
-/**
- * Reflection definition for program steps
- */
 @Serializable
-data class ReflectionDefinition(
-    val prompt: String,
-    val type: ReflectionType,
-    val responseFormat: ResponseFormat,
-    val isOptional: Boolean = false,
-    val options: List<ReflectionOption>? = null,
-    val maxLength: Int? = null
-)
+enum class AudioType {
+    GUIDED_MEDITATION,
+    BREATHING_EXERCISE,
+    SLEEP_STORY,
+    BODY_SCAN,
+    VISUALIZATION
+}
 
 @Serializable
 enum class ReflectionType {
@@ -149,8 +114,7 @@ enum class ReflectionType {
     RATING_SCALE,
     MULTIPLE_CHOICE,
     CHECKLIST,
-    JOURNAL_ENTRY,
-    YES_NO
+    BOOLEAN
 }
 
 @Serializable
@@ -159,125 +123,121 @@ enum class ResponseFormat {
 }
 
 @Serializable
-data class ReflectionOption(
-    val id: String,
-    val text: String,
-    val value: String
-)
-
-/**
- * Audio session definition
- */
-@Serializable
-data class AudioDefinition(
-    val title: String,
-    val durationMinutes: Int,
-    val type: AudioType,
-    val voiceGender: VoiceGender,
-    val backgroundMusic: Boolean,
-    val script: String,
-    val audioUrl: String? = null, // URL to actual audio file
-    val isDownloaded: Boolean = false,
-    val localPath: String? = null
-)
-
-@Serializable
-enum class AudioType {
-    GUIDED_MEDITATION,
-    BREATHING_EXERCISE,
-    SLEEP_STORY,
-    BODY_SCAN,
-    GROUNDING_EXERCISE,
-    AFFIRMATIONS,
-    FOCUS_MUSIC,
-    RELAXATION_MUSIC
-}
-
-@Serializable
-enum class VoiceGender {
-    MALE, FEMALE, NEUTRAL
-}
-
-/**
- * User's active program session
- */
-@Serializable
-data class UserProgramSession(
-    val userId: String,
-    val programId: String,
-    val currentStepIndex: Int,
-    val sessionStartTime: Long,
-    val sessionEndTime: Long? = null,
-    val isActive: Boolean = true,
-    val sessionType: SessionType
-)
-
-@Serializable
 enum class SessionType {
     DAILY_PRACTICE,
     PROGRAM_STEP,
     REFLECTION,
-    AUDIO_ONLY
+    CRISIS_INTERVENTION
 }
-
-/**
- * Program completion data
- */
-@Serializable
-data class ProgramCompletion(
-    val programId: String,
-    val userId: String,
-    val completedAt: Long,
-    val totalDurationMinutes: Long,
-    finalRating: Int, // 1-5 rating for the entire program
-    val feedback: String? = null,
-    val certificateEarned: Boolean = false,
-    val nextProgramRecommendation: String? = null
-)
-
-/**
- * Program recommendation system
- */
-@Serializable
-data class ProgramRecommendation(
-    val programId: String,
-    val score: Float, // 0.0 to 1.0
-    val reason: String,
-    val priority: RecommendationPriority,
-    val expiresAt: Long
-)
 
 @Serializable
 enum class RecommendationPriority {
     HIGH, MEDIUM, LOW
 }
 
-/**
- * Daily program activity tracking
- */
+// Supporting data classes
+@Serializable
+data class ExerciseDefinition(
+    val type: ExerciseType,
+    val instructions: String,
+    val durationMinutes: Int,
+    val difficulty: ExerciseDifficulty,
+    val voiceGender: VoiceGender = VoiceGender.NEUTRAL
+)
+
+@Serializable
+data class ExerciseStep(
+    val stepNumber: Int,
+    val instruction: String,
+    val durationSeconds: Int,
+    val audioCue: String? = null
+)
+
+@Serializable
+data class ReflectionDefinition(
+    val prompt: String,
+    val type: ReflectionType,
+    val responseFormat: ResponseFormat,
+    val options: List<ReflectionOption> = emptyList()
+)
+
+@Serializable
+data class ReflectionOption(
+    val id: String,
+    val text: String,
+    val value: String
+)
+
+@Serializable
+data class AudioDefinition(
+    val title: String,
+    val durationMinutes: Int,
+    val type: AudioType,
+    val voiceGender: VoiceGender = VoiceGender.NEUTRAL,
+    val backgroundMusic: Boolean = false
+)
+
+@Serializable
+data class UserProgramSession(
+    val userId: String,
+    val programId: String,
+    val currentStepIndex: Int,
+    val sessionType: SessionType,
+    val startDate: Long,
+    val lastActivityDate: Long
+)
+
+@Serializable
+data class ProgramCompletion(
+    val programId: String,
+    val userId: String,
+    val completedAt: Long,
+    val totalDurationMinutes: Int,
+    val finalRating: Int? = null,
+    val certificateEarned: Boolean = false
+)
+
+@Serializable
+data class ProgramRecommendation(
+    val programId: String,
+    val score: Float,
+    val reason: String,
+    val priority: RecommendationPriority
+)
+
 @Serializable
 data class DailyProgramActivity(
     val userId: String,
-    val date: String, // YYYY-MM-DD format
+    val date: String,
     val programsAccessed: List<String>,
-    val stepsCompleted: List<String>,
     val totalMinutesSpent: Int,
-    val moodBefore: Int? = null, // 1-5 mood rating
-    val moodAfter: Int? = null, // 1-5 mood rating
-    val stressLevel: Int? = null, // 1-5 stress rating
-    val notes: String? = null
+    val stepsCompleted: Int,
+    val reflectionsCompleted: Int
 )
 
-/**
- * Program analytics for insights
- */
 @Serializable
 data class ProgramAnalytics(
     val totalUsers: Int,
     val activeUsers: Int,
-    val completionRates: Map<String, Float>, // program ID -> completion rate
-    val averageCompletionTime: Map<String, Long>, // program ID -> average time
-    val userSatisfaction: Map<String, Float>, // program ID -> average rating
-    val mostPopularPrograms: List<String>,
-    val dropoutPoints: Map<String, List<Int>> // program ID -> step indices where users drop out
+    val completionRates: Map<String, Float>,
+    val averageCompletionTime: Map<String, Int>,
+    val userSatisfactionScores: Map<String, Float>
 )
+
+@Serializable
+data class ProgramEnrollment(
+    val userId: String,
+    val programId: String,
+    val enrollmentDate: Long,
+    val status: EnrollmentStatus,
+    val completionDate: Long? = null
+)
+
+@Serializable
+enum class EnrollmentStatus {
+    ENROLLED,
+    IN_PROGRESS,
+    COMPLETED,
+    DROPPED,
+    PAUSED
+}
