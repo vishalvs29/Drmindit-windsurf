@@ -6,9 +6,8 @@ plugins {
     id("com.google.gms.google-services")
     id("com.google.firebase.crashlytics")
     id("com.google.firebase.firebase-perf")
-    // Temporarily disabled Hilt due to Kotlin 2.0 compatibility issues
-    // id("com.google.dagger.hilt.android")
-    // id("kotlin-kapt")
+    id("org.jetbrains.kotlin.plugin.serialization") version "2.0.0"
+    id("com.google.devtools.ksp") version "2.0.0-1.0.21"
 }
 
 android {
@@ -28,11 +27,9 @@ android {
             useSupportLibrary = true
         }
 
-        // Build config fields for environment - LOAD FROM ENVIRONMENT VARIABLES
         buildConfigField("String", "SUPABASE_URL", "\"${System.getenv("SUPABASE_URL") ?: "https://your-project.supabase.co"}\"")
         buildConfigField("String", "SUPABASE_ANON_KEY", "\"${System.getenv("SUPABASE_ANON_KEY") ?: "your-anon-key-here"}\"")
         
-        // Manifest placeholders
         manifestPlaceholders["appAuthRedirectScheme"] = "com.drmindit.android"
     }
 
@@ -51,14 +48,11 @@ android {
 
     signingConfigs {
         create("release") {
-            // Load signing config from local.properties or environment variables
-            // DO NOT hardcode passwords here
             storeFile = file(project.findProperty("RELEASE_STORE_FILE") ?: "release.keystore")
             storePassword = project.findProperty("RELEASE_STORE_PASSWORD") as String? ?: System.getenv("RELEASE_STORE_PASSWORD")
             keyAlias = project.findProperty("RELEASE_KEY_ALIAS") as String? ?: System.getenv("RELEASE_KEY_ALIAS")
             keyPassword = project.findProperty("RELEASE_KEY_PASSWORD") as String? ?: System.getenv("RELEASE_KEY_PASSWORD")
             
-            // Enable V1 and V2 signing
             enableV1Signing = true
             enableV2Signing = true
         }
@@ -81,7 +75,6 @@ android {
         }
     }
 
-    // Test options
     testOptions {
         unitTests {
             isIncludeAndroidResources = true
@@ -91,7 +84,6 @@ android {
         }
     }
 
-    // Detekt configuration
     detekt {
         config.setFrom(files("$projectDir/config/detekt/detekt.yml"))
         buildUponDefaultConfig = true
@@ -116,11 +108,6 @@ dependencies {
     // ViewModel
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.8.2")
     implementation("androidx.lifecycle:lifecycle-runtime-compose:2.8.2")
-    
-    // Dependency Injection - Hilt (temporarily disabled)
-    // implementation("com.google.dagger:hilt-android:2.51.1")
-    // implementation("androidx.hilt:hilt-navigation-compose:1.2.0")
-    // kapt("com.google.dagger:hilt-android-compiler:2.51.1")
     
     // Network
     implementation("io.ktor:ktor-client-android:2.3.12")
@@ -152,12 +139,10 @@ dependencies {
     // Room Database
     implementation("androidx.room:room-runtime:2.6.1")
     implementation("androidx.room:room-ktx:2.6.1")
-    // kapt("androidx.room:room-compiler:2.6.1")
+    ksp("androidx.room:room-compiler:2.6.1")
     
     // WorkManager
     implementation("androidx.work:work-runtime-ktx:2.9.1")
-    // implementation("androidx.hilt:hilt-work:1.2.0")
-    // kapt("com.google.dagger:hilt-android-compiler:2.51.1")
     
     // DataStore
     implementation("androidx.datastore:datastore-preferences:1.1.1")
@@ -175,21 +160,16 @@ dependencies {
     
     // Testing
     testImplementation("junit:junit:4.13.2")
-    testImplementation("org.mockito:mockito-core:5.12.0")
-    testImplementation("org.mockito.kotlin:mockito-kotlin:5.2.0")
+    testImplementation("io.mockk:mockk:1.13.11")
+    testImplementation("androidx.arch.core:core-testing:2.2.0")
     testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.8.1")
-    testImplementation("org.jetbrains.kotlin:kotlin-test:1.9.24")
-    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.8.1")
-    testImplementation("org.jetbrains.kotlin:kotlin-test-junit:1.9.24")
+    testImplementation("org.jetbrains.kotlin:kotlin-test:2.0.0")
+    testImplementation("org.jetbrains.kotlin:kotlin-test-junit:2.0.0")
     testImplementation("androidx.test.ext:junit:1.1.5")
     testImplementation("androidx.test.espresso:espresso-core:3.5.1")
     testImplementation("androidx.compose.ui:ui-test-junit4")
-    // testImplementation("com.google.dagger:hilt-android-testing:2.51.1")
-    // kaptTest("com.google.dagger:hilt-android-compiler:2.51.1")
     
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
     androidTestImplementation("androidx.compose.ui:ui-test-junit4")
-    // androidTestImplementation("com.google.dagger:hilt-android-testing:2.51.1")
-    // kaptAndroidTest("com.google.dagger:hilt-android-compiler:2.51.1")
 }

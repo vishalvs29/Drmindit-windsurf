@@ -29,13 +29,13 @@ kotlin {
         val supabaseVersion = "2.5.0"
         
         commonMain.dependencies {
-            implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3")
-            implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.0")
+            implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.8.1")
+            implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.3")
             implementation("io.ktor:ktor-client-core:2.3.5")
             implementation("io.ktor:ktor-client-content-negotiation:2.3.5")
             implementation("io.ktor:ktor-serialization-kotlinx-json:2.3.5")
-            implementation("io.ktor:ktor-client-logging:2.3.5")
             implementation("io.ktor:ktor-client-auth:2.3.5")
+            implementation("io.ktor:ktor-client-logging:2.3.5")
             implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.4.1")
             
             // Supabase dependencies
@@ -47,6 +47,9 @@ kotlin {
         
         commonTest.dependencies {
             implementation(kotlin("test"))
+            implementation(kotlin("test-common"))
+            implementation(kotlin("test-annotations-common"))
+            implementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.8.1")
         }
         
         androidMain.dependencies {

@@ -2,19 +2,16 @@ package com.drmindit.android
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
+import androidx.activity.compose.setContent
+import com.drmindit.android.ui.theme.DrMinditTheme
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(android.widget.TextView(this).apply {
-            text = "DrMindit App"
-        })
+        setContent {
+            DrMinditTheme {
+                DrMinditApp()
+            }
+        }
     }
-}
-
-@Composable
-fun SimpleText() {
-    Text("Hello")
 }
