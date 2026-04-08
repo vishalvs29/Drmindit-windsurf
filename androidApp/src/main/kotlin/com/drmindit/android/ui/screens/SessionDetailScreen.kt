@@ -2,6 +2,7 @@ package com.drmindit.android.ui.screens
 
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -22,7 +23,11 @@ import com.drmindit.android.ui.components.*
 import com.drmindit.android.ui.theme.*
 
 @Composable
-fun SessionDetailScreen(sessionId: String) {
+fun SessionDetailScreen(
+    sessionId: String,
+    onNavigateBack: () -> Unit = {},
+    onNavigateToPlayer: () -> Unit = {}
+) {
     val scrollState = rememberScrollState()
     val scrollOffset = scrollState.value.toFloat()
     
@@ -51,7 +56,7 @@ fun SessionDetailScreen(sessionId: String) {
             verticalArrangement = Arrangement.spacedBy(24.dp)
         ) {
             // Header with back button
-            SessionDetailHeader()
+            SessionDetailHeader(onNavigateBack = onNavigateBack)
             
             // Hero section with background image
             SessionHeroSection()
@@ -77,7 +82,9 @@ fun SessionDetailScreen(sessionId: String) {
 }
 
 @Composable
-fun SessionDetailHeader() {
+fun SessionDetailHeader(
+    onNavigateBack: () -> Unit = {}
+) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -86,7 +93,7 @@ fun SessionDetailHeader() {
         verticalAlignment = Alignment.CenterVertically
     ) {
         IconButton(
-            onClick = { /* Handle back */ },
+            onClick = onNavigateBack,
             modifier = Modifier.size(48.dp),
             backgroundColor = Color(0x1A4FD1C5),
             contentColor = Color(0xFF4FD1C5)
@@ -446,17 +453,18 @@ fun RelatedSessionCard(session: RelatedSession) {
             }
             
             IconButton(
+                icon = {
+                    Icon(
+                        Icons.Default.PlayArrow,
+                        contentDescription = "Play",
+                        modifier = Modifier.size(20.dp)
+                    )
+                },
                 onClick = { /* Handle play */ },
                 modifier = Modifier.size(40.dp),
                 backgroundColor = session.color.copy(alpha = 0.2f),
                 contentColor = session.color
-            ) {
-                Icon(
-                    Icons.Default.PlayArrow,
-                    contentDescription = "Play",
-                    modifier = Modifier.size(20.dp)
-                )
-            }
+            )
         }
     }
 }
@@ -479,7 +487,7 @@ fun CTASection() {
         
         GradientButton(
             text = "Start Session",
-            onClick = { /* Handle session start */ },
+            onClick = onNavigateToPlayer,
             modifier = Modifier.fillMaxWidth()
         )
         

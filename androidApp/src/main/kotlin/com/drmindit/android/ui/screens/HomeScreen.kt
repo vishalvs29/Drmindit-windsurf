@@ -2,6 +2,7 @@ package com.drmindit.android.ui.screens
 
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
@@ -24,7 +25,13 @@ import com.drmindit.android.ui.components.*
 import com.drmindit.android.ui.theme.*
 
 @Composable
-fun HomeScreen() {
+fun HomeScreen(
+    onNavigateToSession: (String) -> Unit = {},
+    onNavigateToExplore: () -> Unit = {},
+    onNavigateToPlayer: () -> Unit = {},
+    onNavigateToProgress: () -> Unit = {},
+    onNavigateToAnalytics: () -> Unit = {}
+) {
     val scrollState = rememberScrollState()
     val scrollOffset = scrollState.value.toFloat()
     
@@ -99,24 +106,29 @@ fun HomeHeader() {
         
         Row {
             IconButton(
+                icon = {
+                    Icon(Icons.Default.Notifications, contentDescription = "Notifications")
+                },
                 onClick = { /* Handle notifications */ },
                 modifier = Modifier.size(40.dp),
                 backgroundColor = Color(0x1A4FD1C5),
                 contentColor = Color(0xFF4FD1C5)
-            ) {
-                Icon(Icons.Default.Notifications, contentDescription = "Notifications")
-            }
+            )
             
             Spacer(modifier = Modifier.width(8.dp))
             
             IconButton(
-                onClick = { /* Handle search */ },
+                icon = {
+                    Icon(
+                        imageVector = Icons.Default.Search,
+                        contentDescription = "Search"
+                    )
+                },
+                onClick = onNavigateToExplore,
                 modifier = Modifier.size(40.dp),
                 backgroundColor = Color(0x1A4FD1C5),
                 contentColor = Color(0xFF4FD1C5)
-            ) {
-                Icon(Icons.Default.Search, contentDescription = "Search")
-            }
+            )
         }
     }
 }
@@ -287,7 +299,7 @@ fun FeaturedSession() {
                 
                 GradientButton(
                     text = "Start Session",
-                    onClick = { /* Handle session start */ },
+                    onClick = { onNavigateToPlayer() },
                     modifier = Modifier.fillMaxWidth()
                 )
             }
@@ -416,10 +428,17 @@ fun SessionCard(
                 )
             }
             
-            Icon(
-                imageVector = Icons.Default.Search,
-                contentDescription = "Play",
-                tint = Color(0xFF4FD1C5)
+            IconButton(
+                icon = {
+                    Icon(
+                        imageVector = Icons.Default.PlayArrow,
+                        contentDescription = "Play"
+                    )
+                },
+                onClick = { onNavigateToPlayer() },
+                modifier = Modifier.size(48.dp),
+                backgroundColor = Color(0xFF4FD1C5).copy(alpha = 0.2f),
+                contentColor = Color(0xFF4FD1C5)
             )
         }
     }

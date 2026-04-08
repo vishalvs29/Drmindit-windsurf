@@ -23,7 +23,10 @@ import com.drmindit.android.ui.components.*
 import com.drmindit.android.ui.theme.*
 
 @Composable
-fun AnalyticsScreen() {
+fun AnalyticsScreen(
+    onNavigateBack: () -> Unit = {},
+    onNavigateToProgress: () -> Unit = {}
+) {
     // Background gradient
     val backgroundGradient = Brush.verticalGradient(
         colors = listOf(
@@ -275,10 +278,10 @@ fun MoodTrends() {
                 fontWeight = FontWeight.Medium
             )
             
-            LazyColumn(
+            Column(
                 verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
-                items(moodTrends) { trend ->
+                moodTrends.forEach { trend ->
                     MoodTrendCard(trend = trend)
                 }
             }
@@ -462,10 +465,10 @@ fun Insights() {
                 fontWeight = FontWeight.Medium
             )
             
-            LazyColumn(
+            Column(
                 verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
-                items(insights) { insight ->
+                insights.forEach { insight ->
                     InsightCard(insight = insight)
                 }
             }

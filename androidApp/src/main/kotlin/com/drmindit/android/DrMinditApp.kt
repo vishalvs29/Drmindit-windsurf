@@ -37,7 +37,7 @@ fun DrMinditApp() {
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
     
-    // Background gradient for the entire app
+    // Background gradient for entire app
     val backgroundGradient = Brush.verticalGradient(
         colors = listOf(
             Color(0xFF0B1C2C), // Deep navy
@@ -66,23 +66,72 @@ fun DrMinditApp() {
                     modifier = Modifier.fillMaxSize()
                 ) {
                     composable("home") {
-                        HomeScreen()
+                        HomeScreen(
+                            onNavigateToSession = { sessionId ->
+                                navController.navigate("session/$sessionId")
+                            },
+                            onNavigateToExplore = {
+                                navController.navigate("explore")
+                            },
+                            onNavigateToPlayer = {
+                                navController.navigate("player")
+                            },
+                            onNavigateToProgress = {
+                                navController.navigate("progress")
+                            },
+                            onNavigateToAnalytics = {
+                                navController.navigate("analytics")
+                            }
+                        )
                     }
                     
                     composable("explore") {
-                        ExploreScreen()
+                        ExploreScreen(
+                            onNavigateBack = {
+                                navController.popBackStack()
+                            },
+                            onNavigateToSession = { sessionId ->
+                                navController.navigate("session/$sessionId")
+                            },
+                            onNavigateToPlayer = {
+                                navController.navigate("player")
+                            }
+                        )
                     }
                     
                     composable("player") {
-                        SessionPlayerScreen()
+                        SessionPlayerScreen(
+                            onNavigateBack = {
+                                navController.popBackStack()
+                            },
+                            onNavigateToHome = {
+                                navController.navigate("home") {
+                                    popUpTo("home") { inclusive = true }
+                                }
+                            }
+                        )
                     }
                     
                     composable("progress") {
-                        ProgressScreen()
+                        ProgressScreen(
+                            onNavigateToAnalytics = {
+                                navController.navigate("analytics")
+                            },
+                            onNavigateToSession = { sessionId ->
+                                navController.navigate("session/$sessionId")
+                            }
+                        )
                     }
                     
                     composable("analytics") {
-                        AnalyticsScreen()
+                        AnalyticsScreen(
+                            onNavigateBack = {
+                                navController.popBackStack()
+                            },
+                            onNavigateToProgress = {
+                                navController.navigate("progress")
+                            }
+                        )
                     }
                     
                     composable(
@@ -90,7 +139,15 @@ fun DrMinditApp() {
                         arguments = listOf(navArgument("sessionId") { type = NavType.StringType })
                     ) { backStackEntry ->
                         val sessionId = backStackEntry.arguments?.getString("sessionId") ?: ""
-                        SessionDetailScreen(sessionId = sessionId)
+                        SessionDetailScreen(
+                            sessionId = sessionId,
+                            onNavigateBack = {
+                                navController.popBackStack()
+                            },
+                            onNavigateToPlayer = {
+                                navController.navigate("player")
+                            }
+                        )
                     }
                 }
             }
@@ -103,29 +160,5 @@ fun DrMinditApp() {
                 )
             }
         }
-    }
-}
-
-@Composable
-fun SessionDetailScreen(sessionId: String) {
-    // This would be a detailed session screen
-    // For now, we'll show a placeholder
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(20.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp)
-    ) {
-        Text(
-            text = "Session Detail",
-            style = MaterialTheme.typography.headlineMedium,
-            color = Color(0xFFE2E8F0)
-        )
-        
-        Text(
-            text = "Session ID: $sessionId",
-            style = MaterialTheme.typography.bodyLarge,
-            color = Color(0xFFE2E8F0)
-        )
     }
 }

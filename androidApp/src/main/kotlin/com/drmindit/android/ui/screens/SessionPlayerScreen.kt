@@ -21,7 +21,10 @@ import com.drmindit.android.ui.components.*
 import com.drmindit.android.ui.theme.*
 
 @Composable
-fun SessionPlayerScreen() {
+fun SessionPlayerScreen(
+    onNavigateBack: () -> Unit = {},
+    onNavigateToHome: () -> Unit = {}
+) {
     val isPlaying = remember { mutableStateOf(false) }
     val currentTime = remember { mutableStateOf(0f) }
     val totalTime = 900f // 15 minutes in seconds
@@ -61,7 +64,7 @@ fun SessionPlayerScreen() {
             verticalArrangement = Arrangement.SpaceBetween
         ) {
             // Top Bar
-            SessionPlayerTopBar()
+            SessionPlayerTopBar(onNavigateBack = onNavigateBack)
             
             // Main Content
             Column(
@@ -69,8 +72,7 @@ fun SessionPlayerScreen() {
                     .fillMaxWidth()
                     .weight(1f),
                 horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Center,
-                verticalAlignment = Alignment.CenterVertically
+                verticalArrangement = Arrangement.Center
             ) {
                 // Breathing Orb
                 BreathingOrb(
@@ -115,7 +117,9 @@ fun SessionPlayerScreen() {
 }
 
 @Composable
-fun SessionPlayerTopBar() {
+fun SessionPlayerTopBar(
+    onNavigateBack: () -> Unit = {}
+) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -124,7 +128,7 @@ fun SessionPlayerTopBar() {
         verticalAlignment = Alignment.CenterVertically
     ) {
         IconButton(
-            onClick = { /* Handle back */ },
+            onClick = onNavigateBack,
             modifier = Modifier.size(48.dp),
             backgroundColor = Color(0x1A4FD1C5),
             contentColor = Color(0xFF4FD1C5)

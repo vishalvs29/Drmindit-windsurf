@@ -1,6 +1,7 @@
 package com.drmindit.android.ui.screens
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
@@ -26,7 +27,11 @@ import com.drmindit.android.ui.components.*
 import com.drmindit.android.ui.theme.*
 
 @Composable
-fun ExploreScreen() {
+fun ExploreScreen(
+    onNavigateBack: () -> Unit = {},
+    onNavigateToSession: (String) -> Unit = {},
+    onNavigateToPlayer: () -> Unit = {}
+) {
     val searchQuery = remember { mutableStateOf("") }
     val selectedCategory = remember { mutableStateOf("All") }
     val keyboardController = LocalSoftwareKeyboardController.current
@@ -324,16 +329,12 @@ fun FeaturedSessionCard(session: Session) {
             
             GradientButton(
                 text = "Start",
-                onClick = { /* Handle session start */ },
+                onClick = onNavigateToPlayer,
                 modifier = Modifier.fillMaxWidth()
             )
         }
     }
 }
-
-@Composable
-fun PopularSessions() {
-    val popularSessions = listOf(
         Session(
             title = "Evening Meditation",
             description = "Relax and unwind after a long day",
@@ -431,17 +432,18 @@ fun SessionCard(session: Session) {
             }
             
             IconButton(
-                onClick = { /* Handle play */ },
+                icon = {
+                    Icon(
+                        Icons.Default.PlayArrow,
+                        contentDescription = "Play",
+                        modifier = Modifier.size(24.dp)
+                    )
+                },
+                onClick = { onNavigateToPlayer() },
                 modifier = Modifier.size(48.dp),
                 backgroundColor = session.color.copy(alpha = 0.2f),
                 contentColor = session.color
-            ) {
-                Icon(
-                    Icons.Default.PlayArrow,
-                    contentDescription = "Play",
-                    modifier = Modifier.size(24.dp)
-                )
-            }
+            )
         }
     }
 }

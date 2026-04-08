@@ -23,7 +23,10 @@ import com.drmindit.android.ui.components.*
 import com.drmindit.android.ui.theme.*
 
 @Composable
-fun ProgressScreen() {
+fun ProgressScreen(
+    onNavigateToAnalytics: () -> Unit = {},
+    onNavigateToSession: (String) -> Unit = {}
+) {
     // Background gradient
     val backgroundGradient = Brush.verticalGradient(
         colors = listOf(
