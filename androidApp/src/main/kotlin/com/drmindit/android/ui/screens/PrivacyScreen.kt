@@ -27,8 +27,27 @@ import java.util.*
  */
 @Composable
 fun PrivacyScreen(
-    onNavigateBack: () -> Unit = {}
+    onNavigateBack: () -> Unit = {},
+    userViewModel: UserViewModel = viewModel(factory = viewModelFactory { UserViewModel(MockUserRepository()) })
 ) {
+    val user by userViewModel.user.collectAsStateWithLifecycle()
+    var showDeleteDialog by remember { mutableStateOf(false) }
+    var isDeleting by remember { mutableStateOf(false) }
+    
+    // Delete user account
+    suspend fun deleteAllData() {
+        isDeleting.value = true
+        try {
+            val result = userViewModel.deleteAccount()
+            if (result.isSuccess) {
+                // Navigate to login or home screen
+                onNavigateBack()
+            }
+        } catch (e: Exception) {
+            // Show error message
+            isDeleting.value = false
+        }
+    }
     val scrollState = rememberScrollState()
     
     // Mock data - in real app, this would come from SharedPreferences/DataStore
@@ -221,14 +240,19 @@ fun PrivacyScreen(
                     ) {
                         SecondaryButton(
                             text = "Cancel",
-                            onClick = { /* Cancel */ },
+                            onClick = { showDeleteDialog = false },
                             modifier = Modifier.weight(1f)
                         )
                         
                         GradientButton(
-                            text = "Delete All Data",
-                            onClick = { /* Delete all data */ },
-                            modifier = Modifier.weight(1f)
+                            text = if (isDeleting) "Deleting..." else "Delete All Data",
+                            onClick = { 
+                                showDeleteDialog = false
+                                // In a real app, this would be called in a coroutine
+                                // deleteAllData()
+                            },
+                            modifier = Modifier.weight(1f),
+                            enabled = !isDeleting
                         )
                     }
                 }

@@ -11,6 +11,7 @@ interface UserRepository {
     suspend fun getCurrentUser(): Result<User?>
     suspend fun updateUser(user: User): Result<User>
     suspend fun signOut(): Result<Unit>
+    suspend fun deleteAccount(): Result<Unit>
     fun getUserStream(): Flow<User?>
 }
 
@@ -38,6 +39,12 @@ class MockUserRepository : UserRepository {
     
     override suspend fun signOut(): Result<Unit> {
         currentUser = null
+        return Result.success(Unit)
+    }
+    
+    override suspend fun deleteAccount(): Result<Unit> {
+        currentUser = null
+        // In real implementation, this would cascade delete all user data
         return Result.success(Unit)
     }
     
