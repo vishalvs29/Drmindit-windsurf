@@ -144,7 +144,7 @@ fun SessionPlayerTopBar(
             backgroundColor = Color(0x1A4FD1C5),
             contentColor = Color(0xFF4FD1C5)
         ) {
-            Icon(Icons.Default.ArrowBack, contentDescription = "Back")
+            Icon(Icons.Default.ArrowBack, contentDescription = "Navigate back")
         }
         
         Column(
@@ -425,7 +425,13 @@ fun ControlButton(
     ) {
         Icon(
             imageVector = icon,
-            contentDescription = null,
+            contentDescription = when (icon) {
+                Icons.Default.Replay15 -> "Rewind 15 seconds"
+                Icons.Default.Pause -> "Pause"
+                Icons.Default.PlayArrow -> "Play"
+                Icons.Default.Forward15 -> "Forward 15 seconds"
+                else -> "Control button"
+            },
             modifier = Modifier.size(32.dp)
         )
     }

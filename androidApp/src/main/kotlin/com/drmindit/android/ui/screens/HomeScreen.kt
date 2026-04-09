@@ -66,7 +66,7 @@ fun HomeScreen(
             HomeHeader()
             
             // Welcome Message
-            WelcomeSection()
+            WelcomeSection(userName = userName)
             
             // Mood Selector
             MoodSelector()
@@ -122,13 +122,13 @@ fun HomeHeader() {
             IconButton(
                 icon = {
                     Icon(
-                        imageVector = Icons.Default.Search,
-                        contentDescription = "Search"
+                        imageVector = Icons.Default.PlayArrow,
+                        contentDescription = "Play"
                     )
                 },
-                onClick = onNavigateToExplore,
-                modifier = Modifier.size(40.dp),
-                backgroundColor = Color(0x1A4FD1C5),
+                onClick = onNavigateToPlayer,
+                modifier = Modifier.size(48.dp),
+                backgroundColor = Color(0xFF4FD1C5).copy(alpha = 0.2f),
                 contentColor = Color(0xFF4FD1C5)
             )
         }
@@ -136,7 +136,9 @@ fun HomeHeader() {
 }
 
 @Composable
-fun WelcomeSection() {
+fun WelcomeSection(
+    userName: String = "Alex"
+) {
     GlassCard(
         modifier = Modifier.fillMaxWidth(),
         cornerRadius = 20.dp
@@ -146,7 +148,7 @@ fun WelcomeSection() {
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             Text(
-                text = "Welcome back, Alex",
+                text = "Welcome back, $userName",
                 style = MaterialTheme.typography.headlineSmall,
                 color = Color(0xFFE2E8F0),
                 fontWeight = FontWeight.Light
