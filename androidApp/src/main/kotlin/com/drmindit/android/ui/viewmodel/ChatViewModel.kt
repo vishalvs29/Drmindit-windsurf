@@ -32,18 +32,29 @@ class ChatViewModel(
     private val _showCrisisDialog = MutableStateFlow(false)
     val showCrisisDialog: StateFlow<Boolean> = _showCrisisDialog.asStateFlow()
     
+    private val _showCrisisBanner = MutableStateFlow(false)
+    val showCrisisBanner: StateFlow<Boolean> = _showCrisisBanner.asStateFlow()
+    
+    private val _crisisMessage = MutableStateFlow("")
+    val crisisMessage: StateFlow<String> = _crisisMessage.asStateFlow()
+    
     fun updateInput(input: String) {
         _currentInput.value = input
         
-        // Real-time crisis detection
-        if (input.isNotEmpty()) {
-            val alert = crisisDetector.analyzeText(input)
-            if (alert.level != CrisisLevel.NONE) {
-                _crisisAlert.value = alert
-                if (alert.requiresImmediateAction) {
-                    _showCrisisDialog.value = true
-                }
+        // Real-time crisis detection with immediate banner
+        val alert = crisisDetector.analyzeText(input)
+        if (alert.level != CrisisLevel.NONE) {
+            _crisisMessage.value = "I'm here with you. You're not alone."
+            _showCrisisBanner.value = true
+            
+            // Only show dialog for immediate crises
+            if (alert.requiresImmediateAction) {
+                _showCrisisDialog.value = true
             }
+        } else {
+            _crisisMessage.value = ""
+            _showCrisisBanner.value = false
+            _showCrisisDialog.value = false
         }
     }
     
@@ -60,6 +71,11 @@ class ChatViewModel(
                 timestamp = System.currentTimeMillis()
             )
             _messages.value = _messages.value + userMessage
+            
+            // Clear crisis states after sending
+            _crisisMessage.value = ""
+            _showCrisisBanner.value = false
+            _showCrisisDialog.value = false
             
             // Clear input
             _currentInput.value = ""

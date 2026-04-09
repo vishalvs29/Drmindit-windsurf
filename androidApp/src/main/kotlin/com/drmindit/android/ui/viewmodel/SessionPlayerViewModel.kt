@@ -19,6 +19,11 @@ class SessionPlayerViewModel : ViewModel() {
     private val _uiState = MutableStateFlow(SessionPlayerUiState())
     val uiState: StateFlow<SessionPlayerUiState> = _uiState.asStateFlow()
     
+    private val _moodBefore = MutableStateFlow(5.0f) // Default neutral mood
+    private val _moodAfter = MutableStateFlow(5.0f) // Default neutral mood
+    val moodBefore: StateFlow<Float> = _moodBefore.asStateFlow()
+    val moodAfter: StateFlow<Float> = _moodAfter.asStateFlow()
+    
     init {
         setupExoPlayer()
     }
@@ -90,10 +95,14 @@ class SessionPlayerViewModel : ViewModel() {
     fun loadSession(
         title: String,
         audioUrl: String,
-        duration: Int = 600
+        duration: Float = 900f
     ) {
         viewModelScope.launch {
             try {
+                // Reset mood tracking for new session
+                _moodBefore.value = 5.0f // Neutral mood before session
+                _moodAfter.value = 5.0f // Will be updated after session
+                
                 _uiState.value = _uiState.value.copy(
                     isLoading = true,
                     error = null,
@@ -109,7 +118,7 @@ class SessionPlayerViewModel : ViewModel() {
                 exoPlayer.prepare()
                 
                 _uiState.value = _uiState.value.copy(
-                    duration = duration,
+                    duration = duration.toInt(),
                     currentPosition = 0f,
                     isLoading = false
                 )

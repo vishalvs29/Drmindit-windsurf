@@ -21,6 +21,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.drmindit.android.domain.schedule.SessionScheduler
 import com.drmindit.android.ui.components.*
 import com.drmindit.android.ui.theme.*
 
@@ -247,65 +248,92 @@ fun MoodChip(
 
 @Composable
 fun FeaturedSession() {
-    GlassCardWithGradient(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(200.dp),
+    val scheduler = SessionScheduler()
+    val recommendedDuration = scheduler.getRecommendedSessionDuration()
+    val sessionType = scheduler.getSessionType()
+    
+    GlassCard(
+        modifier = Modifier.fillMaxWidth(),
         cornerRadius = 24.dp
     ) {
         Box(
             modifier = Modifier
-                .fillMaxSize()
-                .background(
-                    Brush.radialGradient(
-                        colors = listOf(
-                            Color(0x1A4FD1C5),
-                            Color(0x1A667EEA),
-                            Color(0x0DFFFFFF)
+                .fillMaxWidth()
+                .height(200.dp)
+        ) {
+            // Background gradient
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(
+                        Brush.radialGradient(
+                            colors = listOf(
+                                Color(0x664FD1C5), // Teal with higher opacity
+                                Color(0x33667EEA), // Purple with opacity
+                                Color.Transparent
+                            )
                         )
                     )
-                )
-                .padding(24.dp)
-        ) {
-            Column(
-                modifier = Modifier.fillMaxSize(),
-                verticalArrangement = Arrangement.SpaceBetween
             ) {
-                Column {
+                // Content
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(24.dp)
+                        .background(
+                            Brush.verticalGradient(
+                                colors = listOf(
+                                    Color.Transparent,
+                                    Color(0x0D000000), // Transparent to black
+                                    Color(0x0D000000)
+                                ),
+                                startY = 0.2f,
+                                endY = 1f
+                            )
+                        )
+                        .clip(RoundedCornerShape(20.dp))
+                ) {
+                    Spacer(modifier = Modifier.height(16.dp))
+                    
+                    Text(
+                        text = sessionType,
+                        style = MaterialTheme.typography.titleMedium,
+                        color = Color(0xFFE2E8F0),
+                        fontWeight = FontWeight.Bold
+                    )
+                    
+                    Spacer(modifier = Modifier.height(8.dp))
+                    
                     Text(
                         text = "Evening Meditation",
                         style = MaterialTheme.typography.headlineSmall,
                         color = Color(0xFFE2E8F0),
-                        fontWeight = FontWeight.SemiBold
+                        fontWeight = FontWeight.Light
                     )
+                    
                     Text(
-                        text = "Deep relaxation for better sleep",
+                        text = "$recommendedDuration minutes",
                         style = MaterialTheme.typography.bodyMedium,
                         color = Color(0xFFE2E8F0).copy(alpha = 0.7f)
                     )
-                    Spacer(modifier = Modifier.height(8.dp))
+                    
+                    Spacer(modifier = Modifier.height(16.dp))
+                    
                     Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(16.dp)
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
-                        Text(
-                            text = "15 min",
-                            style = MaterialTheme.typography.bodySmall,
-                            color = Color(0xFF4FD1C5)
-                        )
-                        Text(
-                            text = "Sleep",
-                            style = MaterialTheme.typography.bodySmall,
-                            color = Color(0xFF667EEA)
-                        )
+                        InfoChip("Sleep", Color(0xFF667EEA))
+                        InfoChip("$recommendedDuration min", Color(0xFF4FD1C5))
                     }
+                    
+                    Spacer(modifier = Modifier.height(20.dp))
+                    
+                    GradientButton(
+                        text = "Start Session",
+                        onClick = { onNavigateToPlayer() },
+                        modifier = Modifier.fillMaxWidth()
+                    )
                 }
-                
-                GradientButton(
-                    text = "Start Session",
-                    onClick = { onNavigateToPlayer() },
-                    modifier = Modifier.fillMaxWidth()
-                )
             }
         }
     }

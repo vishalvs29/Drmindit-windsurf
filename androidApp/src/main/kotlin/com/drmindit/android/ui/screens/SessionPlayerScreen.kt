@@ -35,7 +35,7 @@ fun SessionPlayerScreen(
         sessionPlayerViewModel.loadSession(
             title = "Evening Meditation",
             audioUrl = "https://www.soundhelix.com/files/mp3s/SoundHelix-Song-1.mp3", // Sample audio URL
-            duration = 900 // 15 minutes
+            duration = 900f // 15 minutes
         )
     }
     
