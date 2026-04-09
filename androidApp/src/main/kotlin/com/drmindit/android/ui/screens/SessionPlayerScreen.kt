@@ -17,23 +17,33 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.drmindit.android.ui.components.*
 import com.drmindit.android.ui.theme.*
+import com.drmindit.android.ui.viewmodel.SessionPlayerViewModel
 
 @Composable
 fun SessionPlayerScreen(
     onNavigateBack: () -> Unit = {},
-    onNavigateToHome: () -> Unit = {}
+    onNavigateToHome: () -> Unit = {},
+    sessionPlayerViewModel: SessionPlayerViewModel = viewModel()
 ) {
-    val isPlaying = remember { mutableStateOf(false) }
-    val currentTime = remember { mutableStateOf(0f) }
-    val totalTime = 900f // 15 minutes in seconds
+    val uiState by sessionPlayerViewModel.uiState.collectAsState()
     
-    // Breathing animation
+    // Load a sample session on screen enter
+    LaunchedEffect(Unit) {
+        sessionPlayerViewModel.loadSession(
+            title = "Evening Meditation",
+            audioUrl = "https://www.soundhelix.com/files/mp3s/SoundHelix-Song-1.mp3", // Sample audio URL
+            duration = 900 // 15 minutes
+        )
+    }
+    
+    // Breathing animation synced with playback
     val breathingAnimation = rememberInfiniteTransition()
     val breathingScale by breathingAnimation.animateFloat(
         initialValue = 1f,
-        targetValue = 1.2f,
+        targetValue = if (uiState.isPlaying) 1.2f else 1f,
         animationSpec = infiniteRepeatable(
             animation = tween(4000, easing = EaseInOutCubic),
             repeatMode = RepeatMode.Reverse
@@ -77,16 +87,16 @@ fun SessionPlayerScreen(
                 // Breathing Orb
                 BreathingOrb(
                     scale = breathingScale,
-                    isPlaying = isPlaying.value
+                    isPlaying = uiState.isPlaying
                 )
                 
                 Spacer(modifier = Modifier.height(40.dp))
                 
                 // Timer
                 TimerDisplay(
-                    currentTime = currentTime.value,
-                    totalTime = totalTime,
-                    isPlaying = isPlaying.value
+                    currentTime = uiState.currentPosition,
+                    totalTime = uiState.duration.toFloat(),
+                    isPlaying = uiState.isPlaying
                 )
                 
                 Spacer(modifier = Modifier.height(60.dp))
@@ -98,18 +108,19 @@ fun SessionPlayerScreen(
                 
                 // Progress Bar
                 ProgressBar(
-                    currentTime = currentTime.value,
-                    totalTime = totalTime
+                    progress = sessionPlayerViewModel.progress,
+                    currentTime = sessionPlayerViewModel.formattedCurrentTime,
+                    totalTime = sessionPlayerViewModel.formattedTotalTime
                 )
                 
                 Spacer(modifier = Modifier.height(60.dp))
                 
                 // Controls
                 PlayerControls(
-                    isPlaying = isPlaying.value,
-                    onPlayPause = { isPlaying.value = !isPlaying.value },
-                    onRewind = { currentTime.value = (currentTime.value - 15f).coerceAtLeast(0f) },
-                    onForward = { currentTime.value = (currentTime.value + 15f).coerceAtMost(totalTime) }
+                    isPlaying = uiState.isPlaying,
+                    onPlayPause = { sessionPlayerViewModel.playPause() },
+                    onRewind = { sessionPlayerViewModel.skipBackward(15) },
+                    onForward = { sessionPlayerViewModel.skipForward(15) }
                 )
             }
         }

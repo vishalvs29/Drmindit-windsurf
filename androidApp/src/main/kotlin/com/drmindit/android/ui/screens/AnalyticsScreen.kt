@@ -199,10 +199,10 @@ fun SessionStats() {
                 fontWeight = FontWeight.Medium
             )
             
-            LazyColumn(
+            Column(
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
-                items(stats) { stat ->
+                stats.forEach { stat ->
                     SessionStatCard(stat = stat)
                 }
             }

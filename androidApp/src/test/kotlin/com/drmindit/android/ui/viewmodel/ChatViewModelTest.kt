@@ -1,10 +1,10 @@
 package com.drmindit.android.ui.viewmodel
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
-import com.drmindit.android.crisis.CrisisDetector
-import com.drmindit.android.crisis.CrisisEscalationManager
-import com.drmindit.shared.domain.model.*
-import com.drmindit.shared.domain.repository.ChatRepository
+import com.drmindit.android.domain.crisis.CrisisDetector
+import com.drmindit.android.ui.viewmodel.ChatViewModel
+import com.drmindit.android.domain.model.CrisisLevel
+import com.drmindit.android.domain.model.CrisisAlert
 import io.mockk.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi

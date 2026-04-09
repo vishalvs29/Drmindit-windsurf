@@ -1,14 +1,35 @@
-import { Inter } from 'next/font/google'
-import { NextSeo } from 'next-seo'
+import localFont from 'next/font/local'
+import { Metadata } from 'next'
 import './globals.css'
 
-const inter = Inter({ subsets: ['latin'] })
+const inter = localFont({
+  src: [
+    {
+      path: './fonts/Inter-Regular.woff2',
+      weight: '400',
+      style: 'normal',
+    },
+    {
+      path: './fonts/Inter-Medium.woff2',
+      weight: '500',
+      style: 'normal',
+    },
+    {
+      path: './fonts/Inter-Bold.woff2',
+      weight: '700',
+      style: 'normal',
+    },
+  ],
+  variable: '--font-inter',
+})
 
-export const metadata = {
+export const metadata: Metadata = {
   title: 'DrMindit – Mental Health App for Stress, Sleep & Focus',
   description: 'Reduce stress, improve sleep, and stay focused with AI-guided sessions and relaxing audio like rain and 432Hz. Start your mental wellness journey today.',
   keywords: 'mental health app, stress relief, sleep app, focus app, anxiety relief, meditation, wellness, therapy, audio therapy',
   authors: [{ name: 'DrMindit' }],
+  robots: 'index, follow',
+  viewport: 'width=device-width, initial-scale=1',
   openGraph: {
     title: 'DrMindit – Mental Health App',
     description: 'AI-powered mental wellness for students, professionals, and high-pressure roles',
@@ -29,8 +50,6 @@ export const metadata = {
     site: '@drmindit',
     cardType: 'summary_large_image',
   },
-  robots: 'index, follow',
-  viewport: 'width=device-width, initial-scale=1',
 }
 
 export default function RootLayout({

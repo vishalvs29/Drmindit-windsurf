@@ -17,25 +17,33 @@ export default function HeroSection({ onCTAClick }: HeroSectionProps) {
       
       {/* Animated background particles */}
       <div className="absolute inset-0">
-        {[...Array(20)].map((_, i) => (
-          <motion.div
-            key={i}
-            className="absolute w-2 h-2 bg-white/20 rounded-full"
-            style={{
-              left: `${Math.random() * 100}%`,
-              top: `${Math.random() * 100}%`,
-            }}
-            animate={{
-              y: [0, -100, 0],
-              opacity: [0, 1, 0],
-            }}
-            transition={{
-              duration: 3 + Math.random() * 4,
-              repeat: Infinity,
-              delay: Math.random() * 2,
-            }}
-          />
-        ))}
+        {[...Array(20)].map((_, i) => {
+          // Use deterministic positions based on index to avoid hydration mismatch
+          const angle = (i / 20) * Math.PI * 2
+          const radius = 30 + (i % 3) * 20
+          const x = 50 + Math.cos(angle) * radius / 100
+          const y = 50 + Math.sin(angle) * radius / 100
+          
+          return (
+            <motion.div
+              key={i}
+              className="absolute w-2 h-2 bg-white/20 rounded-full"
+              style={{
+                left: `${x}%`,
+                top: `${y}%`,
+              }}
+              animate={{
+                y: [0, -20, 0],
+                opacity: [0, 0.5, 0],
+              }}
+              transition={{
+                duration: 3 + (i % 3) * 2,
+                repeat: Infinity,
+                delay: (i % 4) * 0.5,
+              }}
+            />
+          )
+        })}
       </div>
 
       <div className="container mx-auto px-6 relative z-10">

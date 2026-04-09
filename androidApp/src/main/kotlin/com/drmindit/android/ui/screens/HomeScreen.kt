@@ -30,8 +30,10 @@ fun HomeScreen(
     onNavigateToExplore: () -> Unit = {},
     onNavigateToPlayer: () -> Unit = {},
     onNavigateToProgress: () -> Unit = {},
-    onNavigateToAnalytics: () -> Unit = {}
+    onNavigateToAnalytics: () -> Unit = {},
+    userViewModel: UserViewModel? = null
 ) {
+    val userName by remember { mutableStateOf("Alex") } // TODO: Get from UserViewModel
     val scrollState = rememberScrollState()
     val scrollOffset = scrollState.value.toFloat()
     

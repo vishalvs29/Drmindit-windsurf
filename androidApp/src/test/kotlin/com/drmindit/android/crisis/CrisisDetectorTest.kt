@@ -1,7 +1,8 @@
 package com.drmindit.android.crisis
 
-import com.drmindit.shared.domain.model.MoodCategory
-import com.drmindit.shared.domain.model.RiskLevel
+import com.drmindit.android.domain.crisis.CrisisDetector
+import com.drmindit.android.domain.model.CrisisLevel
+import com.drmindit.android.domain.model.CrisisAlert
 import org.junit.Before
 import org.junit.Test
 import kotlin.test.assertEquals
@@ -18,152 +19,82 @@ class CrisisDetectorTest {
     }
     
     @Test
-    fun `analyzeMessage with suicidal keywords returns critical risk`() {
+    fun `analyzeText with suicidal keywords returns immediate crisis`() {
         // Given
         val message = "I feel suicidal and want to end my life"
-        val mood = null
         
         // When
-        val assessment = crisisDetector.analyzeMessage(message, mood)
+        val alert = crisisDetector.analyzeText(message)
         
         // Then
-        assertEquals(RiskLevel.CRITICAL, assessment.riskLevel)
-        assertTrue(assessment.hasCrisisKeywords)
-        assertFalse(assessment.isLowMood)
-        assertTrue(assessment.detectedKeywords.isNotEmpty())
-        assertTrue(assessment.emergencyHelplines.isNotEmpty())
+        assertEquals(CrisisLevel.IMMEDIATE, alert.level)
+        assertTrue(alert.requiresImmediateAction)
     }
     
     @Test
-    fun `analyzeMessage with hopeless keyword returns high risk`() {
+    fun `analyzeText with hopeless keyword returns high crisis`() {
         // Given
         val message = "I feel hopeless and there's no point"
-        val mood = null
         
         // When
-        val assessment = crisisDetector.analyzeMessage(message, mood)
+        val alert = crisisDetector.analyzeText(message)
         
         // Then
-        assertEquals(RiskLevel.HIGH, assessment.riskLevel)
-        assertTrue(assessment.hasCrisisKeywords)
-        assertFalse(assessment.isLowMood)
-        assertTrue(assessment.detectedKeywords.contains("hopeless"))
+        assertEquals(CrisisLevel.HIGH, alert.level)
+        assertFalse(alert.requiresImmediateAction)
+        assertTrue(alert.detectedKeywords.contains("hopeless"))
     }
     
     @Test
-    fun `analyzeMessage with low mood returns medium risk`() {
+    fun `analyzeText with low mood returns medium crisis`() {
         // Given
         val message = "I'm having a bad day"
-        val mood = MoodCategory.LOW
         
         // When
-        val assessment = crisisDetector.analyzeMessage(message, mood)
+        val alert = crisisDetector.analyzeText(message)
         
         // Then
-        assertEquals(RiskLevel.MEDIUM, assessment.riskLevel)
-        assertFalse(assessment.hasCrisisKeywords)
-        assertTrue(assessment.isLowMood)
+        assertEquals(CrisisLevel.MEDIUM, alert.level)
+        assertFalse(alert.requiresImmediateAction)
     }
     
     @Test
-    fun `analyzeMessage with normal mood returns low risk`() {
+    fun `analyzeText with normal mood returns low crisis`() {
         // Given
         val message = "I'm feeling okay today"
-        val mood = MoodCategory.NEUTRAL
         
         // When
-        val assessment = crisisDetector.analyzeMessage(message, mood)
+        val alert = crisisDetector.analyzeText(message)
         
         // Then
-        assertEquals(RiskLevel.LOW, assessment.riskLevel)
-        assertFalse(assessment.hasCrisisKeywords)
-        assertFalse(assessment.isLowMood)
-        assertTrue(assessment.emergencyHelplines.isEmpty())
+        assertEquals(CrisisLevel.LOW, alert.level)
+        assertFalse(alert.requiresImmediateAction)
     }
     
     @Test
-    fun `analyzeMessage with very low mood and crisis keywords returns critical risk`() {
+    fun `analyzeText with very low mood and crisis keywords returns immediate crisis`() {
         // Given
         val message = "I want to die"
-        val mood = MoodCategory.VERY_LOW
         
         // When
-        val assessment = crisisDetector.analyzeMessage(message, mood)
+        val alert = crisisDetector.analyzeText(message)
         
         // Then
-        assertEquals(RiskLevel.CRITICAL, assessment.riskLevel)
-        assertTrue(assessment.hasCrisisKeywords)
-        assertTrue(assessment.isLowMood)
+        assertEquals(CrisisLevel.IMMEDIATE, alert.level)
+        assertTrue(alert.requiresImmediateAction)
     }
     
     @Test
-    fun `updateCrisisState with critical assessment sets critical state`() {
+    fun `analyzeText with critical alert sets immediate action`() {
         // Given
-        val assessment = CrisisAssessment(
-            riskLevel = RiskLevel.CRITICAL,
-            hasCrisisKeywords = true,
-            isLowMood = false,
-            detectedKeywords = listOf("suicidal"),
-            emergencyHelplines = crisisDetector.getEmergencyHelplines()
-        )
+        val message = "I want to kill myself"
         
         // When
-        crisisDetector.updateCrisisState(assessment)
+        val alert = crisisDetector.analyzeText(message)
         
         // Then
-        val currentState = crisisDetector.getCurrentCrisisState()
-        assertTrue(currentState is CrisisState.Critical)
-    }
-    
-    @Test
-    fun `updateCrisisState with high risk assessment sets high risk state`() {
-        // Given
-        val assessment = CrisisAssessment(
-            riskLevel = RiskLevel.HIGH,
-            hasCrisisKeywords = true,
-            isLowMood = false,
-            detectedKeywords = listOf("hopeless"),
-            emergencyHelplines = crisisDetector.getEmergencyHelplines()
-        )
-        
-        // When
-        crisisDetector.updateCrisisState(assessment)
-        
-        // Then
-        val currentState = crisisDetector.getCurrentCrisisState()
-        assertTrue(currentState is CrisisState.HighRisk)
-    }
-    
-    @Test
-    fun `resetCrisisState returns to normal state`() {
-        // Given
-        val assessment = CrisisAssessment(
-            riskLevel = RiskLevel.HIGH,
-            hasCrisisKeywords = true,
-            isLowMood = false,
-            detectedKeywords = listOf("hopeless"),
-            emergencyHelplines = crisisDetector.getEmergencyHelplines()
-        )
-        crisisDetector.updateCrisisState(assessment)
-        
-        // When
-        crisisDetector.resetCrisisState()
-        
-        // Then
-        val currentState = crisisDetector.getCurrentCrisisState()
-        assertEquals(CrisisState.Normal, currentState)
-    }
-    
-    @Test
-    fun `getEmergencyHelplines returns Indian helplines`() {
-        // When
-        val helplines = crisisDetector.getEmergencyHelplines()
-        
-        // Then
-        assertTrue(helplines.isNotEmpty())
-        assertTrue(helplines.any { it.name.contains("iCall", ignoreCase = true) })
-        assertTrue(helplines.any { it.name.contains("Vandrevala", ignoreCase = true) })
-        assertTrue(helplines.all { it.phone.isNotBlank() })
-        assertTrue(helplines.all { it.availableHours.isNotBlank() })
+        assertEquals(CrisisLevel.IMMEDIATE, alert.level)
+        assertTrue(alert.requiresImmediateAction)
+        assertTrue(alert.riskFactors?.contains("suicidal") == true)
     }
 }
