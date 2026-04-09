@@ -1,20 +1,22 @@
 package com.drmindit.android.ui.viewmodel
 
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
 import androidx.media3.exoplayer.ExoPlayer
-import androidx.media3.exoplayer.SimpleExoPlayer
+import androidx.media3.exoplayer.DefaultLoadControl
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.delay
+import android.app.Application
 
-class SessionPlayerViewModel : ViewModel() {
+class SessionPlayerViewModel(application: Application) : AndroidViewModel(application) {
     
-    private val exoPlayer = SimpleExoPlayer.Builder().build()
+    private val exoPlayer = ExoPlayer.Builder(application).build()
     
     private val _uiState = MutableStateFlow(SessionPlayerUiState())
     val uiState: StateFlow<SessionPlayerUiState> = _uiState.asStateFlow()

@@ -17,8 +17,11 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
+import com.drmindit.android.domain.download.SessionDownloadManager
+import com.drmindit.android.domain.schedule.SessionScheduler
 import com.drmindit.android.ui.components.*
+import com.drmindit.android.ui.components.HapticBreathingGuide
+import com.drmindit.android.ui.components.MoodRatingDialog
 import com.drmindit.android.ui.theme.*
 import com.drmindit.android.ui.viewmodel.SessionPlayerViewModel
 
@@ -37,6 +40,18 @@ fun SessionPlayerScreen(
             audioUrl = "https://www.soundhelix.com/files/mp3s/SoundHelix-Song-1.mp3", // Sample audio URL
             duration = 900f // 15 minutes
         )
+    }
+    
+    // Mood rating state
+    var showMoodRatingBefore by remember { mutableStateOf(false) }
+    var showMoodRatingAfter by remember { mutableStateOf(false) }
+    var currentMood by remember { mutableStateOf(5.0f) }
+    
+    // Show mood rating after session completion
+    LaunchedEffect(uiState.isCompleted) {
+        if (uiState.isCompleted && !showMoodRatingAfter) {
+            showMoodRatingAfter = true
+        }
     }
     
     // Breathing animation synced with playback
@@ -77,18 +92,70 @@ fun SessionPlayerScreen(
             SessionPlayerTopBar(onNavigateBack = onNavigateBack)
             
             // Main Content
-            Column(
+            Box(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .weight(1f),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Center
+                    .fillMaxSize()
+                    .weight(1f)
             ) {
-                // Breathing Orb
-                BreathingOrb(
-                    scale = breathingScale,
-                    isPlaying = uiState.isPlaying
-                )
+                // Mood rating before session
+                if (showMoodRatingBefore) {
+                    MoodRatingDialog(
+                        currentMood = currentMood.value,
+                        onMoodSelected = { mood ->
+                            currentMood.value = mood
+                            sessionPlayerViewModel.setMoodBefore(mood)
+                            showMoodRatingBefore = false
+                        },
+                        onDismiss = { showMoodRatingBefore = false }
+                    )
+                }
+                
+                // Mood rating after session
+                if (showMoodRatingAfter) {
+                    MoodRatingDialog(
+                        currentMood = currentMood.value,
+                        onMoodSelected = { mood ->
+                            currentMood.value = mood
+                            sessionPlayerViewModel.setMoodAfter(mood)
+                            showMoodRatingAfter = false
+                        },
+                        onDismiss = { showMoodRatingAfter = false }
+                    )
+                }
+                
+                // Session content
+                if (!showMoodRatingBefore && !showMoodRatingAfter) {
+                    Column(
+                        modifier = Modifier.fillMaxSize(),
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.Center
+                    ) {
+                        // Breathing Orb with Haptic Guide
+                        Box(
+                            modifier = Modifier.fillMaxWidth(),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            BreathingOrb(
+                                scale = breathingScale,
+                                isPlaying = uiState.isPlaying
+                            )
+                            
+                            // Haptic breathing guide overlay
+                            if (uiState.isPlaying) {
+                                HapticBreathingGuide(
+                                    isPlaying = uiState.isPlaying,
+                                    breathingPhase = when {
+                                        val progress = uiState.currentPosition / uiState.duration
+                                        when {
+                                            progress < 0.25f -> "Inhale"
+                                            progress < 0.5f -> "Hold"
+                                            progress < 0.75f -> "Exhale"
+                                            else -> "Pause"
+                                        }
+                                    }
+                                )
+                            }
+                        }
                 
                 Spacer(modifier = Modifier.height(40.dp))
                 

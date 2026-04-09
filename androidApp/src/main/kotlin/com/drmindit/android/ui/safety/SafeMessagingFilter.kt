@@ -6,26 +6,26 @@ package com.drmindit.android.ui.safety
  */
 object SafeMessagingFilter {
     
-    private val unsafeWords = setOf(
-        // Never use these words
-        "commit", "suicide", "kill", "harm", "hurt", "injure", "end", "die",
-        "cut", "harmful", "dangerous", "risk", "threaten", "violence"
-    )
-    
     private val unsafePhrases = setOf(
+        // Never use these phrases - actual harmful combinations
         "commit suicide", "kill yourself", "harm yourself", "end your life",
-        "ways to die", "how to kill", "suicide methods"
+        "ways to die", "how to kill", "suicide methods", "cut yourself",
+        "harm yourself", "end it all", "want to die", "kill myself"
     )
     
     private val safeAlternatives = mapOf(
-        "commit" to "harm thoughts",
-        "kill" to "hurt yourself",
-        "harm" to "hurt yourself",
-        "end" to "end your life",
-        "die" to "pass away",
-        "cut" to "hurt yourself",
-        "suicide" to "having thoughts of ending your life",
-        "violence" to "aggressive thoughts"
+        "commit suicide" to "having thoughts of ending your life",
+        "kill yourself" to "hurt yourself",
+        "harm yourself" to "hurt yourself",
+        "end your life" to "end your life",
+        "ways to die" to "thoughts of ending your life",
+        "how to kill" to "thoughts of hurting yourself",
+        "suicide methods" to "methods of self-harm",
+        "cut yourself" to "hurt yourself",
+        "harm yourself" to "hurt yourself",
+        "end it all" to "end your life",
+        "want to die" to "want to end your life",
+        "kill myself" to "hurt myself"
     )
     
     /**
@@ -36,16 +36,11 @@ object SafeMessagingFilter {
     fun filterResponse(originalResponse: String): String {
         var filteredResponse = originalResponse.lowercase()
         
-        // Replace unsafe words with safe alternatives
-        unsafeWords.forEach { unsafe ->
+        // Replace unsafe phrases with safe alternatives (phrase-level only)
+        unsafePhrases.forEach { unsafe ->
             safeAlternatives[unsafe]?.let { safe ->
                 filteredResponse = filteredResponse.replace(unsafe, safe)
             }
-        }
-        
-        // Remove unsafe phrases entirely
-        unsafePhrases.forEach { unsafe ->
-            filteredResponse = filteredResponse.replace(unsafe.lowercase(), "[removed for safety]")
         }
         
         // Add hope-promoting language

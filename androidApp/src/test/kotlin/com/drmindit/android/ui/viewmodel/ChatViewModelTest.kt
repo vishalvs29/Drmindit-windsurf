@@ -26,46 +26,25 @@ class ChatViewModelTest {
     
     private val testDispatcher = UnconfinedTestDispatcher()
     
-    private lateinit var chatRepository: ChatRepository
     private lateinit var crisisDetector: CrisisDetector
-    private lateinit var crisisEscalationManager: CrisisEscalationManager
     private lateinit var chatViewModel: ChatViewModel
     
     @Before
     fun setup() {
         Dispatchers.setMain(testDispatcher)
         
-        chatRepository = mockk()
         crisisDetector = mockk()
-        crisisEscalationManager = mockk()
+        
+        // Create ChatViewModel with only CrisisDetector (actual constructor)
+        chatViewModel = ChatViewModel(crisisDetector = crisisDetector)
         
         // Setup default mock behaviors
-        every { chatRepository.getActiveChatSession(any()) } returns Result.success(null)
-        every { chatRepository.createChatSession(any()) } returns Result.success(
-            ChatSession(
-                id = "test-session",
-                userId = "test-user",
-                title = "Test Session",
-                messages = emptyList(),
-                createdAt = System.currentTimeMillis(),
-                updatedAt = System.currentTimeMillis(),
-                isActive = true
-            )
-        )
-        every { chatRepository.getMessages(any(), any()) } returns flowOf(emptyList())
-        every { crisisDetector.analyzeMessage(any(), any()) } returns CrisisAssessment(
-            riskLevel = RiskLevel.LOW,
-            hasCrisisKeywords = false,
-            isLowMood = false,
+        every { crisisDetector.analyzeText(any()) } returns CrisisAlert(
+            level = CrisisLevel.NONE,
+            requiresImmediateAction = false,
             detectedKeywords = emptyList(),
-            emergencyHelplines = emptyList()
+            riskFactors = null
         )
-        every { crisisDetector.crisisState } returns flowOf(com.drmindit.android.crisis.CrisisState.Normal)
-        every { crisisDetector.getCurrentCrisisState() } returns com.drmindit.android.crisis.CrisisState.Normal
-        every { crisisDetector.getEmergencyHelplines() } returns emptyList()
-        every { crisisEscalationManager.handleCrisisEvent(any(), any(), any(), any()) } just Runs
-        
-        chatViewModel = ChatViewModel(chatRepository, crisisDetector, crisisEscalationManager)
     }
     
     @After
@@ -76,24 +55,63 @@ class ChatViewModelTest {
     @Test
     fun `sendMessage with normal message processes successfully`() {
         // Given
-        val message = "Hello, how are you?"
-        val aiResponse = ChatMessage(
-            id = "ai-response",
-            text = "I'm doing well, thank you!",
-            sender = MessageSender.AI,
-            timestamp = System.currentTimeMillis(),
-            messageType = MessageType.TEXT
-        )
-        
-        every { chatRepository.sendMessage(any(), any(), any()) } returns Result.success(aiResponse)
+        val testInput = "I'm feeling anxious today"
         
         // When
-        chatViewModel.sendMessage(message)
+        chatViewModel.updateInput(testInput)
         
         // Then
-        verify { chatRepository.sendMessage(any(), message, any()) }
-        verify { crisisDetector.analyzeMessage(message, null) }
-        assertFalse(chatViewModel.showCrisisModal.value)
+        chatViewModel.sendMessage()
+        
+        // Assert
+        val messages = chatViewModel.messages.value
+        assertEquals(2, messages.size) // Initial greeting + response
+        assertEquals("I'm feeling anxious today", messages[0].text)
+        assertTrue(messages[0].isFromUser)
+        assertTrue(messages[1].isFromUser == false)
+        assertTrue(messages[1].text.contains("overwhelming"))
+    }
+    
+    @Test
+    fun `crisis detection triggers banner for high level`() {
+        // Given
+        val crisisInput = "I want to hurt myself"
+        
+        // When
+        chatViewModel.updateInput(crisisInput)
+        
+        // Then
+        val showBanner = chatViewModel.showCrisisBanner.value
+        val showDialog = chatViewModel.showCrisisDialog.value
+        
+        // Assert
+        assertTrue(showBanner, "Crisis banner should show for high level")
+        assertFalse(showDialog, "Dialog should not show for high level")
+    }
+    
+    @Test
+    fun `crisis detection triggers dialog for immediate level`() {
+        // Given
+        val immediateInput = "I want to kill myself"
+        
+        // Mock crisis detector to return immediate level
+        every { crisisDetector.analyzeText(immediateInput) } returns CrisisAlert(
+            level = CrisisLevel.IMMEDIATE,
+            requiresImmediateAction = true,
+            detectedKeywords = listOf("kill", "myself"),
+            riskFactors = null
+        )
+        
+        // When
+        chatViewModel.updateInput(immediateInput)
+        
+        // Then
+        val showBanner = chatViewModel.showCrisisBanner.value
+        val showDialog = chatViewModel.showCrisisDialog.value
+        
+        // Assert
+        assertTrue(showBanner, "Crisis banner should show for immediate level")
+        assertTrue(showDialog, "Dialog should show for immediate level")
     }
     
     @Test

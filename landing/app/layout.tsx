@@ -60,23 +60,6 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
-        <NextSeo
-          title={metadata.title}
-          description={metadata.description}
-          canonical="https://drmindit.com"
-          openGraph={metadata.openGraph}
-          twitter={metadata.twitter}
-          additionalMetaTags={[
-            {
-              name: 'keywords',
-              content: metadata.keywords,
-            },
-            {
-              name: 'author',
-              content: metadata.authors[0].name,
-            },
-          ]}
-        />
         {children}
       </body>
     </html>

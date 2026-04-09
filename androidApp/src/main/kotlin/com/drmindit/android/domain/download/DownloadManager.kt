@@ -15,7 +15,7 @@ import java.io.File
 /**
  * Manages offline audio downloads for DrMindit sessions
  */
-class DownloadManager(
+class SessionDownloadManager(
     private val context: Context
 ) {
     private val downloadManager = DownloadManager(context, DownloadService::class.java)
