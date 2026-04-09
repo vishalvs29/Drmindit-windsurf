@@ -26,19 +26,19 @@ class CrisisDetector {
     fun analyzeText(text: String): CrisisAlert {
         val lowercaseText = text.lowercase()
         
-        // Check for immediate crisis keywords
-        val hasCrisisKeywords = crisisKeywords.any { keyword ->
+        // Find all detected keywords
+        val detectedKeywords = crisisKeywords.filter { keyword ->
             lowercaseText.contains(keyword)
         }
         
         // Check for high-risk indicators
         val hasHighRiskIndicators = highRiskKeywords.any { keyword ->
             lowercaseText.contains(keyword)
-        } && hasCrisisKeywords
+        } && detectedKeywords.isNotEmpty()
         
         val crisisLevel = when {
             hasHighRiskIndicators -> CrisisLevel.IMMEDIATE
-            hasCrisisKeywords -> CrisisLevel.HIGH
+            detectedKeywords.isNotEmpty() -> CrisisLevel.HIGH
             else -> CrisisLevel.NONE
         }
         
@@ -46,7 +46,9 @@ class CrisisDetector {
             level = crisisLevel,
             detectedText = text,
             timestamp = System.currentTimeMillis(),
-            requiresImmediateAction = crisisLevel == CrisisLevel.IMMEDIATE
+            requiresImmediateAction = crisisLevel == CrisisLevel.IMMEDIATE,
+            detectedKeywords = detectedKeywords,
+            riskFactors = detectedKeywords.take(3) // Top 3 risk factors
         )
     }
     

@@ -19,6 +19,7 @@ data class CrisisAlert(
     val detectedText: String,
     val timestamp: Long,
     val requiresImmediateAction: Boolean = false,
+    val detectedKeywords: List<String> = emptyList(),
     val riskFactors: List<String>? = null,
     val recommendations: List<String> = emptyList()
 )

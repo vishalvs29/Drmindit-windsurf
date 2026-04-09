@@ -32,9 +32,10 @@ fun HomeScreen(
     onNavigateToPlayer: () -> Unit = {},
     onNavigateToProgress: () -> Unit = {},
     onNavigateToAnalytics: () -> Unit = {},
-    userViewModel: UserViewModel? = null
+    userViewModel: UserViewModel = viewModel(factory = viewModelFactory { UserViewModel(MockUserRepository()) })
 ) {
-    val userName by remember { mutableStateOf("Alex") } // TODO: Get from UserViewModel
+    val user by userViewModel.user.collectAsStateWithLifecycle()
+    
     val scrollState = rememberScrollState()
     val scrollOffset = scrollState.value.toFloat()
     
@@ -67,7 +68,7 @@ fun HomeScreen(
             HomeHeader()
             
             // Welcome Message
-            WelcomeSection(userName = userName)
+            WelcomeSection(userName = user?.firstName ?: "there")
             
             // Mood Selector
             MoodSelector()

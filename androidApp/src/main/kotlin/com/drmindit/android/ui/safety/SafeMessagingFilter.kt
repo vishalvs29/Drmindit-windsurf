@@ -17,14 +17,14 @@ object SafeMessagingFilter {
         "commit suicide" to "having thoughts of ending your life",
         "kill yourself" to "hurt yourself",
         "harm yourself" to "hurt yourself",
-        "end your life" to "end your life",
+        "end your life" to "end your suffering",
         "ways to die" to "thoughts of ending your life",
         "how to kill" to "thoughts of hurting yourself",
         "suicide methods" to "methods of self-harm",
         "cut yourself" to "hurt yourself",
         "harm yourself" to "hurt yourself",
-        "end it all" to "end your life",
-        "want to die" to "want to end your life",
+        "end it all" to "feel overwhelmed and hopeless",
+        "want to die" to "feel like you can't go on",
         "kill myself" to "hurt myself"
     )
     
