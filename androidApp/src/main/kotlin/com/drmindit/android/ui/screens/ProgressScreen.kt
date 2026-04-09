@@ -21,12 +21,39 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.drmindit.android.ui.components.*
 import com.drmindit.android.ui.theme.*
+import com.drmindit.android.ui.components.WellbeingScore
 
 @Composable
 fun ProgressScreen(
     onNavigateToAnalytics: () -> Unit = {},
     onNavigateToSession: (String) -> Unit = {}
 ) {
+    // Mock data - in real app, this would come from repository
+    val sessions = listOf(
+        Session("Morning Breathing", "10 min", "Completed"),
+        Session("Evening Meditation", "15 min", "Completed"),
+        Session("Quick Stress Relief", "5 min", "Completed"),
+        Session("Sleep Stories", "20 min", "In Progress")
+    )
+    
+    // Calculate wellbeing score
+    val moodTrend = 0.4f // Positive trend (40%)
+    val consistencyScore = 0.8f // High consistency (80%)
+    val goalProgressScore = 0.6f // Good progress (60%)
+    val baseScore = 65f
+    
+    val wellbeingScore = WellbeingScore(
+        score = baseScore + (moodTrend * 20) + (consistencyScore * 15) + (goalProgressScore * 10),
+        trendDirection = moodTrend,
+        consistencyScore = consistencyScore,
+        goalProgressScore = goalProgressScore,
+        components = mapOf(
+            "Mood Trend" to moodTrend * 100,
+            "Consistency" to consistencyScore * 100,
+            "Goal Progress" to goalProgressScore * 100
+        )
+    )
+    
     // Background gradient
     val backgroundGradient = Brush.verticalGradient(
         colors = listOf(
@@ -52,6 +79,10 @@ fun ProgressScreen(
         ) {
             item {
                 ProgressHeader()
+            }
+            
+            item {
+                WellbeingScoreCard(wellbeingScore = wellbeingScore)
             }
             
             item {
