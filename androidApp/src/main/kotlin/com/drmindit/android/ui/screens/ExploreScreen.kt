@@ -335,62 +335,9 @@ fun FeaturedSessionCard(session: Session) {
         }
     }
 }
-        Session(
-            title = "Evening Meditation",
-            description = "Relax and unwind after a long day",
-            duration = "15 min",
-            category = "Relaxation",
-            color = Color(0xFF4FD1C5),
-            imageRes = "evening_meditation"
-        ),
-        Session(
-            title = "Focus Enhancement",
-            description = "Improve concentration and productivity",
-            duration = "20 min",
-            category = "Focus",
-            color = Color(0xFF48BB78),
-            imageRes = "focus_enhancement"
-        ),
-        Session(
-            title = "Stress Relief",
-            description = "Release tension and find calm",
-            duration = "10 min",
-            category = "Stress",
-            color = Color(0xFFED8936),
-            imageRes = "stress_relief"
-        ),
-        Session(
-            title = "Breathing Exercise",
-            description = "Deep breathing for instant calm",
-            duration = "5 min",
-            category = "Breathing",
-            color = Color(0xFF9F7AEA),
-            imageRes = "breathing_exercise"
-        )
-    )
-    
-    Column(
-        verticalArrangement = Arrangement.spacedBy(16.dp)
-    ) {
-        Text(
-            text = "Popular",
-            style = MaterialTheme.typography.titleMedium,
-            color = Color(0xFFE2E8F0),
-            fontWeight = FontWeight.Medium
-        )
-        
-        LazyColumn(
-            verticalArrangement = Arrangement.spacedBy(12.dp)
-        ) {
-            items(popularSessions) { session ->
-                SessionCard(session = session)
-            }
-        }
-    }
-}
 
 @Composable
-fun SessionCard(session: Session) {
+fun SessionCard(session: Session, onNavigateToPlayer: () -> Unit = {}) {
     GlassCard(
         modifier = Modifier
             .fillMaxWidth()

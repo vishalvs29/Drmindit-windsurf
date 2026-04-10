@@ -144,7 +144,7 @@ fun SessionPlayerScreen(
                             if (uiState.isPlaying) {
                                 HapticBreathingGuide(
                                     isPlaying = uiState.isPlaying,
-                                    breathingPhase = when {
+                                    breathingPhase = {
                                         val progress = uiState.currentPosition / uiState.duration
                                         when {
                                             progress < 0.25f -> "Inhale"
@@ -152,7 +152,7 @@ fun SessionPlayerScreen(
                                             progress < 0.75f -> "Exhale"
                                             else -> "Pause"
                                         }
-                                    }
+                                    }()
                                 )
                             }
                         }

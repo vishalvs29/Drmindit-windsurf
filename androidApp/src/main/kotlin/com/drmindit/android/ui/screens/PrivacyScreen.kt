@@ -316,7 +316,7 @@ fun DataCategoryCard(
                 Text(
                     text = "Retain for ${category.retention}",
                     style = MaterialTheme.typography.bodySmall,
-                    color = Color(0xFF4FD1C5)
+                    color = Color(0xFF4FD1C5),
                     modifier = Modifier
                         .background(
                             Color(0xFF4FD1C5).copy(alpha = 0.2f),

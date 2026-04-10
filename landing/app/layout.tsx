@@ -1,26 +1,10 @@
-import localFont from 'next/font/local'
 import { Metadata } from 'next'
+import { Inter } from 'next/font/google'
 import './globals.css'
 
-const inter = localFont({
-  src: [
-    {
-      path: './fonts/Inter-Regular.woff2',
-      weight: '400',
-      style: 'normal',
-    },
-    {
-      path: './fonts/Inter-Medium.woff2',
-      weight: '500',
-      style: 'normal',
-    },
-    {
-      path: './fonts/Inter-Bold.woff2',
-      weight: '700',
-      style: 'normal',
-    },
-  ],
-  variable: '--font-inter',
+const inter = Inter({
+  subsets: ['latin'],
+  display: 'swap',
 })
 
 export const metadata: Metadata = {
@@ -46,9 +30,8 @@ export const metadata: Metadata = {
     type: 'website',
   },
   twitter: {
-    handle: '@drmindit',
     site: '@drmindit',
-    cardType: 'summary_large_image',
+    card: 'summary_large_image',
   },
 }
 

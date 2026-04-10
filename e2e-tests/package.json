@@ -1,0 +1,21 @@
+{
+  "name": "drmindit-e2e-tests",
+  "version": "1.0.0",
+  "description": "End-to-end tests for DrMindit application",
+  "scripts": {
+    "test": "playwright test",
+    "test:headed": "playwright test --headed",
+    "test:ui": "playwright test --ui",
+    "test:debug": "playwright test --debug",
+    "test:android": "playwright test --project=android",
+    "test:ios": "playwright test --project=ios",
+    "test:web": "playwright test --project=web",
+    "report": "playwright show-report",
+    "install": "playwright install",
+    "codegen": "playwright codegen"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.40.0",
+    "@types/node": "^20.0.0"
+  }
+}
