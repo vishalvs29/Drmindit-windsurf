@@ -4,10 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.drmindit.android.domain.model.User
 import com.drmindit.android.domain.repository.UserRepository
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 
 /**
@@ -35,14 +32,15 @@ class UserViewModel(
             _isLoading.value = true
             _error.value = null
             
-            try {
-                val currentUser = userRepository.getCurrentUser()
-                _user.value = currentUser
-            } catch (e: Exception) {
-                _error.value = "Failed to load user: ${e.message}"
-            } finally {
-                _isLoading.value = false
-            }
+            userRepository.getCurrentUser()
+                .onSuccess { currentUser ->
+                    _user.value = currentUser
+                }
+                .onFailure { e ->
+                    _error.value = "Failed to load user: ${e.message}"
+                }
+            
+            _isLoading.value = false
         }
     }
     
@@ -52,12 +50,13 @@ class UserViewModel(
     
     fun signOut() {
         viewModelScope.launch {
-            try {
-                userRepository.signOut()
-                _user.value = null
-            } catch (e: Exception) {
-                _error.value = "Failed to sign out: ${e.message}"
-            }
+            userRepository.signOut()
+                .onSuccess {
+                    _user.value = null
+                }
+                .onFailure { e ->
+                    _error.value = "Failed to sign out: ${e.message}"
+                }
         }
     }
     
@@ -67,23 +66,25 @@ class UserViewModel(
     
     fun deleteAccount() {
         viewModelScope.launch {
-            try {
-                userRepository.deleteAccount()
-                _user.value = null
-            } catch (e: Exception) {
-                _error.value = "Failed to delete account: ${e.message}"
-            }
+            userRepository.deleteAccount()
+                .onSuccess {
+                    _user.value = null
+                }
+                .onFailure { e ->
+                    _error.value = "Failed to delete account: ${e.message}"
+                }
         }
     }
     
     // Convenience properties for UI
     val userName: StateFlow<String> = user.map { user ->
         user?.let { "${it.firstName} ${it.lastName}" } ?: "Guest"
-    }
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), "Guest")
     
     val firstName: StateFlow<String> = user.map { user ->
         user?.firstName ?: "Guest"
-    }
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), "Guest")
     
     val isSignedIn: StateFlow<Boolean> = user.map { it != null }
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), false)
 }

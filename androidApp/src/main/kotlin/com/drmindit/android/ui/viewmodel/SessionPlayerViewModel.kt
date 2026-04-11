@@ -1,18 +1,17 @@
 package com.drmindit.android.ui.viewmodel
 
+import android.app.Application
 import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.media3.common.MediaItem
+import androidx.media3.common.PlaybackException
 import androidx.media3.common.Player
 import androidx.media3.exoplayer.ExoPlayer
-import androidx.media3.exoplayer.DefaultLoadControl
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.delay
-import android.app.Application
 
 class SessionPlayerViewModel(application: Application) : AndroidViewModel(application) {
     
@@ -57,10 +56,6 @@ class SessionPlayerViewModel(application: Application) : AndroidViewModel(applic
                 _uiState.value = _uiState.value.copy(isPlaying = isPlaying)
             }
             
-            override fun onPlayWhenReadyChanged(playWhenReady: Boolean) {
-                // Handle play when ready
-            }
-            
             override fun onPlayerError(error: PlaybackException) {
                 _uiState.value = _uiState.value.copy(
                     error = error.message,
@@ -84,13 +79,10 @@ class SessionPlayerViewModel(application: Application) : AndroidViewModel(applic
     }
     
     fun playPause() {
-        val currentState = _uiState.value
-        if (currentState.isPlaying) {
+        if (exoPlayer.isPlaying) {
             exoPlayer.pause()
-            _uiState.value = currentState.copy(isPlaying = false)
         } else {
             exoPlayer.play()
-            _uiState.value = currentState.copy(isPlaying = true)
         }
     }
     
@@ -102,8 +94,8 @@ class SessionPlayerViewModel(application: Application) : AndroidViewModel(applic
         viewModelScope.launch {
             try {
                 // Reset mood tracking for new session
-                _moodBefore.value = 5.0f // Neutral mood before session
-                _moodAfter.value = 5.0f // Will be updated after session
+                _moodBefore.value = 5.0f
+                _moodAfter.value = 5.0f
                 
                 _uiState.value = _uiState.value.copy(
                     isLoading = true,
@@ -149,20 +141,8 @@ class SessionPlayerViewModel(application: Application) : AndroidViewModel(applic
     }
     
     fun changePlaybackSpeed(speed: Float) {
-        val newSpeed = when (speed) {
-            0.5f -> 0.5f
-            0.75f -> 0.75f
-            1.0f -> 1.0f
-            1.25f -> 1.25f
-            1.5f -> 1.5f
-            2.0f -> 2.0f
-            else -> 1.0f
-        }
-        _uiState.value = _uiState.value.copy(playbackSpeed = newSpeed)
-        exoPlayer.playbackParameters = exoPlayer.playbackParameters
-            .buildUpon()
-            .setSpeed(newSpeed)
-            .build()
+        _uiState.value = _uiState.value.copy(playbackSpeed = speed)
+        exoPlayer.setPlaybackSpeed(speed)
     }
     
     fun stop() {
@@ -171,6 +151,14 @@ class SessionPlayerViewModel(application: Application) : AndroidViewModel(applic
             isPlaying = false,
             currentPosition = 0f
         )
+    }
+    
+    fun setMoodBefore(mood: Float) {
+        _moodBefore.value = mood
+    }
+    
+    fun setMoodAfter(mood: Float) {
+        _moodAfter.value = mood
     }
     
     fun release() {
@@ -186,7 +174,6 @@ class SessionPlayerViewModel(application: Application) : AndroidViewModel(applic
         _uiState.value = _uiState.value.copy(
             isCompleted = true
         )
-        // Here you would mark the session as completed in the repository
     }
     
     fun clearError() {

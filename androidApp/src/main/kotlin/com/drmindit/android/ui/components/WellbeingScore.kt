@@ -5,18 +5,18 @@ import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.TrendingDown
+import androidx.compose.material.icons.filled.TrendingFlat
+import androidx.compose.material.icons.filled.TrendingUp
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import kotlin.math.max
-import kotlin.math.min
 
 /**
  * Composite wellbeing score based on multiple factors
@@ -56,7 +56,8 @@ fun WellbeingScoreCard(
 ) {
     val animatedScore by animateFloatAsState(
         targetValue = wellbeingScore.score,
-        animationSpec = tween(durationMillis = 1000, easing = androidx.compose.animation.core.EaseInOutCubic)
+        animationSpec = tween(durationMillis = 1000, easing = androidx.compose.animation.core.EaseInOutCubic),
+        label = "scoreAnimation"
     )
     
     Card(
@@ -169,65 +170,37 @@ fun WellbeingScoreCard(
                         Text(
                             text = component,
                             style = MaterialTheme.typography.bodySmall,
-                            color = Color(0xFFE2E8F0).copy(alpha = 0.7f)
+                            color = Color(0xFFE2E8F0).copy(alpha = 0.7f),
+                            modifier = Modifier.weight(1f)
                         )
                         
                         // Progress bar for component
                         Box(
                             modifier = Modifier
-                                .width(100.dp)
+                                .width(150.dp)
                                 .height(8.dp)
-                                .background(
-                                    Color(0xFFE2E8F0).copy(alpha = 0.2f),
-                                    CircleShape
-                                )
                                 .clip(CircleShape)
+                                .background(Color(0xFFE2E8F0).copy(alpha = 0.2f))
                         ) {
                             Box(
                                 modifier = Modifier
                                     .fillMaxHeight()
-                                    .background(
-                                        wellbeingScore.levelColor,
-                                        CircleShape
-                                    )
+                                    .fillMaxWidth(score / 100f)
                                     .clip(CircleShape)
-                                ,
-                                contentAlignment = Alignment.CenterStart
-                            ) {
-                                Box(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .background(
-                                            Color(0xFF1E3A5F),
-                                            CircleShape
-                                        )
-                                        .clip(CircleShape)
-                                ) {
-                                    Box(
-                                        modifier = Modifier
-                                            .fillMaxWidth(
-                                                animatedScore / 100f
-                                            )
-                                            .height(8.dp)
-                                            .background(
-                                                wellbeingScore.levelColor,
-                                                CircleShape
-                                            )
-                                            .clip(CircleShape)
-                                        ,
-                                        contentAlignment = Alignment.CenterStart
-                                    ) {
-                                        Text(
-                                            text = "${score.toInt()}%",
-                                            style = MaterialTheme.typography.bodySmall,
-                                            color = Color.White,
-                                            fontWeight = FontWeight.Bold
-                                        )
-                                    }
-                                }
-                            }
+                                    .background(wellbeingScore.levelColor)
+                            )
                         }
+                        
+                        Spacer(modifier = Modifier.width(8.dp))
+                        
+                        Text(
+                            text = "${score.toInt()}%",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = Color(0xFFE2E8F0),
+                            fontWeight = FontWeight.Bold
+                        )
                     }
+                    Spacer(modifier = Modifier.height(8.dp))
                 }
             }
         }

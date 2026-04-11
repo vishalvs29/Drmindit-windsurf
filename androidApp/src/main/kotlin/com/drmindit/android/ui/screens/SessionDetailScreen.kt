@@ -5,6 +5,8 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
@@ -15,12 +17,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.drmindit.android.ui.components.*
-import com.drmindit.android.ui.theme.*
 
 @Composable
 fun SessionDetailScreen(
@@ -59,10 +59,10 @@ fun SessionDetailScreen(
             SessionDetailHeader(onNavigateBack = onNavigateBack)
             
             // Hero section with background image
-            SessionHeroSection()
+            SessionHeroSection(onNavigateToPlayer = onNavigateToPlayer)
             
             // Session information
-            SessionInformation()
+            SessionInformationSection()
             
             // Benefits
             SessionBenefits()
@@ -71,10 +71,10 @@ fun SessionDetailScreen(
             InstructorSection()
             
             // Related sessions
-            RelatedSessions()
+            RelatedSessionsSection(onNavigateToPlayer = onNavigateToPlayer)
             
             // CTA section
-            CTASection()
+            CTASection(onNavigateToPlayer = onNavigateToPlayer)
             
             Spacer(modifier = Modifier.height(20.dp))
         }
@@ -94,39 +94,51 @@ fun SessionDetailHeader(
     ) {
         IconButton(
             onClick = onNavigateBack,
-            modifier = Modifier.size(48.dp),
-            backgroundColor = Color(0x1A4FD1C5),
-            contentColor = Color(0xFF4FD1C5)
+            modifier = Modifier
+                .size(48.dp)
+                .background(Color(0x1A4FD1C5), CircleShape)
         ) {
-            Icon(Icons.Default.ArrowBack, contentDescription = "Back")
+            Icon(
+                imageVector = Icons.Default.ArrowBack, 
+                contentDescription = "Back",
+                tint = Color(0xFF4FD1C5)
+            )
         }
         
         Row {
             IconButton(
                 onClick = { /* Handle favorite */ },
-                modifier = Modifier.size(48.dp),
-                backgroundColor = Color(0x1A4FD1C5),
-                contentColor = Color(0xFF4FD1C5)
+                modifier = Modifier
+                    .size(48.dp)
+                    .background(Color(0x1A4FD1C5), CircleShape)
             ) {
-                Icon(Icons.Default.FavoriteBorder, contentDescription = "Favorite")
+                Icon(
+                    imageVector = Icons.Default.FavoriteBorder, 
+                    contentDescription = "Favorite",
+                    tint = Color(0xFF4FD1C5)
+                )
             }
             
             Spacer(modifier = Modifier.width(8.dp))
             
             IconButton(
                 onClick = { /* Handle share */ },
-                modifier = Modifier.size(48.dp),
-                backgroundColor = Color(0x1A4FD1C5),
-                contentColor = Color(0xFF4FD1C5)
+                modifier = Modifier
+                    .size(48.dp)
+                    .background(Color(0x1A4FD1C5), CircleShape)
             ) {
-                Icon(Icons.Default.Share, contentDescription = "Share")
+                Icon(
+                    imageVector = Icons.Default.Share, 
+                    contentDescription = "Share",
+                    tint = Color(0xFF4FD1C5)
+                )
             }
         }
     }
 }
 
 @Composable
-fun SessionHeroSection() {
+fun SessionHeroSection(onNavigateToPlayer: () -> Unit) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -137,7 +149,7 @@ fun SessionHeroSection() {
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .clip(androidx.compose.foundation.shape.RoundedCornerShape(24.dp))
+                .clip(RoundedCornerShape(24.dp))
                 .background(
                     Brush.radialGradient(
                         colors = listOf(
@@ -182,18 +194,12 @@ fun SessionHeroSection() {
                     }
                 }
                 
-                // Play button overlay
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(60.dp),
-                    contentAlignment = Alignment.Center
+                Button(
+                    onClick = onNavigateToPlayer,
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF4FD1C5))
                 ) {
-                    GradientButton(
-                        text = "Start Session",
-                        onClick = { /* Handle session start */ },
-                        modifier = Modifier.fillMaxWidth()
-                    )
+                    Text("Start Session", color = Color.White)
                 }
             }
         }
@@ -201,7 +207,7 @@ fun SessionHeroSection() {
 }
 
 @Composable
-fun SessionInformation() {
+fun SessionInformationSection() {
     Column(
         modifier = Modifier.padding(horizontal = 20.dp),
         verticalArrangement = Arrangement.spacedBy(20.dp)
@@ -224,8 +230,7 @@ fun SessionInformation() {
                 Text(
                     text = "This gentle evening meditation is designed to help you unwind from the day and prepare for restful sleep. Through guided breathing and body awareness techniques, you'll release tension and find deep relaxation.",
                     style = MaterialTheme.typography.bodyLarge,
-                    color = Color(0xFFE2E8F0).copy(alpha = 0.9f),
-                    lineHeight = 24.sp
+                    color = Color(0xFFE2E8F0).copy(alpha = 0.9f)
                 )
                 
                 Row(
@@ -350,7 +355,7 @@ fun InstructorSection() {
             Box(
                 modifier = Modifier
                     .size(60.dp)
-                    .clip(androidx.compose.foundation.shape.CircleShape)
+                    .clip(CircleShape)
                     .background(
                         Brush.radialGradient(
                             colors = listOf(
@@ -396,11 +401,11 @@ fun InstructorSection() {
 }
 
 @Composable
-fun RelatedSessions() {
+fun RelatedSessionsSection(onNavigateToPlayer: () -> Unit) {
     val relatedSessions = listOf(
-        RelatedSession("Morning Meditation", "10 min", Color(0xFF4FD1C5)),
-        RelatedSession("Deep Sleep", "20 min", Color(0xFF667EEA)),
-        RelatedSession("Stress Relief", "15 min", Color(0xFFED8936))
+        RelatedSessionDetail("Morning Meditation", "10 min", Color(0xFF4FD1C5)),
+        RelatedSessionDetail("Deep Sleep", "20 min", Color(0xFF667EEA)),
+        RelatedSessionDetail("Stress Relief", "15 min", Color(0xFFED8936))
     )
     
     Column(
@@ -415,17 +420,17 @@ fun RelatedSessions() {
         )
         
         relatedSessions.forEach { session ->
-            RelatedSessionCard(session = session)
+            RelatedSessionDetailCard(session = session, onNavigateToPlayer = onNavigateToPlayer)
         }
     }
 }
 
 @Composable
-fun RelatedSessionCard(session: RelatedSession) {
+fun RelatedSessionDetailCard(session: RelatedSessionDetail, onNavigateToPlayer: () -> Unit) {
     GlassCard(
         modifier = Modifier
             .fillMaxWidth()
-            .clickable { /* Handle session click */ },
+            .clickable { onNavigateToPlayer() },
         cornerRadius = 16.dp
     ) {
         Row(
@@ -453,24 +458,24 @@ fun RelatedSessionCard(session: RelatedSession) {
             }
             
             IconButton(
-                icon = {
-                    Icon(
-                        Icons.Default.PlayArrow,
-                        contentDescription = "Play",
-                        modifier = Modifier.size(20.dp)
-                    )
-                },
-                onClick = { /* Handle play */ },
-                modifier = Modifier.size(40.dp),
-                backgroundColor = session.color.copy(alpha = 0.2f),
-                contentColor = session.color
-            )
+                onClick = onNavigateToPlayer,
+                modifier = Modifier
+                    .size(40.dp)
+                    .background(session.color.copy(alpha = 0.2f), CircleShape)
+            ) {
+                Icon(
+                    imageVector = Icons.Default.PlayArrow, 
+                    contentDescription = "Play",
+                    tint = session.color,
+                    modifier = Modifier.size(20.dp)
+                )
+            }
         }
     }
 }
 
 @Composable
-fun CTASection() {
+fun CTASection(onNavigateToPlayer: () -> Unit) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -485,21 +490,25 @@ fun CTASection() {
             fontWeight = FontWeight.SemiBold
         )
         
-        GradientButton(
-            text = "Start Session",
+        Button(
             onClick = onNavigateToPlayer,
-            modifier = Modifier.fillMaxWidth()
-        )
+            modifier = Modifier.fillMaxWidth(),
+            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF4FD1C5))
+        ) {
+            Text("Start Session", color = Color.White)
+        }
         
-        SecondaryButton(
-            text = "Add to Favorites",
+        OutlinedButton(
             onClick = { /* Handle favorite */ },
-            modifier = Modifier.fillMaxWidth()
-        )
+            modifier = Modifier.fillMaxWidth(),
+            border = androidx.compose.foundation.BorderStroke(1.dp, Color(0xFF4FD1C5))
+        ) {
+            Text("Add to Favorites", color = Color(0xFF4FD1C5))
+        }
     }
 }
 
-data class RelatedSession(
+data class RelatedSessionDetail(
     val title: String,
     val duration: String,
     val color: Color

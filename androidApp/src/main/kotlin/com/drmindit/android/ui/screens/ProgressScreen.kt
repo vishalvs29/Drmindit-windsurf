@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
@@ -20,22 +21,12 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.drmindit.android.ui.components.*
-import com.drmindit.android.ui.theme.*
-import com.drmindit.android.ui.components.WellbeingScore
 
 @Composable
 fun ProgressScreen(
     onNavigateToAnalytics: () -> Unit = {},
     onNavigateToSession: (String) -> Unit = {}
 ) {
-    // Mock data - in real app, this would come from repository
-    val sessions = listOf(
-        Session("Morning Breathing", "10 min", "Completed"),
-        Session("Evening Meditation", "15 min", "Completed"),
-        Session("Quick Stress Relief", "5 min", "Completed"),
-        Session("Sleep Stories", "20 min", "In Progress")
-    )
-    
     // Calculate wellbeing score
     val moodTrend = 0.4f // Positive trend (40%)
     val consistencyScore = 0.8f // High consistency (80%)
@@ -147,12 +138,9 @@ fun StatsOverview() {
                 fontWeight = FontWeight.Medium
             )
             
-            LazyColumn(
-                verticalArrangement = Arrangement.spacedBy(16.dp)
-            ) {
-                items(stats) { stat ->
-                    StatCard(stat = stat)
-                }
+            stats.forEach { stat ->
+                StatCard(stat = stat)
+                Spacer(modifier = Modifier.height(16.dp))
             }
         }
     }
@@ -262,7 +250,7 @@ fun MoodBar(day: DayMood) {
                     .height(8.dp)
                     .background(
                         Color(0x1AFFFFFF),
-                        shape = androidx.compose.foundation.shape.RoundedCornerShape(50.dp)
+                        shape = RoundedCornerShape(50.dp)
                     )
             ) {
                 Box(
@@ -271,7 +259,7 @@ fun MoodBar(day: DayMood) {
                         .fillMaxHeight()
                         .background(
                             day.color,
-                            shape = androidx.compose.foundation.shape.RoundedCornerShape(50.dp)
+                            shape = RoundedCornerShape(50.dp)
                         )
                 )
             }
@@ -303,12 +291,9 @@ fun AchievementsSection() {
                 fontWeight = FontWeight.Medium
             )
             
-            LazyColumn(
-                verticalArrangement = Arrangement.spacedBy(12.dp)
-            ) {
-                items(achievements) { achievement ->
-                    AchievementCard(achievement = achievement)
-                }
+            achievements.forEach { achievement ->
+                AchievementCard(achievement = achievement)
+                Spacer(modifier = Modifier.height(12.dp))
             }
         }
     }
@@ -392,12 +377,9 @@ fun RecentActivity() {
                 fontWeight = FontWeight.Medium
             )
             
-            LazyColumn(
-                verticalArrangement = Arrangement.spacedBy(12.dp)
-            ) {
-                items(activities) { activity ->
-                    ActivityCard(activity = activity)
-                }
+            activities.forEach { activity ->
+                ActivityCard(activity = activity)
+                Spacer(modifier = Modifier.height(12.dp))
             }
         }
     }

@@ -4,13 +4,13 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.TrendingUp
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
@@ -18,7 +18,6 @@ import androidx.navigation.NavController
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.drmindit.android.ui.components.GlassCard
-import com.drmindit.android.ui.theme.*
 
 @Composable
 fun DrMinditBottomNavigation(
@@ -47,7 +46,7 @@ fun DrMinditBottomNavigation(
         NavigationItem(
             route = "progress",
             title = "Progress",
-            icon = Icons.Default.TrendingUp
+            icon = Icons.AutoMirrored.Filled.TrendingUp
         ),
         NavigationItem(
             route = "analytics",
@@ -105,11 +104,11 @@ fun DrMinditBottomNavigation(
                         }
                     },
                     colors = NavigationBarItemDefaults.colors(
-                        selectedIndicatorColor = Color.Transparent,
-                        unselectedIconColor = Color(0xFFE2E8F0).copy(alpha = 0.6f),
+                        indicatorColor = Color.Transparent,
                         selectedIconColor = Color(0xFF4FD1C5),
-                        unselectedTextColor = Color(0xFFE2E8F0).copy(alpha = 0.6f),
-                        selectedTextColor = Color(0xFF4FD1C5)
+                        unselectedIconColor = Color(0xFFE2E8F0).copy(alpha = 0.6f),
+                        selectedTextColor = Color(0xFF4FD1C5),
+                        unselectedTextColor = Color(0xFFE2E8F0).copy(alpha = 0.6f)
                     )
                 )
             }

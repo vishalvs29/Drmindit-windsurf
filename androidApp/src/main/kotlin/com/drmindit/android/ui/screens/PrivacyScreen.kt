@@ -3,6 +3,8 @@ package com.drmindit.android.ui.screens
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
@@ -15,11 +17,11 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.drmindit.android.domain.repository.MockUserRepository
 import com.drmindit.android.ui.components.*
-import com.drmindit.android.ui.theme.*
-import java.text.SimpleDateFormat
-import java.util.*
+import com.drmindit.android.ui.viewmodel.UserViewModel
 
 /**
  * Privacy and data management screen showing all collected data
@@ -28,29 +30,15 @@ import java.util.*
 @Composable
 fun PrivacyScreen(
     onNavigateBack: () -> Unit = {},
-    userViewModel: UserViewModel = viewModel(factory = viewModelFactory { UserViewModel(MockUserRepository()) })
+    userViewModel: UserViewModel = viewModel(
+        factory = viewModelFactory { UserViewModel(MockUserRepository()) }
+    )
 ) {
     val user by userViewModel.user.collectAsStateWithLifecycle()
-    var showDeleteDialog by remember { mutableStateOf(false) }
     var isDeleting by remember { mutableStateOf(false) }
-    
-    // Delete user account
-    suspend fun deleteAllData() {
-        isDeleting = true
-        try {
-            val result = userViewModel.deleteAccount()
-            if (result.isSuccess) {
-                // Navigate to login or home screen
-                onNavigateBack()
-            }
-        } catch (e: Exception) {
-            // Show error message
-            isDeleting = false
-        }
-    }
     val scrollState = rememberScrollState()
     
-    // Mock data - in real app, this would come from SharedPreferences/DataStore
+    // Mock data
     val dataCategories = listOf(
         DataCategory(
             icon = Icons.Default.Person,
@@ -123,11 +111,15 @@ fun PrivacyScreen(
             ) {
                 IconButton(
                     onClick = onNavigateBack,
-                    modifier = Modifier.size(48.dp),
-                    backgroundColor = Color(0x1A4FD1C5),
-                    contentColor = Color(0xFF4FD1C5)
+                    modifier = Modifier
+                        .size(48.dp)
+                        .background(Color(0x1A4FD1C5), CircleShape)
                 ) {
-                    Icon(Icons.Default.ArrowBack, contentDescription = "Navigate back")
+                    Icon(
+                        imageVector = Icons.Default.ArrowBack, 
+                        contentDescription = "Navigate back",
+                        tint = Color(0xFF4FD1C5)
+                    )
                 }
                 
                 Text(
@@ -159,8 +151,7 @@ fun PrivacyScreen(
                     Text(
                         text = "We believe in complete transparency about your data. Below is everything we collect, why we collect it, and how long we keep it.",
                         style = MaterialTheme.typography.bodyMedium,
-                        color = Color(0xFFE2E8F0).copy(alpha = 0.8f),
-                        lineHeight = 1.5.sp
+                        color = Color(0xFFE2E8F0).copy(alpha = 0.8f)
                     )
                     
                     Spacer(modifier = Modifier.height(16.dp))
@@ -198,7 +189,7 @@ fun PrivacyScreen(
             
             Spacer(modifier = Modifier.height(24.dp))
             
-            // Delete all data button
+            // Delete all data section
             GlassCard(
                 modifier = Modifier.fillMaxWidth(),
                 cornerRadius = 16.dp
@@ -224,35 +215,26 @@ fun PrivacyScreen(
                         fontWeight = FontWeight.Bold
                     )
                     
-                    Spacer(modifier = Modifier.height(8.dp))
-                    
                     Text(
                         text = "This will permanently delete all your personal data, mood history, chat conversations, and app usage information. This action cannot be undone.",
                         style = MaterialTheme.typography.bodySmall,
-                        color = Color(0xFFE74C3C).copy(alpha = 0.8f),
-                        lineHeight = 1.4.sp
+                        color = Color(0xFFE74C3C).copy(alpha = 0.8f)
                     )
                     
                     Spacer(modifier = Modifier.height(20.dp))
                     
-                    Row(
-                        horizontalArrangement = Arrangement.spacedBy(16.dp)
+                    Button(
+                        onClick = { 
+                            isDeleting = true
+                            userViewModel.deleteAccount()
+                        },
+                        modifier = Modifier.fillMaxWidth(),
+                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFE74C3C)),
+                        enabled = !isDeleting
                     ) {
-                        SecondaryButton(
-                            text = "Cancel",
-                            onClick = { showDeleteDialog = false },
-                            modifier = Modifier.weight(1f)
-                        )
-                        
-                        GradientButton(
+                        Text(
                             text = if (isDeleting) "Deleting..." else "Delete All Data",
-                            onClick = { 
-                                showDeleteDialog = false
-                                // In a real app, this would be called in a coroutine
-                                // deleteAllData()
-                            },
-                            modifier = Modifier.weight(1f),
-                            enabled = !isDeleting
+                            color = Color.White
                         )
                     }
                 }
@@ -286,7 +268,8 @@ fun DataCategoryCard(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Row(
-                    verticalAlignment = Alignment.CenterVertically
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.weight(1f)
                 ) {
                     Icon(
                         imageVector = category.icon,
@@ -320,22 +303,17 @@ fun DataCategoryCard(
                     modifier = Modifier
                         .background(
                             Color(0xFF4FD1C5).copy(alpha = 0.2f),
-                            androidx.compose.foundation.shape.RoundedCornerShape(8.dp)
+                            RoundedCornerShape(8.dp)
                         )
                         .padding(horizontal = 8.dp, vertical = 4.dp)
                 )
             }
             
-            Spacer(modifier = Modifier.height(12.dp))
-            
             Text(
                 text = category.description,
                 style = MaterialTheme.typography.bodyMedium,
-                color = Color(0xFFE2E8F0).copy(alpha = 0.8f),
-                lineHeight = 1.4.sp
+                color = Color(0xFFE2E8F0).copy(alpha = 0.8f)
             )
-            
-            Spacer(modifier = Modifier.height(16.dp))
             
             // Data types
             Column(

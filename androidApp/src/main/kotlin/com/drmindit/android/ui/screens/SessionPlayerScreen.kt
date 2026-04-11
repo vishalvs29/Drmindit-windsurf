@@ -4,7 +4,10 @@ import androidx.compose.animation.core.*
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.Forward
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -17,12 +20,8 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.drmindit.android.domain.download.SessionDownloadManager
-import com.drmindit.android.domain.schedule.SessionScheduler
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.drmindit.android.ui.components.*
-import com.drmindit.android.ui.components.HapticBreathingGuide
-import com.drmindit.android.ui.components.MoodRatingDialog
-import com.drmindit.android.ui.theme.*
 import com.drmindit.android.ui.viewmodel.SessionPlayerViewModel
 
 @Composable
@@ -45,7 +44,7 @@ fun SessionPlayerScreen(
     // Mood rating state
     var showMoodRatingBefore by remember { mutableStateOf(false) }
     var showMoodRatingAfter by remember { mutableStateOf(false) }
-    var currentMood by remember { mutableStateOf(5.0f) }
+    var currentMood by remember { mutableFloatStateOf(5.0f) }
     
     // Show mood rating after session completion
     LaunchedEffect(uiState.isCompleted) {
@@ -55,14 +54,15 @@ fun SessionPlayerScreen(
     }
     
     // Breathing animation synced with playback
-    val breathingAnimation = rememberInfiniteTransition()
+    val breathingAnimation = rememberInfiniteTransition(label = "breathing")
     val breathingScale by breathingAnimation.animateFloat(
         initialValue = 1f,
         targetValue = if (uiState.isPlaying) 1.2f else 1f,
         animationSpec = infiniteRepeatable(
             animation = tween(4000, easing = EaseInOutCubic),
             repeatMode = RepeatMode.Reverse
-        )
+        ),
+        label = "scale"
     )
     
     // Background gradient
@@ -100,9 +100,9 @@ fun SessionPlayerScreen(
                 // Mood rating before session
                 if (showMoodRatingBefore) {
                     MoodRatingDialog(
-                        currentMood = currentMood.value,
+                        currentMood = currentMood,
                         onMoodSelected = { mood ->
-                            currentMood.value = mood
+                            currentMood = mood
                             sessionPlayerViewModel.setMoodBefore(mood)
                             showMoodRatingBefore = false
                         },
@@ -111,11 +111,11 @@ fun SessionPlayerScreen(
                 }
                 
                 // Mood rating after session
-                if (showMoodRatingAfter) {
+                else if (showMoodRatingAfter) {
                     MoodRatingDialog(
-                        currentMood = currentMood.value,
+                        currentMood = currentMood,
                         onMoodSelected = { mood ->
-                            currentMood.value = mood
+                            currentMood = mood
                             sessionPlayerViewModel.setMoodAfter(mood)
                             showMoodRatingAfter = false
                         },
@@ -124,7 +124,7 @@ fun SessionPlayerScreen(
                 }
                 
                 // Session content
-                if (!showMoodRatingBefore && !showMoodRatingAfter) {
+                else {
                     Column(
                         modifier = Modifier.fillMaxSize(),
                         horizontalAlignment = Alignment.CenterHorizontally,
@@ -142,53 +142,53 @@ fun SessionPlayerScreen(
                             
                             // Haptic breathing guide overlay
                             if (uiState.isPlaying) {
+                                val progress = if (uiState.duration > 0) uiState.currentPosition / uiState.duration else 0f
+                                val breathingPhase = when {
+                                    progress < 0.25f -> "Inhale"
+                                    progress < 0.5f -> "Hold"
+                                    progress < 0.75f -> "Exhale"
+                                    else -> "Pause"
+                                }
                                 HapticBreathingGuide(
                                     isPlaying = uiState.isPlaying,
-                                    breathingPhase = {
-                                        val progress = uiState.currentPosition / uiState.duration
-                                        when {
-                                            progress < 0.25f -> "Inhale"
-                                            progress < 0.5f -> "Hold"
-                                            progress < 0.75f -> "Exhale"
-                                            else -> "Pause"
-                                        }
-                                    }()
+                                    breathingPhase = breathingPhase
                                 )
                             }
                         }
                 
-                Spacer(modifier = Modifier.height(40.dp))
-                
-                // Timer
-                TimerDisplay(
-                    currentTime = uiState.currentPosition,
-                    totalTime = uiState.duration.toFloat(),
-                    isPlaying = uiState.isPlaying
-                )
-                
-                Spacer(modifier = Modifier.height(60.dp))
-                
-                // Session Info
-                SessionInfo()
-                
-                Spacer(modifier = Modifier.height(40.dp))
-                
-                // Progress Bar
-                ProgressBar(
-                    progress = sessionPlayerViewModel.progress,
-                    currentTime = sessionPlayerViewModel.formattedCurrentTime,
-                    totalTime = sessionPlayerViewModel.formattedTotalTime
-                )
-                
-                Spacer(modifier = Modifier.height(60.dp))
-                
-                // Controls
-                PlayerControls(
-                    isPlaying = uiState.isPlaying,
-                    onPlayPause = { sessionPlayerViewModel.playPause() },
-                    onRewind = { sessionPlayerViewModel.skipBackward(15) },
-                    onForward = { sessionPlayerViewModel.skipForward(15) }
-                )
+                        Spacer(modifier = Modifier.height(40.dp))
+                        
+                        // Timer
+                        TimerDisplay(
+                            currentTime = uiState.currentPosition,
+                            totalTime = uiState.duration.toFloat(),
+                            isPlaying = uiState.isPlaying
+                        )
+                        
+                        Spacer(modifier = Modifier.height(60.dp))
+                        
+                        // Session Info
+                        SessionInfoSection()
+                        
+                        Spacer(modifier = Modifier.height(40.dp))
+                        
+                        // Progress Bar
+                        PlayerProgressBar(
+                            currentTime = uiState.currentPosition,
+                            totalTime = uiState.duration.toFloat()
+                        )
+                        
+                        Spacer(modifier = Modifier.height(60.dp))
+                        
+                        // Controls
+                        PlayerControlsSection(
+                            isPlaying = uiState.isPlaying,
+                            onPlayPause = { sessionPlayerViewModel.playPause() },
+                            onRewind = { sessionPlayerViewModel.skipBackward(10) },
+                            onForward = { sessionPlayerViewModel.skipForward(10) }
+                        )
+                    }
+                }
             }
         }
     }
@@ -207,11 +207,15 @@ fun SessionPlayerTopBar(
     ) {
         IconButton(
             onClick = onNavigateBack,
-            modifier = Modifier.size(48.dp),
-            backgroundColor = Color(0x1A4FD1C5),
-            contentColor = Color(0xFF4FD1C5)
+            modifier = Modifier
+                .size(48.dp)
+                .background(Color(0x1A4FD1C5), CircleShape)
         ) {
-            Icon(Icons.Default.ArrowBack, contentDescription = "Navigate back")
+            Icon(
+                imageVector = Icons.AutoMirrored.Filled.ArrowBack, 
+                contentDescription = "Navigate back",
+                tint = Color(0xFF4FD1C5)
+            )
         }
         
         Column(
@@ -232,11 +236,15 @@ fun SessionPlayerTopBar(
         
         IconButton(
             onClick = { /* Handle favorite */ },
-            modifier = Modifier.size(48.dp),
-            backgroundColor = Color(0x1A4FD1C5),
-            contentColor = Color(0xFF4FD1C5)
+            modifier = Modifier
+                .size(48.dp)
+                .background(Color(0x1A4FD1C5), CircleShape)
         ) {
-            Icon(Icons.Default.FavoriteBorder, contentDescription = "Favorite")
+            Icon(
+                imageVector = Icons.Default.FavoriteBorder, 
+                contentDescription = "Favorite",
+                tint = Color(0xFF4FD1C5)
+            )
         }
     }
 }
@@ -326,7 +334,7 @@ fun TimerDisplay(
 }
 
 @Composable
-fun SessionInfo() {
+fun SessionInfoSection() {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(8.dp)
@@ -355,31 +363,11 @@ fun SessionInfo() {
 }
 
 @Composable
-fun InfoChip(
-    text: String,
-    color: Color
-) {
-    GlassCard(
-        modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
-        cornerRadius = 50.dp,
-        backgroundColor = Color(0x0DFFFFFF),
-        borderColor = color
-    ) {
-        Text(
-            text = text,
-            style = MaterialTheme.typography.bodySmall,
-            color = color,
-            fontWeight = FontWeight.Medium
-        )
-    }
-}
-
-@Composable
-fun ProgressBar(
+fun PlayerProgressBar(
     currentTime: Float,
     totalTime: Float
 ) {
-    val progress = currentTime / totalTime
+    val progress = if (totalTime > 0) currentTime / totalTime else 0f
     
     Column(
         modifier = Modifier
@@ -394,7 +382,7 @@ fun ProgressBar(
                 .height(4.dp)
                 .background(
                     Color(0x1AFFFFFF),
-                    shape = androidx.compose.foundation.shape.RoundedCornerShape(50.dp)
+                    shape = RoundedCornerShape(50.dp)
                 )
         ) {
             Box(
@@ -408,7 +396,7 @@ fun ProgressBar(
                                 Color(0xFF667EEA)
                             )
                         ),
-                        shape = androidx.compose.foundation.shape.RoundedCornerShape(50.dp)
+                        shape = RoundedCornerShape(50.dp)
                     )
             )
         }
@@ -419,12 +407,12 @@ fun ProgressBar(
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             Text(
-                text = formatTime(currentTime),
+                text = formatPlayerTime(currentTime),
                 style = MaterialTheme.typography.bodySmall,
                 color = Color(0xFFE2E8F0).copy(alpha = 0.7f)
             )
             Text(
-                text = formatTime(totalTime),
+                text = formatPlayerTime(totalTime),
                 style = MaterialTheme.typography.bodySmall,
                 color = Color(0xFFE2E8F0).copy(alpha = 0.7f)
             )
@@ -433,7 +421,7 @@ fun ProgressBar(
 }
 
 @Composable
-fun PlayerControls(
+fun PlayerControlsSection(
     isPlaying: Boolean,
     onPlayPause: () -> Unit,
     onRewind: () -> Unit,
@@ -447,8 +435,8 @@ fun PlayerControls(
         verticalAlignment = Alignment.CenterVertically
     ) {
         // Rewind button
-        ControlButton(
-            icon = Icons.Default.Replay15,
+        PlayerControlButton(
+            icon = Icons.Default.Replay,
             onClick = onRewind,
             size = 56.dp,
             backgroundColor = Color(0x1A4FD1C5),
@@ -456,7 +444,7 @@ fun PlayerControls(
         )
         
         // Play/Pause button
-        ControlButton(
+        PlayerControlButton(
             icon = if (isPlaying) Icons.Default.Pause else Icons.Default.PlayArrow,
             onClick = onPlayPause,
             size = 80.dp,
@@ -465,8 +453,8 @@ fun PlayerControls(
         )
         
         // Forward button
-        ControlButton(
-            icon = Icons.Default.Forward15,
+        PlayerControlButton(
+            icon = Icons.AutoMirrored.Filled.Forward,
             onClick = onForward,
             size = 56.dp,
             backgroundColor = Color(0x1A4FD1C5),
@@ -476,7 +464,7 @@ fun PlayerControls(
 }
 
 @Composable
-fun ControlButton(
+fun PlayerControlButton(
     icon: ImageVector,
     onClick: () -> Unit,
     size: androidx.compose.ui.unit.Dp,
@@ -485,29 +473,21 @@ fun ControlButton(
 ) {
     IconButton(
         onClick = onClick,
-        modifier = Modifier.size(size),
-        backgroundColor = backgroundColor,
-        contentColor = contentColor,
-        cornerRadius = 50.dp
+        modifier = Modifier
+            .size(size)
+            .background(backgroundColor, CircleShape)
     ) {
         Icon(
             imageVector = icon,
-            contentDescription = when (icon) {
-                Icons.Default.Replay15 -> "Rewind 15 seconds"
-                Icons.Default.Pause -> "Pause"
-                Icons.Default.PlayArrow -> "Play"
-                Icons.Default.Forward15 -> "Forward 15 seconds"
-                else -> "Control button"
-            },
+            contentDescription = null,
+            tint = contentColor,
             modifier = Modifier.size(32.dp)
         )
     }
 }
 
-private fun formatTime(seconds: Float): String {
+private fun formatPlayerTime(seconds: Float): String {
     val minutes = (seconds / 60).toInt()
     val secs = (seconds % 60).toInt()
     return String.format("%d:%02d", minutes, secs)
-}
-}
 }

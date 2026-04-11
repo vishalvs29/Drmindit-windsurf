@@ -7,23 +7,28 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Notifications
+import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.blur
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.drmindit.android.domain.repository.MockUserRepository
 import com.drmindit.android.domain.schedule.SessionScheduler
 import com.drmindit.android.ui.components.*
-import com.drmindit.android.ui.theme.*
+import com.drmindit.android.ui.viewmodel.UserViewModel
 
 @Composable
 fun HomeScreen(
@@ -32,7 +37,9 @@ fun HomeScreen(
     onNavigateToPlayer: () -> Unit = {},
     onNavigateToProgress: () -> Unit = {},
     onNavigateToAnalytics: () -> Unit = {},
-    userViewModel: UserViewModel = viewModel(factory = viewModelFactory { UserViewModel(MockUserRepository()) })
+    userViewModel: UserViewModel = viewModel(
+        factory = viewModelFactory { UserViewModel(MockUserRepository()) }
+    )
 ) {
     val user by userViewModel.user.collectAsStateWithLifecycle()
     
@@ -65,7 +72,7 @@ fun HomeScreen(
             verticalArrangement = Arrangement.spacedBy(24.dp)
         ) {
             // Header Section
-            HomeHeader()
+            HomeHeader(onNavigateToPlayer = onNavigateToPlayer)
             
             // Welcome Message
             WelcomeSection(userName = user?.firstName ?: "there")
@@ -74,13 +81,13 @@ fun HomeScreen(
             MoodSelector()
             
             // Featured Session
-            FeaturedSession()
+            FeaturedSession(onNavigateToPlayer = onNavigateToPlayer)
             
             // Categories
             CategoriesSection()
             
             // Recent Sessions
-            RecentSessions()
+            RecentSessions(onNavigateToPlayer = onNavigateToPlayer)
             
             Spacer(modifier = Modifier.height(20.dp))
         }
@@ -88,7 +95,7 @@ fun HomeScreen(
 }
 
 @Composable
-fun HomeHeader() {
+fun HomeHeader(onNavigateToPlayer: () -> Unit) {
     Row(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceBetween,
@@ -110,29 +117,34 @@ fun HomeHeader() {
         
         Row {
             IconButton(
-                icon = {
-                    Icon(Icons.Default.Notifications, contentDescription = "Notifications")
-                },
                 onClick = { /* Handle notifications */ },
-                modifier = Modifier.size(40.dp),
-                backgroundColor = Color(0x1A4FD1C5),
-                contentColor = Color(0xFF4FD1C5)
-            )
+                modifier = Modifier
+                    .size(40.dp)
+                    .clip(CircleShape)
+                    .background(Color(0x1A4FD1C5))
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Notifications,
+                    contentDescription = "Notifications",
+                    tint = Color(0xFF4FD1C5)
+                )
+            }
             
             Spacer(modifier = Modifier.width(8.dp))
             
             IconButton(
-                icon = {
-                    Icon(
-                        imageVector = Icons.Default.PlayArrow,
-                        contentDescription = "Play"
-                    )
-                },
                 onClick = onNavigateToPlayer,
-                modifier = Modifier.size(48.dp),
-                backgroundColor = Color(0xFF4FD1C5).copy(alpha = 0.2f),
-                contentColor = Color(0xFF4FD1C5)
-            )
+                modifier = Modifier
+                    .size(48.dp)
+                    .clip(CircleShape)
+                    .background(Color(0xFF4FD1C5).copy(alpha = 0.2f))
+            ) {
+                Icon(
+                    imageVector = Icons.Default.PlayArrow,
+                    contentDescription = "Play",
+                    tint = Color(0xFF4FD1C5)
+                )
+            }
         }
     }
 }
@@ -223,13 +235,13 @@ fun MoodChip(
 
     GlassCard(
         modifier = Modifier
-            .clickable(onClick = onClick)
-            .padding(horizontal = 16.dp, vertical = 12.dp),
+            .clickable(onClick = onClick),
         cornerRadius = 20.dp,
         backgroundColor = backgroundColor,
         borderColor = borderColor
     ) {
         Row(
+            modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp),
             horizontalArrangement = Arrangement.spacedBy(8.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
@@ -248,7 +260,7 @@ fun MoodChip(
 }
 
 @Composable
-fun FeaturedSession() {
+fun FeaturedSession(onNavigateToPlayer: () -> Unit) {
     val scheduler = SessionScheduler()
     val recommendedDuration = scheduler.getRecommendedSessionDuration()
     val sessionType = scheduler.getSessionType()
@@ -275,65 +287,55 @@ fun FeaturedSession() {
                             )
                         )
                     )
+            )
+            
+            // Content
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(24.dp)
             ) {
-                // Content
-                Column(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(24.dp)
-                        .background(
-                            Brush.verticalGradient(
-                                colors = listOf(
-                                    Color.Transparent,
-                                    Color(0x0D000000), // Transparent to black
-                                    Color(0x0D000000)
-                                ),
-                                startY = 0.2f,
-                                endY = 1f
-                            )
-                        )
-                        .clip(RoundedCornerShape(20.dp))
+                Text(
+                    text = sessionType,
+                    style = MaterialTheme.typography.titleMedium,
+                    color = Color(0xFFE2E8F0),
+                    fontWeight = FontWeight.Bold
+                )
+                
+                Spacer(modifier = Modifier.height(8.dp))
+                
+                Text(
+                    text = "Evening Meditation",
+                    style = MaterialTheme.typography.headlineSmall,
+                    color = Color(0xFFE2E8F0),
+                    fontWeight = FontWeight.Light
+                )
+                
+                Text(
+                    text = "$recommendedDuration minutes",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = Color(0xFFE2E8F0).copy(alpha = 0.7f)
+                )
+                
+                Spacer(modifier = Modifier.height(16.dp))
+                
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    Spacer(modifier = Modifier.height(16.dp))
-                    
-                    Text(
-                        text = sessionType,
-                        style = MaterialTheme.typography.titleMedium,
-                        color = Color(0xFFE2E8F0),
-                        fontWeight = FontWeight.Bold
+                    InfoChip("Sleep", Color(0xFF667EEA))
+                    InfoChip("$recommendedDuration min", Color(0xFF4FD1C5))
+                }
+                
+                Spacer(modifier = Modifier.weight(1f))
+                
+                Button(
+                    onClick = onNavigateToPlayer,
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Color(0xFF4FD1C5)
                     )
-                    
-                    Spacer(modifier = Modifier.height(8.dp))
-                    
-                    Text(
-                        text = "Evening Meditation",
-                        style = MaterialTheme.typography.headlineSmall,
-                        color = Color(0xFFE2E8F0),
-                        fontWeight = FontWeight.Light
-                    )
-                    
-                    Text(
-                        text = "$recommendedDuration minutes",
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = Color(0xFFE2E8F0).copy(alpha = 0.7f)
-                    )
-                    
-                    Spacer(modifier = Modifier.height(16.dp))
-                    
-                    Row(
-                        horizontalArrangement = Arrangement.spacedBy(8.dp)
-                    ) {
-                        InfoChip("Sleep", Color(0xFF667EEA))
-                        InfoChip("$recommendedDuration min", Color(0xFF4FD1C5))
-                    }
-                    
-                    Spacer(modifier = Modifier.height(20.dp))
-                    
-                    GradientButton(
-                        text = "Start Session",
-                        onClick = { onNavigateToPlayer() },
-                        modifier = Modifier.fillMaxWidth()
-                    )
+                ) {
+                    Text("Start Session", color = Color.White)
                 }
             }
         }
@@ -383,8 +385,7 @@ fun CategoryChip(
 ) {
     GlassCard(
         modifier = Modifier
-            .clickable(onClick = onClick)
-            .padding(horizontal = 16.dp, vertical = 8.dp),
+            .clickable(onClick = onClick),
         cornerRadius = 50.dp,
         backgroundColor = Color(0x0DFFFFFF),
         borderColor = color
@@ -393,13 +394,14 @@ fun CategoryChip(
             text = label,
             style = MaterialTheme.typography.bodySmall,
             color = color,
-            fontWeight = FontWeight.Medium
+            fontWeight = FontWeight.Medium,
+            modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
         )
     }
 }
 
 @Composable
-fun RecentSessions() {
+fun RecentSessions(onNavigateToPlayer: () -> Unit) {
     val recentSessions = listOf(
         "Morning Breathing" to "5 min",
         "Focus Meditation" to "10 min",
@@ -420,7 +422,7 @@ fun RecentSessions() {
             SessionCard(
                 title = title,
                 duration = duration,
-                onClick = { /* Handle session click */ }
+                onNavigateToPlayer = onNavigateToPlayer
             )
         }
     }
@@ -430,12 +432,12 @@ fun RecentSessions() {
 fun SessionCard(
     title: String,
     duration: String,
-    onClick: () -> Unit
+    onNavigateToPlayer: () -> Unit
 ) {
     GlassCard(
         modifier = Modifier
             .fillMaxWidth()
-            .clickable(onClick = onClick),
+            .clickable(onClick = onNavigateToPlayer),
         cornerRadius = 16.dp
     ) {
         Row(
@@ -462,17 +464,25 @@ fun SessionCard(
             }
             
             IconButton(
-                icon = {
-                    Icon(
-                        imageVector = Icons.Default.PlayArrow,
-                        contentDescription = "Play"
-                    )
-                },
-                onClick = { onNavigateToPlayer() },
-                modifier = Modifier.size(48.dp),
-                backgroundColor = Color(0xFF4FD1C5).copy(alpha = 0.2f),
-                contentColor = Color(0xFF4FD1C5)
-            )
+                onClick = onNavigateToPlayer,
+                modifier = Modifier
+                    .size(48.dp)
+                    .clip(CircleShape)
+                    .background(Color(0xFF4FD1C5).copy(alpha = 0.2f))
+            ) {
+                Icon(
+                    imageVector = Icons.Default.PlayArrow,
+                    contentDescription = "Play",
+                    tint = Color(0xFF4FD1C5)
+                )
+            }
         }
     }
 }
+
+// Helper for viewModel factory
+@Composable
+inline fun <reified T : androidx.lifecycle.ViewModel> viewModelFactory(crossinline f: () -> T): androidx.lifecycle.ViewModelProvider.Factory =
+    object : androidx.lifecycle.ViewModelProvider.Factory {
+        override fun <T : androidx.lifecycle.ViewModel> create(modelClass: Class<T>): T = f() as T
+    }

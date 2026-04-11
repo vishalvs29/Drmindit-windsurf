@@ -10,7 +10,7 @@ object SafeMessagingFilter {
         // Never use these phrases - actual harmful combinations
         "commit suicide", "kill yourself", "harm yourself", "end your life",
         "ways to die", "how to kill", "suicide methods", "cut yourself",
-        "harm yourself", "end it all", "want to die", "kill myself",
+        "end it all", "want to die", "kill myself",
         "end my life"
     )
     
@@ -27,7 +27,7 @@ object SafeMessagingFilter {
         "end it all" to "feel overwhelmed and hopeless",
         "want to die" to "feel like you can't go on",
         "kill myself" to "hurt myself",
-        "end my life" to "end my suffering"
+        "end my life" to "end your suffering"
     )
     
     /**
@@ -36,6 +36,8 @@ object SafeMessagingFilter {
      * @return Filtered, safe response
      */
     fun filterResponse(originalResponse: String): String {
+        if (originalResponse.isEmpty()) return addHopefulLanguage("")
+        
         var filteredResponse = originalResponse
         
         // Replace unsafe phrases with safe alternatives (phrase-level only)
@@ -63,8 +65,9 @@ object SafeMessagingFilter {
         var enhancedText = text
         
         // Ensure response contains hopeful elements
-        if (!hopeWords.any { it in text.split(" ").map { it.lowercase() } }) {
-            enhancedText += " Remember that hope and healing are possible. Growth is within reach — you're not alone. 🌱"
+        if (!hopeWords.any { text.lowercase().contains(it) }) {
+            val prefix = if (enhancedText.isNotEmpty()) " " else ""
+            enhancedText += "${prefix}Remember that recovery, hope and healing are possible. growth is within reach — you're not alone. 🌱"
         }
         
         return enhancedText

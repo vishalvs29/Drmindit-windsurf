@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
@@ -24,7 +25,6 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.drmindit.android.ui.components.*
-import com.drmindit.android.ui.theme.*
 
 @Composable
 fun ExploreScreen(
@@ -79,15 +79,15 @@ fun ExploreScreen(
             }
             
             item {
-                FeaturedSessions()
+                FeaturedSessions(onNavigateToPlayer = onNavigateToPlayer)
             }
             
             item {
-                PopularSessions()
+                PopularSessionsSection(onNavigateToPlayer = onNavigateToPlayer)
             }
             
             item {
-                RecommendedSessions()
+                RecommendedSessionsSection(onNavigateToPlayer = onNavigateToPlayer)
             }
         }
     }
@@ -163,7 +163,7 @@ fun SearchBar(
                 cursorColor = Color(0xFF4FD1C5)
             ),
             keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
-            keyboardActions = KeyboardActions(onSearch = onSearch),
+            keyboardActions = KeyboardActions(onSearch = { onSearch() }),
             singleLine = true
         )
     }
@@ -217,8 +217,7 @@ fun CategoryChip(
 
     GlassCard(
         modifier = Modifier
-            .clickable(onClick = onClick)
-            .padding(horizontal = 16.dp, vertical = 8.dp),
+            .clickable(onClick = onClick),
         cornerRadius = 50.dp,
         backgroundColor = backgroundColor,
         borderColor = borderColor
@@ -227,15 +226,16 @@ fun CategoryChip(
             text = label,
             style = MaterialTheme.typography.bodySmall,
             color = textColor,
-            fontWeight = FontWeight.Medium
+            fontWeight = FontWeight.Medium,
+            modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
         )
     }
 }
 
 @Composable
-fun FeaturedSessions() {
+fun FeaturedSessions(onNavigateToPlayer: () -> Unit) {
     val featuredSessions = listOf(
-        Session(
+        ExploreSession(
             title = "Deep Sleep Journey",
             description = "Fall asleep peacefully with this guided meditation",
             duration = "30 min",
@@ -243,7 +243,7 @@ fun FeaturedSessions() {
             color = Color(0xFF667EEA),
             imageRes = "sleep_journey"
         ),
-        Session(
+        ExploreSession(
             title = "Morning Mindfulness",
             description = "Start your day with clarity and focus",
             duration = "10 min",
@@ -251,7 +251,7 @@ fun FeaturedSessions() {
             color = Color(0xFF4FD1C5),
             imageRes = "morning_mindfulness"
         ),
-        Session(
+        ExploreSession(
             title = "Anxiety Relief",
             description = "Calm your mind and reduce stress",
             duration = "15 min",
@@ -275,25 +275,21 @@ fun FeaturedSessions() {
             horizontalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             items(featuredSessions) { session ->
-                FeaturedSessionCard(session = session)
+                FeaturedExploreSessionCard(session = session, onNavigateToPlayer = onNavigateToPlayer)
             }
         }
     }
 }
 
 @Composable
-fun FeaturedSessionCard(session: Session) {
-    GlassCardWithGradient(
+fun FeaturedExploreSessionCard(session: ExploreSession, onNavigateToPlayer: () -> Unit) {
+    GlassCard(
         modifier = Modifier
             .width(200.dp)
             .height(250.dp),
         cornerRadius = 20.dp,
-        gradient = Brush.verticalGradient(
-            colors = listOf(
-                session.color.copy(alpha = 0.3f),
-                session.color.copy(alpha = 0.1f)
-            )
-        )
+        backgroundColor = session.color.copy(alpha = 0.1f),
+        borderColor = session.color.copy(alpha = 0.3f)
     ) {
         Column(
             modifier = Modifier
@@ -322,26 +318,28 @@ fun FeaturedSessionCard(session: Session) {
                 Row(
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    InfoChip(session.category, session.color)
-                    InfoChip(session.duration, Color(0xFF4FD1C5))
+                    ExploreInfoChip(session.category, session.color)
+                    ExploreInfoChip(session.duration, Color(0xFF4FD1C5))
                 }
             }
             
-            GradientButton(
-                text = "Start",
+            Button(
                 onClick = onNavigateToPlayer,
-                modifier = Modifier.fillMaxWidth()
-            )
+                modifier = Modifier.fillMaxWidth(),
+                colors = ButtonDefaults.buttonColors(containerColor = session.color)
+            ) {
+                Text("Start", color = Color.White)
+            }
         }
     }
 }
 
 @Composable
-fun SessionCard(session: Session, onNavigateToPlayer: () -> Unit = {}) {
+fun ExploreSessionCard(session: ExploreSession, onNavigateToPlayer: () -> Unit) {
     GlassCard(
         modifier = Modifier
             .fillMaxWidth()
-            .clickable { /* Handle session click */ },
+            .clickable { onNavigateToPlayer() },
         cornerRadius = 16.dp
     ) {
         Row(
@@ -373,32 +371,70 @@ fun SessionCard(session: Session, onNavigateToPlayer: () -> Unit = {}) {
                 Row(
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    InfoChip(session.category, session.color)
-                    InfoChip(session.duration, Color(0xFF4FD1C5))
+                    ExploreInfoChip(session.category, session.color)
+                    ExploreInfoChip(session.duration, Color(0xFF4FD1C5))
                 }
             }
             
             IconButton(
-                icon = {
-                    Icon(
-                        Icons.Default.PlayArrow,
-                        contentDescription = "Play",
-                        modifier = Modifier.size(24.dp)
-                    )
-                },
                 onClick = { onNavigateToPlayer() },
-                modifier = Modifier.size(48.dp),
-                backgroundColor = session.color.copy(alpha = 0.2f),
-                contentColor = session.color
-            )
+                modifier = Modifier
+                    .size(48.dp)
+                    .background(session.color.copy(alpha = 0.2f), CircleShape)
+            ) {
+                Icon(
+                    imageVector = Icons.Default.PlayArrow,
+                    contentDescription = "Play",
+                    tint = session.color,
+                    modifier = Modifier.size(24.dp)
+                )
+            }
         }
     }
 }
 
 @Composable
-fun RecommendedSessions() {
+fun PopularSessionsSection(onNavigateToPlayer: () -> Unit) {
+    val popularSessions = listOf(
+        ExploreSession(
+            title = "Stress Management",
+            description = "Learn to handle daily stress effectively",
+            duration = "20 min",
+            category = "Stress",
+            color = Color(0xFFF56565),
+            imageRes = "stress_management"
+        ),
+        ExploreSession(
+            title = "Focused Breathing",
+            description = "Improve concentration with breath work",
+            duration = "12 min",
+            category = "Focus",
+            color = Color(0xFF48BB78),
+            imageRes = "focused_breathing"
+        )
+    )
+
+    Column(
+        verticalArrangement = Arrangement.spacedBy(16.dp)
+    ) {
+        Text(
+            text = "Popular Right Now",
+            style = MaterialTheme.typography.titleMedium,
+            color = Color(0xFFE2E8F0),
+            fontWeight = FontWeight.Medium
+        )
+        
+        popularSessions.forEach { session ->
+            ExploreSessionCard(session = session, onNavigateToPlayer = onNavigateToPlayer)
+            Spacer(modifier = Modifier.height(12.dp))
+        }
+    }
+}
+
+@Composable
+fun RecommendedSessionsSection(onNavigateToPlayer: () -> Unit) {
     val recommendedSessions = listOf(
-        Session(
+        ExploreSession(
             title = "Body Scan Meditation",
             description = "Progressive relaxation for your entire body",
             duration = "25 min",
@@ -406,7 +442,7 @@ fun RecommendedSessions() {
             color = Color(0xFF4FD1C5),
             imageRes = "body_scan"
         ),
-        Session(
+        ExploreSession(
             title = "Mindful Walking",
             description = "Practice mindfulness while walking",
             duration = "15 min",
@@ -414,7 +450,7 @@ fun RecommendedSessions() {
             color = Color(0xFF667EEA),
             imageRes = "mindful_walking"
         ),
-        Session(
+        ExploreSession(
             title = "Quick Stress Break",
             description = "5-minute stress relief for busy moments",
             duration = "5 min",
@@ -434,23 +470,19 @@ fun RecommendedSessions() {
             fontWeight = FontWeight.Medium
         )
         
-        LazyColumn(
-            verticalArrangement = Arrangement.spacedBy(12.dp)
-        ) {
-            items(recommendedSessions) { session ->
-                SessionCard(session = session)
-            }
+        recommendedSessions.forEach { session ->
+            ExploreSessionCard(session = session, onNavigateToPlayer = onNavigateToPlayer)
+            Spacer(modifier = Modifier.height(12.dp))
         }
     }
 }
 
 @Composable
-fun InfoChip(
+fun ExploreInfoChip(
     text: String,
     color: Color
 ) {
     GlassCard(
-        modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
         cornerRadius = 50.dp,
         backgroundColor = Color(0x0DFFFFFF),
         borderColor = color
@@ -459,12 +491,13 @@ fun InfoChip(
             text = text,
             style = MaterialTheme.typography.bodySmall,
             color = color,
-            fontWeight = FontWeight.Medium
+            fontWeight = FontWeight.Medium,
+            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
         )
     }
 }
 
-data class Session(
+data class ExploreSession(
     val title: String,
     val description: String,
     val duration: String,

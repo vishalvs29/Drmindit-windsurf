@@ -1,11 +1,11 @@
 package com.drmindit.android.usecase
 
-import com.drmindit.shared.domain.model.AudioSession
+import com.drmindit.shared.domain.model.Difficulty
+import com.drmindit.shared.domain.model.Session
 import com.drmindit.shared.domain.model.SessionCategory
 import com.drmindit.shared.domain.repository.SessionRepository
 import com.drmindit.shared.domain.usecase.GetSessionsUseCase
 import io.mockk.*
-import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.runBlocking
 import org.junit.Before
 import org.junit.Test
@@ -27,40 +27,43 @@ class GetSessionsUseCaseTest {
     fun `invoke returns sessions successfully`() = runBlocking {
         // Given
         val expectedSessions = listOf(
-            AudioSession(
+            Session(
                 id = "session1",
                 title = "Meditation for Beginners",
                 description = "A gentle introduction to meditation",
-                instructorName = "Dr. Smith",
-                duration = 600,
+                instructor = "Dr. Smith",
+                duration = 10,
                 audioUrl = "https://example.com/audio1.mp3",
-                thumbnailUrl = "https://example.com/thumb1.jpg",
+                imageUrl = "https://example.com/thumb1.jpg",
                 category = SessionCategory.MINDFULNESS,
                 tags = listOf("meditation", "beginners"),
                 rating = 4.5f,
-                reviewCount = 100
+                totalRatings = 100,
+                difficulty = Difficulty.BEGINNER
             ),
-            AudioSession(
+            Session(
                 id = "session2",
                 title = "Sleep Stories",
                 description = "Calming stories for better sleep",
-                instructorName = "Dr. Johnson",
-                duration = 900,
+                instructor = "Dr. Johnson",
+                duration = 15,
                 audioUrl = "https://example.com/audio2.mp3",
-                thumbnailUrl = "https://example.com/thumb2.jpg",
+                imageUrl = "https://example.com/thumb2.jpg",
                 category = SessionCategory.SLEEP,
                 tags = listOf("sleep", "stories"),
                 rating = 4.8f,
-                reviewCount = 200
+                totalRatings = 200,
+                difficulty = Difficulty.BEGINNER
             )
         )
         
-        every { sessionRepository.getSessions() } returns flowOf(Result.success(expectedSessions))
+        coEvery { sessionRepository.getSessions(any()) } returns Result.success(expectedSessions)
         
         // When
         val result = getSessionsUseCase()
         
         // Then
+        assertTrue(result.isSuccess)
         val sessions = result.getOrNull()
         assertEquals(expectedSessions.size, sessions?.size)
         assertEquals(expectedSessions[0].id, sessions?.get(0)?.id)
@@ -71,7 +74,7 @@ class GetSessionsUseCaseTest {
     fun `invoke handles repository error`() = runBlocking {
         // Given
         val errorMessage = "Network error"
-        every { sessionRepository.getSessions() } returns flowOf(Result.failure(RuntimeException(errorMessage)))
+        coEvery { sessionRepository.getSessions(any()) } returns Result.failure(RuntimeException(errorMessage))
         
         // When
         val result = getSessionsUseCase()
@@ -84,13 +87,14 @@ class GetSessionsUseCaseTest {
     @Test
     fun `invoke returns empty list when no sessions available`() = runBlocking {
         // Given
-        val emptySessions = emptyList<AudioSession>()
-        every { sessionRepository.getSessions() } returns flowOf(Result.success(emptySessions))
+        val emptySessions = emptyList<Session>()
+        coEvery { sessionRepository.getSessions(any()) } returns Result.success(emptySessions)
         
         // When
         val result = getSessionsUseCase()
         
         // Then
+        assertTrue(result.isSuccess)
         val sessions = result.getOrNull()
         assertEquals(0, sessions?.size)
     }

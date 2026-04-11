@@ -3,12 +3,12 @@ package com.drmindit.android.ui.components
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
-import com.drmindit.android.ui.components.GradientButton
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -32,7 +32,7 @@ fun MoodRatingDialog(
 ) {
     var selectedMood by remember { mutableStateOf(currentMood) }
     val animatedMood by animateFloatAsState(
-        targetValue = selectedMood.value,
+        targetValue = selectedMood,
         animationSpec = tween(durationMillis = 300, easing = androidx.compose.animation.core.EaseInOutCubic),
         label = "moodAnimation"
     )
@@ -68,7 +68,11 @@ fun MoodRatingDialog(
                     onClick = onDismiss,
                     modifier = Modifier.size(32.dp)
                 ) {
-                    Icon(Icons.Default.Close, contentDescription = "Close")
+                    Icon(
+                        imageVector = Icons.Default.Close, 
+                        contentDescription = "Close",
+                        tint = Color.White
+                    )
                 }
             }
             
@@ -91,18 +95,22 @@ fun MoodRatingDialog(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 // Mood emojis
-                listOf(
+                val moodOptions = listOf(
                     "😔" to 1f,
                     "😐" to 3f,
                     "🙂" to 5f,
                     "😊" to 7f,
                     "🤗" to 9f,
                     "😄" to 10f
-                ).forEach { (emoji, moodValue) ->
+                )
+                
+                moodOptions.forEach { (emoji, moodValue) ->
                     val isSelected = animatedMood.roundToInt() == moodValue.roundToInt()
                     Column(
                         horizontalAlignment = Alignment.CenterHorizontally,
-                        modifier = Modifier.weight(1f)
+                        modifier = Modifier
+                            .weight(1f)
+                            .clickable { selectedMood = moodValue }
                     ) {
                         Box(
                             modifier = Modifier
@@ -117,7 +125,12 @@ fun MoodRatingDialog(
                                             )
                                         )
                                     } else {
-                                        Color(0xFF1E3A5F).copy(alpha = 0.3f)
+                                        Brush.linearGradient(
+                                            colors = listOf(
+                                                Color(0xFF1E3A5F).copy(alpha = 0.3f),
+                                                Color(0xFF1E3A5F).copy(alpha = 0.3f)
+                                            )
+                                        )
                                     },
                                     CircleShape
                                 ),
@@ -133,13 +146,14 @@ fun MoodRatingDialog(
                         Spacer(modifier = Modifier.height(4.dp))
                         
                         Text(
-                            text = when (moodValue) {
-                                1f -> "Very Low"
-                                3f -> "Low"
-                                5f -> "Neutral"
-                                7f -> "Good"
-                                9f -> "Great"
-                                10f -> "Excellent"
+                            text = when (moodValue.roundToInt()) {
+                                1 -> "Very Low"
+                                3 -> "Low"
+                                5 -> "Neutral"
+                                7 -> "Good"
+                                9 -> "Great"
+                                10 -> "Excellent"
+                                else -> ""
                             },
                             style = MaterialTheme.typography.bodySmall,
                             color = if (isSelected) Color(0xFF4FD1C5) else Color(0xFFE2E8F0).copy(alpha = 0.6f),
@@ -152,11 +166,15 @@ fun MoodRatingDialog(
             Spacer(modifier = Modifier.height(24.dp))
             
             // Action button
-            GradientButton(
-                text = "Continue",
-                onClick = { onMoodSelected(selectedMood.value) },
-                modifier = Modifier.fillMaxWidth()
-            )
+            Button(
+                onClick = { onMoodSelected(selectedMood) },
+                modifier = Modifier.fillMaxWidth(),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = Color(0xFF4FD1C5)
+                )
+            ) {
+                Text("Continue", color = Color.White)
+            }
         }
     }
 }

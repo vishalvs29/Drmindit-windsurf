@@ -17,12 +17,9 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.navArgument
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.drmindit.android.ui.navigation.DrMinditBottomNavigation
 import com.drmindit.android.ui.screens.*
 import com.drmindit.android.ui.theme.DrMinditTheme
-import com.drmindit.android.ui.viewmodel.UserViewModel
-import com.drmindit.android.ui.viewmodel.SessionPlayerViewModel
 
 @Composable
 fun DrMinditApp() {
@@ -59,7 +56,6 @@ fun DrMinditApp() {
                     modifier = Modifier.fillMaxSize()
                 ) {
                     composable("home") {
-                        val userViewModel: UserViewModel = viewModel()
                         HomeScreen(
                             onNavigateToSession = { sessionId ->
                                 navController.navigate("session/$sessionId")
@@ -75,8 +71,7 @@ fun DrMinditApp() {
                             },
                             onNavigateToAnalytics = {
                                 navController.navigate("analytics")
-                            },
-                            userViewModel = userViewModel
+                            }
                         )
                     }
                     
@@ -95,7 +90,6 @@ fun DrMinditApp() {
                     }
                     
                     composable("player") {
-                        val sessionPlayerViewModel: SessionPlayerViewModel = viewModel()
                         SessionPlayerScreen(
                             onNavigateBack = {
                                 navController.popBackStack()
@@ -104,8 +98,7 @@ fun DrMinditApp() {
                                 navController.navigate("home") {
                                     popUpTo("home") { inclusive = true }
                                 }
-                            },
-                            sessionPlayerViewModel = sessionPlayerViewModel
+                            }
                         )
                     }
                     

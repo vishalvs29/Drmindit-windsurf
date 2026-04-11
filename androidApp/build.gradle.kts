@@ -1,6 +1,7 @@
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
+    id("org.jetbrains.kotlin.plugin.compose") version "2.0.0"
     id("kotlin-parcelize")
     id("io.gitlab.arturbosch.detekt")
     id("com.google.gms.google-services")
@@ -44,6 +45,7 @@ android {
 
     buildFeatures {
         buildConfig = true
+        compose = true
     }
 
     signingConfigs {
@@ -70,8 +72,12 @@ android {
         }
         debug {
             isDebuggable = true
-            applicationIdSuffix = ".debug"
+            // Removed applicationIdSuffix = ".debug" to match google-services.json
             versionNameSuffix = "-debug"
+            
+            configure<com.google.firebase.crashlytics.buildtools.gradle.CrashlyticsExtension> {
+                mappingFileUploadEnabled = false
+            }
         }
     }
 

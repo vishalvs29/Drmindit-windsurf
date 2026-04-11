@@ -2,13 +2,15 @@ package com.drmindit.android.ui.widget
 
 import android.content.Context
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.glance.*
+import androidx.glance.action.actionStartActivity
+import androidx.glance.action.clickable
 import androidx.glance.appwidget.*
-import androidx.glance.appwidget.action.actionStartActivity
-import androidx.glance.appwidget.action.clickable
 import androidx.glance.layout.*
 import androidx.glance.text.*
-import androidx.glance.unit.*
+import androidx.glance.unit.ColorProvider
 import com.drmindit.android.MainActivity
 
 /**
@@ -23,8 +25,14 @@ class DailyCheckInWidgetReceiver : GlanceAppWidgetReceiver() {
  */
 class DailyCheckInWidget : GlanceAppWidget() {
 
+    override suspend fun provideGlance(context: Context, id: GlanceId) {
+        provideContent {
+            Content()
+        }
+    }
+
     @Composable
-    override fun Content() {
+    private fun Content() {
         val state = DailyCheckInWidgetState()
 
         Column(
