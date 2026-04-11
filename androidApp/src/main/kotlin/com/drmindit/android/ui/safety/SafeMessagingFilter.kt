@@ -10,7 +10,8 @@ object SafeMessagingFilter {
         // Never use these phrases - actual harmful combinations
         "commit suicide", "kill yourself", "harm yourself", "end your life",
         "ways to die", "how to kill", "suicide methods", "cut yourself",
-        "harm yourself", "end it all", "want to die", "kill myself"
+        "harm yourself", "end it all", "want to die", "kill myself",
+        "end my life"
     )
     
     private val safeAlternatives = mapOf(
@@ -25,7 +26,8 @@ object SafeMessagingFilter {
         "harm yourself" to "hurt yourself",
         "end it all" to "feel overwhelmed and hopeless",
         "want to die" to "feel like you can't go on",
-        "kill myself" to "hurt myself"
+        "kill myself" to "hurt myself",
+        "end my life" to "end my suffering"
     )
     
     /**
@@ -62,7 +64,7 @@ object SafeMessagingFilter {
         
         // Ensure response contains hopeful elements
         if (!hopeWords.any { it in text.split(" ").map { it.lowercase() } }) {
-            enhancedText += " Remember that healing is possible, and you're not alone in this journey. 🌱"
+            enhancedText += " Remember that hope and healing are possible. Growth is within reach — you're not alone. 🌱"
         }
         
         return enhancedText

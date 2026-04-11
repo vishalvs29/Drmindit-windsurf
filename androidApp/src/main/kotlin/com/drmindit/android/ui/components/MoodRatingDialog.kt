@@ -8,6 +8,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
+import com.drmindit.android.ui.components.GradientButton
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -32,7 +33,8 @@ fun MoodRatingDialog(
     var selectedMood by remember { mutableStateOf(currentMood) }
     val animatedMood by animateFloatAsState(
         targetValue = selectedMood.value,
-        animationSpec = tween(durationMillis = 300, easing = androidx.compose.animation.core.EaseInOutCubic)
+        animationSpec = tween(durationMillis = 300, easing = androidx.compose.animation.core.EaseInOutCubic),
+        label = "moodAnimation"
     )
     
     Card(
@@ -64,9 +66,7 @@ fun MoodRatingDialog(
                 
                 IconButton(
                     onClick = onDismiss,
-                    modifier = Modifier.size(32.dp),
-                    backgroundColor = Color.Transparent,
-                    contentColor = Color(0xFFE2E8F0).copy(alpha = 0.6f)
+                    modifier = Modifier.size(32.dp)
                 ) {
                     Icon(Icons.Default.Close, contentDescription = "Close")
                 }

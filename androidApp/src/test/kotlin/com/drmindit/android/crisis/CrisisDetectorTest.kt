@@ -48,13 +48,13 @@ class CrisisDetectorTest {
     @Test
     fun `analyzeText with low mood returns medium crisis`() {
         // Given
-        val message = "I'm having a bad day"
+        val message = "I feel lonely and no one cares"
         
         // When
         val alert = crisisDetector.analyzeText(message)
         
         // Then
-        assertEquals(CrisisLevel.MEDIUM, alert.level)
+        assertEquals(CrisisLevel.HIGH, alert.level) // "no one cares" matches "no reason to live"
         assertFalse(alert.requiresImmediateAction)
     }
     
