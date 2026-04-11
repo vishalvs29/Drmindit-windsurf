@@ -34,12 +34,12 @@ object SafeMessagingFilter {
      * @return Filtered, safe response
      */
     fun filterResponse(originalResponse: String): String {
-        var filteredResponse = originalResponse.lowercase()
+        var filteredResponse = originalResponse
         
         // Replace unsafe phrases with safe alternatives (phrase-level only)
         unsafePhrases.forEach { unsafe ->
             safeAlternatives[unsafe]?.let { safe ->
-                filteredResponse = filteredResponse.replace(unsafe, safe)
+                filteredResponse = filteredResponse.replace(unsafe, safe, ignoreCase = true)
             }
         }
         
@@ -61,7 +61,7 @@ object SafeMessagingFilter {
         var enhancedText = text
         
         // Ensure response contains hopeful elements
-        if (!hopeWords.any { it in text.lowercase() }) {
+        if (!hopeWords.any { it in text.split(" ").map { it.lowercase() } }) {
             enhancedText += " Remember that healing is possible, and you're not alone in this journey. 🌱"
         }
         

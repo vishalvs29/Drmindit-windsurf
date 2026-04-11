@@ -141,7 +141,7 @@ fun CircularLoadingAnimation(
                 useCenter = false,
                 style = androidx.compose.ui.graphics.drawscope.Stroke(
                     width = strokeWidthPx,
-                    cap = androidx.compose.ui.graphics.drawscope.StrokeCap.Round
+                    cap = androidx.compose.ui.graphics.StrokeCap.Round
                 ),
                 size = androidx.compose.ui.geometry.Size(
                     width = canvasWidth - strokeWidthPx,

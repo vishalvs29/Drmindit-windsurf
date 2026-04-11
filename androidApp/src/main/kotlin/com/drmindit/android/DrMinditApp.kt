@@ -15,6 +15,7 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.navArgument
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.drmindit.android.ui.navigation.DrMinditBottomNavigation
@@ -22,17 +23,6 @@ import com.drmindit.android.ui.screens.*
 import com.drmindit.android.ui.theme.DrMinditTheme
 import com.drmindit.android.ui.viewmodel.UserViewModel
 import com.drmindit.android.ui.viewmodel.SessionPlayerViewModel
-
-class MainActivity : ComponentActivity() {
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContent {
-            DrMinditTheme {
-                DrMinditApp()
-            }
-        }
-    }
-}
 
 @Composable
 fun DrMinditApp() {

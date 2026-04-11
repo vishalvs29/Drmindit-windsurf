@@ -28,8 +28,8 @@ fun AnimatedBackground(
     val particles = remember(particles) {
         List(particles) { index ->
             Particle(
-                initialX = (index * 100) % 1000,
-                initialY = (index * 150) % 1000,
+                initialX = ((index * 100) % 1000).toFloat(),
+                initialY = ((index * 150) % 1000).toFloat(),
                 speed = 0.5f + (index % 5) * 0.2f,
                 amplitude = 20f + (index % 3) * 10f,
                 phase = (index * 0.5f)
@@ -193,7 +193,7 @@ fun GradientWaveBackground(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(height.dp)
-                    .offset(y = (waveOffset + index * 100) % 1000.dp)
+                    .offset(y = ((waveOffset + index * 100) % 1000).dp)
                     .background(
                         Brush.horizontalGradient(
                             colors = listOf(

@@ -509,3 +509,5 @@ private fun formatTime(seconds: Float): String {
     val secs = (seconds % 60).toInt()
     return String.format("%d:%02d", minutes, secs)
 }
+}
+}

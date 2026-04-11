@@ -65,6 +65,17 @@ class UserViewModel(
         _error.value = null
     }
     
+    fun deleteAccount() {
+        viewModelScope.launch {
+            try {
+                userRepository.deleteAccount()
+                _user.value = null
+            } catch (e: Exception) {
+                _error.value = "Failed to delete account: ${e.message}"
+            }
+        }
+    }
+    
     // Convenience properties for UI
     val userName: StateFlow<String> = user.map { user ->
         user?.let { "${it.firstName} ${it.lastName}" } ?: "Guest"

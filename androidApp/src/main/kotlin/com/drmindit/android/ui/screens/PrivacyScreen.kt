@@ -36,7 +36,7 @@ fun PrivacyScreen(
     
     // Delete user account
     suspend fun deleteAllData() {
-        isDeleting.value = true
+        isDeleting = true
         try {
             val result = userViewModel.deleteAccount()
             if (result.isSuccess) {
@@ -45,7 +45,7 @@ fun PrivacyScreen(
             }
         } catch (e: Exception) {
             // Show error message
-            isDeleting.value = false
+            isDeleting = false
         }
     }
     val scrollState = rememberScrollState()

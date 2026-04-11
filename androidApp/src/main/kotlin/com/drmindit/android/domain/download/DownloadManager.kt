@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.media3.common.C
 import androidx.media3.datasource.DefaultDataSource
 import androidx.media3.datasource.DefaultHttpDataSource
+import androidx.media3.exoplayer.offline.Download
 import androidx.media3.exoplayer.offline.DownloadManager
 import androidx.media3.exoplayer.offline.DownloadRequest
 import androidx.media3.exoplayer.offline.DownloadService
@@ -18,7 +19,6 @@ import java.io.File
 class SessionDownloadManager(
     private val context: Context
 ) {
-    private val downloadManager = DownloadManager(context, DownloadService::class.java)
     private val _downloadProgress = MutableStateFlow<Map<String, Float>>(emptyMap())
     val downloadProgress: Flow<Map<String, Float>> = _downloadProgress.asStateFlow()
     
@@ -26,21 +26,7 @@ class SessionDownloadManager(
     val downloadedFiles: Flow<Set<String>> = _downloadedFiles.asStateFlow()
     
     init {
-        setupDownloadListener()
-    }
-    
-    private fun setupDownloadListener() {
-        downloadManager.addListener { downloads ->
-            val progressMap = downloads.associate { download ->
-                download.request.id to (download.bytesDownloaded.toFloat() / download.request.sizeInBytes.toFloat())
-            }
-            _downloadProgress.value = progressMap
-            
-            // Update downloaded files list
-            val completedDownloads = downloads.filter { it.state == Download.STATE_COMPLETED }
-            val completedIds = completedDownloads.map { it.request.id }.toSet()
-            _downloadedFiles.value = completedIds
-        }
+        // TODO: Setup download listener
     }
     
     fun downloadSession(
@@ -54,14 +40,8 @@ class SessionDownloadManager(
                 return true
             }
             
-            val downloadRequest = DownloadRequest.Builder(audioUrl)
-                .setId(sessionId)
-                .setTitle(title)
-                .setDestinationUri(getDownloadUri(sessionId).toString())
-                .build()
-            
-            downloadManager.sendDownload(downloadRequest)
-            true
+            // TODO: Implement actual download
+            false
         } catch (e: Exception) {
             false
         }
@@ -97,8 +77,7 @@ class SessionDownloadManager(
         val updatedSet = _downloadedFiles.value - sessionId
         _downloadedFiles.value = updatedSet
         
-        // Cancel download if in progress
-        downloadManager.sendDownloadRemove(sessionId)
+        // TODO: Cancel download if in progress
     }
     
     fun clearAllDownloads() {
